@@ -52,6 +52,9 @@
 		[image addRepresentation:rep];
 
 		// Fade the old view out and the new view in.
+		NSAnimationContext* context = [NSAnimationContext currentContext];
+		[context setDuration:1.0];
+		
 		[_images[_index].animator setAlphaValue:0.0];
 		_index = (_index + 1) % 2;
 		[_images[_index].animator setAlphaValue:1.0];
