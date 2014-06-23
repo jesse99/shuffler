@@ -1,0 +1,33 @@
+* Nothing happened when double clicking a nib file.
+
+* Get basics working:
+	- pick another
+	- support hotkeys
+	- make sure the animation is working
+* Add a UI to control stuff
+* Add database support
+* Support ratings
+* Support tags
+	- use sqlite?
+	- would be nice if could somehow edit these
+	- always have a none
+	- default to missing
+	- always show missing (or maybe just treat this like everything else and default to selecting missing)
+* Support scaling
+* May want an option to shift the picture a bit.
+* Support trashing
+* Indicate dupes somehow.
+* Support opening
+* Need an icon
+* Preference for which directory to use.
+* Default to user's pictures directory.
+	- If that's empty could default to a shuffler directory with a few pics (have to make sure that they are not copy righted)
+	- maybe some wiki commons pictures
+* Preference for which monitor to use.
+* Need a preference to blacklist part of a monitor.
+* Add a license. Maybe not MIT.
+* Some sort of help.
+* Should have a Get Info command. Probably for the database as a whole.
+* Should we support a way to organize files by tag?
+	- old-shuffler has some ideas about this
+* Can we get files from a remote source?

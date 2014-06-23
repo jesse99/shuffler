@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		372A6E091956928400ABC430 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 372A6E081956928400ABC430 /* TODO */; };
+		372A6E0C195767DB00ABC430 /* Files.m in Sources */ = {isa = PBXBuildFile; fileRef = 372A6E0B195767DB00ABC430 /* Files.m */; };
+		372A6E0F1957687E00ABC430 /* Glob.m in Sources */ = {isa = PBXBuildFile; fileRef = 372A6E0E1957687E00ABC430 /* Glob.m */; };
+		372A6E13195769F600ABC430 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 372A6E12195769F600ABC430 /* Logger.m */; };
+		372A6E191957AEBA00ABC430 /* MainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 372A6E181957AEBA00ABC430 /* MainWindow.m */; };
 		372E953319568FF1004FC97D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 372E953219568FF1004FC97D /* Cocoa.framework */; };
 		372E953D19568FF1004FC97D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 372E953B19568FF1004FC97D /* InfoPlist.strings */; };
 		372E953F19568FF1004FC97D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 372E953E19568FF1004FC97D /* main.m */; };
@@ -31,6 +36,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		372A6E081956928400ABC430 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+		372A6E0A195767DB00ABC430 /* Files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Files.h; sourceTree = "<group>"; };
+		372A6E0B195767DB00ABC430 /* Files.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Files.m; sourceTree = "<group>"; };
+		372A6E0D1957687D00ABC430 /* Glob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Glob.h; sourceTree = "<group>"; };
+		372A6E0E1957687E00ABC430 /* Glob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Glob.m; sourceTree = "<group>"; };
+		372A6E11195769F600ABC430 /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		372A6E12195769F600ABC430 /* Logger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Logger.m; sourceTree = "<group>"; };
+		372A6E141957A8FD00ABC430 /* Shuffler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shuffler.h; sourceTree = "<group>"; };
+		372A6E171957AEBA00ABC430 /* MainWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindow.h; sourceTree = "<group>"; };
+		372A6E181957AEBA00ABC430 /* MainWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainWindow.m; sourceTree = "<group>"; };
 		372E952F19568FF1004FC97D /* shuffler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = shuffler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		372E953219568FF1004FC97D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		372E953519568FF1004FC97D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -76,6 +91,7 @@
 		372E952619568FF1004FC97D = {
 			isa = PBXGroup;
 			children = (
+				372A6E081956928400ABC430 /* TODO */,
 				372E953819568FF1004FC97D /* shuffler */,
 				372E955619568FF2004FC97D /* shufflerTests */,
 				372E953119568FF1004FC97D /* Frameworks */,
@@ -117,8 +133,17 @@
 			children = (
 				372E954419568FF1004FC97D /* AppDelegate.h */,
 				372E954519568FF1004FC97D /* AppDelegate.m */,
+				372A6E0A195767DB00ABC430 /* Files.h */,
+				372A6E0B195767DB00ABC430 /* Files.m */,
+				372A6E0D1957687D00ABC430 /* Glob.h */,
+				372A6E0E1957687E00ABC430 /* Glob.m */,
+				372A6E11195769F600ABC430 /* Logger.h */,
+				372A6E12195769F600ABC430 /* Logger.m */,
+				372E953E19568FF1004FC97D /* main.m */,
 				372E954719568FF1004FC97D /* MainMenu.xib */,
-				372E954A19568FF1004FC97D /* Images.xcassets */,
+				372A6E171957AEBA00ABC430 /* MainWindow.h */,
+				372A6E181957AEBA00ABC430 /* MainWindow.m */,
+				372A6E141957A8FD00ABC430 /* Shuffler.h */,
 				372E953919568FF1004FC97D /* Supporting Files */,
 			);
 			path = shuffler;
@@ -127,9 +152,9 @@
 		372E953919568FF1004FC97D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				372E954A19568FF1004FC97D /* Images.xcassets */,
 				372E953A19568FF1004FC97D /* shuffler-Info.plist */,
 				372E953B19568FF1004FC97D /* InfoPlist.strings */,
-				372E953E19568FF1004FC97D /* main.m */,
 				372E954019568FF1004FC97D /* shuffler-Prefix.pch */,
 				372E954119568FF1004FC97D /* Credits.rtf */,
 			);
@@ -231,6 +256,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				372E953D19568FF1004FC97D /* InfoPlist.strings in Resources */,
+				372A6E091956928400ABC430 /* TODO in Resources */,
 				372E954B19568FF1004FC97D /* Images.xcassets in Resources */,
 				372E954319568FF1004FC97D /* Credits.rtf in Resources */,
 				372E954919568FF1004FC97D /* MainMenu.xib in Resources */,
@@ -252,8 +278,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				372A6E0C195767DB00ABC430 /* Files.m in Sources */,
+				372A6E0F1957687E00ABC430 /* Glob.m in Sources */,
+				372A6E191957AEBA00ABC430 /* MainWindow.m in Sources */,
 				372E954619568FF1004FC97D /* AppDelegate.m in Sources */,
 				372E953F19568FF1004FC97D /* main.m in Sources */,
+				372A6E13195769F600ABC430 /* Logger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +496,7 @@
 				372E956219568FF2004FC97D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		372E956319568FF2004FC97D /* Build configuration list for PBXNativeTarget "shufflerTests" */ = {
 			isa = XCConfigurationList;
@@ -474,6 +505,7 @@
 				372E956519568FF2004FC97D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
