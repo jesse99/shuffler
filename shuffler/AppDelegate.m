@@ -5,31 +5,61 @@
 #import "Files.h"
 #import "MainWindow.h"
 
+const double DefaultInterval = 60.0;		// TODO: use a pref for the delay
+const NSUInteger MaxHistory = 500;
+
 @implementation AppDelegate
 {
+	NSTimer* _timer;
 	Files* _files;
+	NSMutableArray* _history;
+	NSUInteger _index;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	NSString* root = @"/Users/jessejones/Documents/Desktop Pictures";	// TODO: don't hard code this
 	_files = [[Files alloc] init:root];
+	_history = [NSMutableArray new];
+	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(_selectNewImage) userInfo:nil repeats:true];
 	
-	[self _setDesktop];
+	[self _selectNewImage];
 	[self _registerHotKeys];
 }
 
-- (void)_setDesktop
+- (void)_selectNewImage
 {
-	[self _changeDesktop];
-	
-	[self performSelector:@selector(_setDesktop) withObject:self afterDelay:60.0];	// TODO: use a pref for the delay
+	if (_history.count == 0 || _index+1 == _history.count)
+	{
+		NSString* path = [_files randomImagePath];
+		[_window update:path];
+		
+		[_history addObject:path];
+		if (_history.count > 2*MaxHistory)
+			[_history removeObjectsInRange:NSMakeRange(0, MaxHistory)];
+		
+		_index = _history.count - 1;
+	}
+	else
+	{
+		[self _nextImage];
+	}
 }
 
-- (void)_changeDesktop
+- (void)_prevImage
 {
-	NSString* path = [_files randomImagePath];
-	[_window update:path];
+	if (_index > 0)
+		[_window update:_history[--_index]];
+	else
+		NSBeep();
+}
+
+- (void)_nextImage
+{
+	if (_index+1 < _history.count)
+		[_window update:_history[++_index]];
+	else
+		[self _selectNewImage];
 }
 
 static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData)
@@ -41,11 +71,13 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
     switch (key.id)
 	{
         case 1:
-			NSBeep();
+			[delegate _prevImage];
+			[delegate->_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 			break;
 			
         case 2:
-			[delegate _changeDesktop];
+			[delegate _nextImage];
+			[delegate->_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 			break;
     }
 	
