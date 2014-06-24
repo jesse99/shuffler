@@ -1,33 +1,35 @@
-* Nothing happened when double clicking a nib file.
-
-* Get basics working:
-	- pick another
-	- support hotkeys
-	- make sure the animation is working
 * Add a UI to control stuff
+	- make sure scaling menu has a working action
+	- make sure rating menu has a working action
 * Add database support
-* Support ratings
-* Support tags
-	- use sqlite?
-	- would be nice if could somehow edit these
-	- always have a none
-	- default to missing
-	- always show missing (or maybe just treat this like everything else and default to selecting missing)
-* Support scaling
-* May want an option to shift the picture a bit.
+	- maybe do this inside UIWindowController
+	- probably want to ignore database tags that the user isn't using atm
+* Get the UI working:
+	- support filtering by tags
+		` for now always show missing
+	- support scaling (MainWindow needs some work here)
+		` make sure multiple scales cannot be selected
+	- support rating
+* May want a menu item to not show missing
+* May want an option to shift the picture a bit (put this in a menu?)
 * Support trashing
 * Indicate dupes somehow.
+	- maybe show in finder could show them both
 * Support opening
 * Need an icon
+* Probably want to support margins on all sides
 * Preference for which directory to use.
 * Default to user's pictures directory.
 	- If that's empty could default to a shuffler directory with a few pics (have to make sure that they are not copy righted)
 	- maybe some wiki commons pictures
 * Preference for which monitor to use.
-* Need a preference to blacklist part of a monitor.
 * Add a license. Maybe not MIT.
-* Some sort of help.
+* Some sort of help. Maybe quickstart that pops up first time.
+	` quickstart should mention where to find the file
+	` quickstart should talk about missing tags
+* Handle new files appearing.
 * Should have a Get Info command. Probably for the database as a whole.
 * Should we support a way to organize files by tag?
 	- old-shuffler has some ideas about this
 * Can we get files from a remote source?
+

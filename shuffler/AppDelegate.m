@@ -4,6 +4,7 @@
 
 #import "Files.h"
 #import "MainWindow.h"
+#import "UIController.h"
 
 const double DefaultInterval = 60.0;		// TODO: use a pref for the delay
 const NSUInteger MaxHistory = 500;
@@ -14,17 +15,31 @@ const NSUInteger MaxHistory = 500;
 	Files* _files;
 	NSMutableArray* _history;
 	NSUInteger _index;
+	UIController* _controller;
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-	NSString* root = @"/Users/jessejones/Documents/Desktop Pictures";	// TODO: don't hard code this
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	NSDictionary* initial = @{@"tags": @[@"Animals", @"Art", @"Celebrities", @"Fantasy", @"Movies", @"Nature", @"Sports"]};
+	[defaults registerDefaults:initial];
+	[defaults synchronize];
+	
+	NSString* root = @"/Users/jessejones/Documents/Desktop Pictures/Asian8";	// TODO: don't hard code this
 	_files = [[Files alloc] init:root];
 	_history = [NSMutableArray new];
 	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(_selectNewImage) userInfo:nil repeats:true];
 	
 	[self _selectNewImage];
 	[self _registerHotKeys];
+		
+	_controller = [[UIController alloc] init];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults synchronize];
 }
 
 - (void)_selectNewImage
@@ -33,6 +48,7 @@ const NSUInteger MaxHistory = 500;
 	{
 		NSString* path = [_files randomImagePath];
 		[_window update:path];
+		[_controller setPath:path];
 		
 		[_history addObject:path];
 		if (_history.count > 2*MaxHistory)
@@ -49,17 +65,27 @@ const NSUInteger MaxHistory = 500;
 - (void)_prevImage
 {
 	if (_index > 0)
+	{
 		[_window update:_history[--_index]];
+		[_controller setPath:_history[_index]];
+	}
 	else
+	{
 		NSBeep();
+	}
 }
 
 - (void)_nextImage
 {
 	if (_index+1 < _history.count)
+	{
 		[_window update:_history[++_index]];
+		[_controller setPath:_history[_index]];
+	}
 	else
+	{
 		[self _selectNewImage];
+	}
 }
 
 static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData)

@@ -678,14 +678,17 @@
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VA6-m3-igu">
                         <rect key="frame" x="11" y="4" width="174" height="232"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="o9I-D8-YSb"/>
                     </imageView>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Mp-4P-iNk">
                         <rect key="frame" x="187" y="4" width="158" height="232"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <animations/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="G12-3y-pBb"/>
                     </imageView>
                 </subviews>
+                <animations/>
             </view>
             <connections>
                 <outlet property="image1" destination="VA6-m3-igu" id="12Q-Cn-4d5"/>
