@@ -1,6 +1,3 @@
-* Add a UI to control stuff
-	- make sure scaling menu has a working action
-	- make sure rating menu has a working action
 * Add database support
 	- maybe do this inside UIWindowController
 	- probably want to ignore database tags that the user isn't using atm

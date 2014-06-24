@@ -26,13 +26,31 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
 }
 
 - (void)setPath:(NSString*)path
 {
 	[self.window setTitle:path.lastPathComponent];
+}
+
+- (IBAction)selectRating:(id)sender
+{
+	NSString* rating = _ratingPopup.titleOfSelectedItem;
+	LOG_INFO("rating = %s", STR(rating));
+}
+
+- (IBAction)selectScaling:(id)sender
+{
+	NSString* title = _scalingPopup.titleOfSelectedItem;
+	if ([title characterAtIndex:title.length-1] == '%')
+	{
+		double scaling = title.doubleValue/100.0;
+		LOG_INFO("scaling = %.2f", scaling);
+	}
+	else
+	{
+		LOG_INFO("scaling = %s", STR(title));	// May be "None" or "Max"
+	}
 }
 
 - (void)selectTag:(NSMenuItem*)sender

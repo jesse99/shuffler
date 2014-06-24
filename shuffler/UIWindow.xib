@@ -6,7 +6,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="UIController">
             <connections>
-                <outlet property="ratingPopup" destination="3Op-gy-klM" id="Qal-RQ-3yr"/>
+                <outlet property="ratingPopup" destination="p6D-Wi-7HU" id="EOV-5E-8lM"/>
                 <outlet property="scalingPopup" destination="3Op-gy-klM" id="Av8-Bg-3Xw"/>
                 <outlet property="tagsLabel" destination="lLZ-gZ-lp6" id="blz-To-hUt"/>
                 <outlet property="tagsMenu" destination="3he-vk-vxg" id="gAI-wb-1XA"/>
@@ -68,16 +68,19 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="selectRating:" target="-2" id="mLw-CC-Xm9"/>
+                        </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="3Op-gy-klM" userLabel="Scaling Popup">
                         <rect key="frame" x="79" y="51" width="199" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" preferredEdge="maxY" selectedItem="Xr7-yH-0eQ" id="G8f-wf-uBa">
+                        <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" preferredEdge="maxY" id="G8f-wf-uBa">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="V2T-2E-Mbo">
                                 <items>
-                                    <menuItem title="None" state="on" id="Xr7-yH-0eQ"/>
+                                    <menuItem title="None" id="Xr7-yH-0eQ"/>
                                     <menuItem title="125%" id="MVv-ki-oFp"/>
                                     <menuItem title="150%" id="vvg-Lg-us3"/>
                                     <menuItem title="175%" id="uam-jS-qzG"/>
@@ -87,6 +90,9 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="selectScaling:" target="-2" id="ern-3O-ncg"/>
+                        </connections>
                     </popUpButton>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lLZ-gZ-lp6">
                         <rect key="frame" x="79" y="25" width="162" height="17"/>
