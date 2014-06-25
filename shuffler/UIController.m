@@ -1,13 +1,20 @@
 #import "UIController.h"
 
-@implementation UIController
+#import "MainWindow.h"
 
-- (id)init
+@implementation UIController
+{
+	MainWindow* _mainWindow;
+}
+
+- (id)init:(MainWindow*)window
 {
 	self = [super initWithWindowNibName:@"UIWindow"];
 
     if (self)
 	{
+		_mainWindow = window;
+		
         [self.window makeKeyAndOrderFront:self];	// note that we need to call the window method to load the controls
 		[_tagsPopup selectItem:nil];
 		[_tagsLabel setStringValue:@""];
@@ -36,21 +43,28 @@
 - (IBAction)selectRating:(id)sender
 {
 	NSString* rating = _ratingPopup.titleOfSelectedItem;
-	LOG_INFO("rating = %s", STR(rating));
+	LOG_DEBUG("rating = %s", STR(rating));
 }
 
 - (IBAction)selectScaling:(id)sender
 {
+	double scaling;
+	
 	NSString* title = _scalingPopup.titleOfSelectedItem;
 	if ([title characterAtIndex:title.length-1] == '%')
 	{
-		double scaling = title.doubleValue/100.0;
-		LOG_INFO("scaling = %.2f", scaling);
+		scaling = title.doubleValue/100.0;
+	}
+	else if ([title localizedCaseInsensitiveCompare:@"None"] == NSOrderedSame)
+	{
+		scaling = 1.0;
 	}
 	else
 	{
-		LOG_INFO("scaling = %s", STR(title));	// May be "None" or "Max"
+		scaling = INFINITY;
 	}
+	
+	[_mainWindow update:_mainWindow.path scaling:scaling];
 }
 
 - (void)selectTag:(NSMenuItem*)sender

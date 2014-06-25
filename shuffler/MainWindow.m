@@ -6,6 +6,7 @@
 {
 	NSImageView* _images[2];
 	NSUInteger _index;
+	double _maxScaling;
 }
 
 // We can't make a borderless window in IB so we need to use a subclass
@@ -38,7 +39,7 @@
 	return self;
 }
 
-- (void)update:(NSString *)path
+- (void)update:(NSString*)path scaling:(double)scaling
 {
 	if (!_images[0])
 		[self _postInit];
@@ -47,7 +48,27 @@
 	if (rep)
 	{
 		NSSize size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
+		NSSize windSize = self.frame.size;
+		_maxScaling = MIN(windSize.width/size.width, windSize.height/size.height);
 		
+		if (scaling == INFINITY)
+		{
+			if (_maxScaling > 1.0)
+			{
+				size.width  *= _maxScaling;
+				size.height *= _maxScaling;
+				[rep setSize:size];
+			}
+		}
+		else if (scaling != 1.0)
+		{
+			size.width  *= scaling;
+			size.height *= scaling;
+			[rep setSize:size];
+		}
+		
+		// Load the image (we need to use a two step process here because just
+		// creating an NSImage won't always give us a valid size).
 		NSImage* image = [[NSImage alloc] initWithSize:size];
 		[image addRepresentation:rep];
 
@@ -63,6 +84,7 @@
 		// results if we do this after the fades.
 		[_images[_index] setFrame:[self _doGetViewRect:size]];
 		[_images[_index] setImage:image];
+		_path = path;
 		LOG_DEBUG("selected '%s'", STR(path));
 	}
 	else

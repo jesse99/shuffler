@@ -1,8 +1,10 @@
 #import "Shuffler.h"
 
+@class MainWindow;
+
 @interface UIController : NSWindowController
 
-- (id)init;
+- (id)init:(MainWindow*)window;
 
 - (void)setPath:(NSString*)path;
 

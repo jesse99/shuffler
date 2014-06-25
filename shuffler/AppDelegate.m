@@ -33,7 +33,7 @@ const NSUInteger MaxHistory = 500;
 	[self _selectNewImage];
 	[self _registerHotKeys];
 		
-	_controller = [[UIController alloc] init];
+	_controller = [[UIController alloc] init:_window];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -42,12 +42,13 @@ const NSUInteger MaxHistory = 500;
 	[defaults synchronize];
 }
 
+// TODO: need to update UI window when the image changes
 - (void)_selectNewImage
 {
 	if (_history.count == 0 || _index+1 == _history.count)
 	{
 		NSString* path = [_files randomImagePath];
-		[_window update:path];
+		[_window update:path scaling:1.0];					// TODO: set scaling for real
 		[_controller setPath:path];
 		
 		[_history addObject:path];
@@ -66,7 +67,7 @@ const NSUInteger MaxHistory = 500;
 {
 	if (_index > 0)
 	{
-		[_window update:_history[--_index]];
+		[_window update:_history[--_index] scaling:1.0];	// TODO: set scaling for real
 		[_controller setPath:_history[_index]];
 	}
 	else
@@ -79,7 +80,7 @@ const NSUInteger MaxHistory = 500;
 {
 	if (_index+1 < _history.count)
 	{
-		[_window update:_history[++_index]];
+		[_window update:_history[++_index] scaling:1.0];	// TODO: set scaling for real
 		[_controller setPath:_history[_index]];
 	}
 	else

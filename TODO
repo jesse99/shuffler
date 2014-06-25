@@ -1,11 +1,26 @@
+may want to add an evernote for cocoa tips
+	how to make windows support smaller widths
+		priroity
+		check window min size constraint
+	animation
+		change duration
+	adding an icon
+		add the file
+		update bundle thingy
+	usage of window in controllers
+		maybe also a skeleton of a controller
+	how to wire up controls
+		seems to work best on same monitor
+		tends to only work for the file controller
+
+
 * Add database support
+	- add a file describing the schema
 	- maybe do this inside UIWindowController
 	- probably want to ignore database tags that the user isn't using atm
-* Get the UI working:
+* Get filtering working:
 	- support filtering by tags
 		` for now always show missing
-	- support scaling (MainWindow needs some work here)
-		` make sure multiple scales cannot be selected
 	- support rating
 * May want a menu item to not show missing
 * May want an option to shift the picture a bit (put this in a menu?)
