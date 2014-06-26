@@ -2,12 +2,11 @@
 #import "Logger.h"
 
 #import <sys/time.h>
-#include <syslog.h>
 
-const int ERROR_LEVEL = 1;
-const int WARN_LEVEL  = 2;
-const int INFO_LEVEL  = 3;
-const int DEBUG_LEVEL = 4;
+const int ERROR_LEVEL   = 1;
+const int WARN_LEVEL    = 2;
+const int NORMAL_LEVEL  = 3;
+const int VERBOSE_LEVEL = 4;
 
 static FILE* _file;
 static double _time;
@@ -43,19 +42,26 @@ void setLevel(const char* level)
 {
 	[_lock lock];
 
-	_level = INFO_LEVEL;
-	if (strcmp(level, "DEBUG") == 0)
-		_level = DEBUG_LEVEL;
-	else if (strcmp(level, "INFO") == 0)
-		_level = INFO_LEVEL;
+	_level = 0;
+	if (strcmp(level, "VERBOSE") == 0)
+		_level = VERBOSE_LEVEL;
+	else if (strcmp(level, "NORMAL") == 0)
+		_level = NORMAL_LEVEL;
 	else if (strcmp(level, "WARN") == 0)
 		_level = WARN_LEVEL;
 	else if (strcmp(level, "ERROR") == 0)
 		_level = ERROR_LEVEL;
+		
+	if (_level == 0)
+	{
+		_level = NORMAL_LEVEL;
+		[_lock unlock];
+		LOG_ERROR("Attempt to set log level to bogus '%s'", level);
+	}
 	else
-		LOG_ERROR("Attempt to set level to bogus '%s'", level);
-
-	[_lock unlock];
+	{
+		[_lock unlock];
+	}
 }
 
 bool _shouldLog(int level)

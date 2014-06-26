@@ -1,5 +1,4 @@
 #import <Cocoa/Cocoa.h>
-#import "Shuffler.h"
 
 @class MainWindow;
 

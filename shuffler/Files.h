@@ -1,5 +1,3 @@
-#import "Shuffler.h"
-
 // Used to select a file to display.
 @interface Files : NSObject
 

@@ -32,7 +32,7 @@
 - (NSArray*)_findPaths:(NSString*)root;
 {
 	NSMutableArray* paths = [NSMutableArray new];
-	LOG_INFO("loading images from '%s'", STR(root));
+	LOG_NORMAL("loading images from '%s'", STR(root));
 	double start_time = getTime();
 	
 	NSError* error = nil;
@@ -42,11 +42,11 @@
 			if ([_glob matchName:item.lastPathComponent] == 1)
 				[paths addObject:item];
 			else
-				LOG_INFO("skipping '%s' (doesn't match image globs)", STR(item.lastPathComponent));
+				LOG_NORMAL("skipping '%s' (doesn't match image globs)", STR(item.lastPathComponent));
 		}];
 	
 	double elapsed = getTime() - start_time;
-	LOG_INFO("found %lu images in %.1fs", paths.count, elapsed);
+	LOG_NORMAL("found %lu images in %.1fs", paths.count, elapsed);
 
 	return paths;
 }

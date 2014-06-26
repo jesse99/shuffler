@@ -1,22 +1,7 @@
-may want to add an evernote for cocoa tips
-	how to make windows support smaller widths
-		priroity
-		check window min size constraint
-	animation
-		change duration
-	adding an icon
-		add the file
-		update bundle thingy
-	usage of window in controllers
-		maybe also a skeleton of a controller
-	how to wire up controls
-		seems to work best on same monitor
-		tends to only work for the file controller
-
-
 * Add database support
-	- add a file describing the schema
-	- maybe do this inside UIWindowController
+	- when the UI changes a setting write it out into the database
+	   maybe do this inside UIWindowController
+	- when changing images read settings from the database
 	- probably want to ignore database tags that the user isn't using atm
 * Get filtering working:
 	- support filtering by tags
@@ -34,6 +19,7 @@ may want to add an evernote for cocoa tips
 * Default to user's pictures directory.
 	- If that's empty could default to a shuffler directory with a few pics (have to make sure that they are not copy righted)
 	- maybe some wiki commons pictures
+* Should we use transactions?
 * Preference for which monitor to use.
 * Add a license. Maybe not MIT.
 * Some sort of help. Maybe quickstart that pops up first time.

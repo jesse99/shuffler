@@ -85,7 +85,7 @@
 		[_images[_index] setFrame:[self _doGetViewRect:size]];
 		[_images[_index] setImage:image];
 		_path = path;
-		LOG_DEBUG("selected '%s'", STR(path));
+		LOG_VERBOSE("selected '%s'", STR(path));
 	}
 	else
 	{

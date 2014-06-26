@@ -24,6 +24,11 @@
 		372E955319568FF2004FC97D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 372E953219568FF1004FC97D /* Cocoa.framework */; };
 		372E955B19568FF2004FC97D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 372E955919568FF2004FC97D /* InfoPlist.strings */; };
 		372E955D19568FF2004FC97D /* shufflerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 372E955C19568FF2004FC97D /* shufflerTests.m */; };
+		3756CB3A195A7B910008C300 /* Tables.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 3756CB39195A7B910008C300 /* Tables.rtf */; };
+		3756CB3D195A7C130008C300 /* Database.m in Sources */ = {isa = PBXBuildFile; fileRef = 3756CB3C195A7C130008C300 /* Database.m */; };
+		3756CB40195A7C600008C300 /* Assert.m in Sources */ = {isa = PBXBuildFile; fileRef = 3756CB3F195A7C600008C300 /* Assert.m */; };
+		3756CB42195A7E3F0008C300 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3756CB41195A7E3F0008C300 /* libsqlite3.dylib */; };
+		3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3756CB44195BD3F30008C300 /* ArrayCategory.m */; };
 		376BF50D195909AA005149EB /* UIController.m in Sources */ = {isa = PBXBuildFile; fileRef = 376BF50C195909AA005149EB /* UIController.m */; };
 		376BF50F19592239005149EB /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 376BF50E19592239005149EB /* Icon.icns */; };
 /* End PBXBuildFile section */
@@ -69,6 +74,14 @@
 		372E955819568FF2004FC97D /* shufflerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "shufflerTests-Info.plist"; sourceTree = "<group>"; };
 		372E955A19568FF2004FC97D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		372E955C19568FF2004FC97D /* shufflerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = shufflerTests.m; sourceTree = "<group>"; };
+		3756CB39195A7B910008C300 /* Tables.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Tables.rtf; sourceTree = "<group>"; };
+		3756CB3B195A7C130008C300 /* Database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Database.h; sourceTree = "<group>"; };
+		3756CB3C195A7C130008C300 /* Database.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Database.m; sourceTree = "<group>"; };
+		3756CB3E195A7C5F0008C300 /* Assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Assert.h; sourceTree = "<group>"; };
+		3756CB3F195A7C600008C300 /* Assert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Assert.m; sourceTree = "<group>"; };
+		3756CB41195A7E3F0008C300 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		3756CB43195BD3F30008C300 /* ArrayCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayCategory.h; sourceTree = "<group>"; };
+		3756CB44195BD3F30008C300 /* ArrayCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArrayCategory.m; sourceTree = "<group>"; };
 		376BF50B195909AA005149EB /* UIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIController.h; sourceTree = "<group>"; };
 		376BF50C195909AA005149EB /* UIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIController.m; sourceTree = "<group>"; };
 		376BF50E19592239005149EB /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
@@ -79,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3756CB42195A7E3F0008C300 /* libsqlite3.dylib in Frameworks */,
 				372E953319568FF1004FC97D /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				372A6E081956928400ABC430 /* TODO */,
+				3756CB39195A7B910008C300 /* Tables.rtf */,
 				372E953819568FF1004FC97D /* shuffler */,
 				372E955619568FF2004FC97D /* shufflerTests */,
 				372E953119568FF1004FC97D /* Frameworks */,
@@ -118,6 +133,7 @@
 		372E953119568FF1004FC97D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3756CB41195A7E3F0008C300 /* libsqlite3.dylib */,
 				372E953219568FF1004FC97D /* Cocoa.framework */,
 				372E955119568FF2004FC97D /* XCTest.framework */,
 				372E953419568FF1004FC97D /* Other Frameworks */,
@@ -140,6 +156,12 @@
 			children = (
 				372E954419568FF1004FC97D /* AppDelegate.h */,
 				372E954519568FF1004FC97D /* AppDelegate.m */,
+				3756CB43195BD3F30008C300 /* ArrayCategory.h */,
+				3756CB44195BD3F30008C300 /* ArrayCategory.m */,
+				3756CB3E195A7C5F0008C300 /* Assert.h */,
+				3756CB3F195A7C600008C300 /* Assert.m */,
+				3756CB3B195A7C130008C300 /* Database.h */,
+				3756CB3C195A7C130008C300 /* Database.m */,
 				372A6E0A195767DB00ABC430 /* Files.h */,
 				372A6E0B195767DB00ABC430 /* Files.m */,
 				372A6E0D1957687D00ABC430 /* Glob.h */,
@@ -273,6 +295,7 @@
 				376BF50F19592239005149EB /* Icon.icns in Resources */,
 				372E954319568FF1004FC97D /* Credits.rtf in Resources */,
 				372E954919568FF1004FC97D /* MainMenu.xib in Resources */,
+				3756CB3A195A7B910008C300 /* Tables.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,6 +316,9 @@
 			files = (
 				372A6E0C195767DB00ABC430 /* Files.m in Sources */,
 				372A6E0F1957687E00ABC430 /* Glob.m in Sources */,
+				3756CB3D195A7C130008C300 /* Database.m in Sources */,
+				3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */,
+				3756CB40195A7C600008C300 /* Assert.m in Sources */,
 				372A6E191957AEBA00ABC430 /* MainWindow.m in Sources */,
 				372E954619568FF1004FC97D /* AppDelegate.m in Sources */,
 				372E953F19568FF1004FC97D /* main.m in Sources */,

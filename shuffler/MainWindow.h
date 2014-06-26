@@ -1,5 +1,3 @@
-#import "Shuffler.h"
-
 // The window which displays the current image.
 @interface MainWindow : NSWindow
 

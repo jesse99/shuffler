@@ -1,5 +1,3 @@
-#import "Shuffler.h"
-
 // Used to match file names using a small regex sort of language:
 //    * matches zero or more characters
 //    ? matches a single character

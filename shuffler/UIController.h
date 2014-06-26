@@ -1,5 +1,3 @@
-#import "Shuffler.h"
-
 @class MainWindow;
 
 @interface UIController : NSWindowController
