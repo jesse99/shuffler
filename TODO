@@ -28,11 +28,6 @@ Images
 		Never
 
 * Work on filtering:
-	- use a thread (and a new db instance) to save uncategorized files
-	- be sure to time this
-	- may want to set the UI window title
-	- shuffle results and start at index 0
-	- make sure this much works
 	- need to disable next and such if we have no paths yet
 	- also need to disable UI if no paths were found
 	- use a thread (and a new db instance) to query indexing

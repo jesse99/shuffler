@@ -14,7 +14,11 @@
 // Returns an array of rows where each row is an array of strings.
 // Note that this should not be used from the main thread if there
 // is a chance that lots of rows can be returned.
-- (NSArray*)queryRows:(NSString*)command error:(NSError**)error;
+- (NSMutableArray*)queryRows:(NSString*)command error:(NSError**)error;
+
+// Like queryRows except that it returns an array of strings
+// (so each result must have one column).
+- (NSMutableArray*)queryRows1:(NSString*)command error:(NSError**)error;
 
 - (void)insertOrReplace:(NSString*)table values:(NSArray*)values;
 - (void)insertOrIgnore:(NSString*)table values:(NSArray*)values;

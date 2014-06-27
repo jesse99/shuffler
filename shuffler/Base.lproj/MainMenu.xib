@@ -93,15 +93,27 @@
                                     <items>
                                         <menuItem title="Normal" id="LAl-Ve-ttm">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="changeRating:" target="Voe-Tx-rLC" id="ZaF-WW-4BI"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem title="Good" id="3Gc-Dv-H2I">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="changeRating:" target="Voe-Tx-rLC" id="fPw-x7-D4j"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem title="Great" id="cre-xV-zEj">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="changeRating:" target="Voe-Tx-rLC" id="Dvr-93-M4q"/>
+                                            </connections>
                                         </menuItem>
                                         <menuItem title="Fantastic" id="dUI-wC-DPy">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="changeRating:" target="Voe-Tx-rLC" id="EVs-ba-cNJ"/>
+                                            </connections>
                                         </menuItem>
                                     </items>
                                 </menu>

@@ -83,7 +83,7 @@ static int queryCallback(void* context, int numCols, char** values, char** names
 	return SQLITE_OK;
 }
 
-- (NSArray*)queryRows:(NSString*)command error:(NSError**)error
+- (NSMutableArray*)queryRows:(NSString*)command error:(NSError**)error
 {
 	ASSERT(error != NULL);
 	
@@ -108,7 +108,43 @@ static int queryCallback(void* context, int numCols, char** values, char** names
 	return rows;
 }
 
-- (void)_insertOrReplace:(NSString*)table values:(NSArray*)values
+static int queryCallback1(void* context, int numCols, char** values, char** names)
+{
+	(void) names;
+	ASSERT(numCols == 1);
+	
+	NSMutableArray* rows = (__bridge NSMutableArray*) context;
+	[rows addObject:[NSString stringWithUTF8String:values[0]]];
+	
+	return SQLITE_OK;
+}
+
+- (NSMutableArray*)queryRows1:(NSString*)command error:(NSError**)error
+{
+	ASSERT(error != NULL);
+	
+	NSMutableArray* rows = [[NSMutableArray alloc] initWithCapacity:16];
+	
+	char* errMesg = NULL;
+	int err = sqlite3_exec(_database, [command UTF8String], queryCallback1, (__bridge void*) rows, &errMesg);
+	if (err != SQLITE_OK)
+	{
+		NSString* underlying;
+		if (errMesg)
+			underlying = [NSString stringWithUTF8String:errMesg];
+		else
+			underlying = [NSString stringWithFormat:@"error %d", err];
+		
+		NSString* mesg = [NSString stringWithFormat:@"Failed to run '%@': %@.", command, underlying];
+		NSDictionary* dict = @{NSLocalizedFailureReasonErrorKey:mesg};
+		*error = [NSError errorWithDomain:@"mimsy" code:6 userInfo:dict];
+		rows = nil;
+	}
+	
+	return rows;
+}
+
+- (void)insertOrReplace:(NSString*)table values:(NSArray*)values
 {
 	NSArray* quoted = [values map:
 	   ^id(NSString* element)
@@ -126,7 +162,7 @@ static int queryCallback(void* context, int numCols, char** values, char** names
 	}
 }
 
-- (void)_insertOrIgnore:(NSString*)table values:(NSArray*)values
+- (void)insertOrIgnore:(NSString*)table values:(NSArray*)values
 {
 	NSArray* quoted = [values map:
 	   ^id(NSString* element)

@@ -96,4 +96,17 @@
 	return result;
 }
 
+// Knuth-Fisher-Yates algorithm
+- (void)shuffle
+{
+	for (NSUInteger i = self.count - 1; i < self.count; --i)
+	{
+		NSUInteger j = random() % (i + 1);
+		
+		id tmp = self[i];
+		self[i] = self[j];
+		self[j] = tmp;
+	}
+}
+
 @end

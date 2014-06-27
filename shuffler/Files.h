@@ -3,6 +3,12 @@
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath;
 
-- (NSString*)randomImagePath;
+- (void)filterBy:(NSString*)rating;
+
+- (NSString*)nextPath;
+- (NSString*)prevPath;
+
+- (NSUInteger)numUnfiltered;
+- (NSUInteger)numFiltered;
 
 @end

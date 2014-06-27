@@ -23,4 +23,6 @@
 
 - (NSMutableArray*)map:(id (^)(id element))block;
 
+- (void)shuffle;
+
 @end
