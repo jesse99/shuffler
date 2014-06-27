@@ -21,20 +21,31 @@ const NSUInteger MaxHistory = 500;
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	NSDictionary* initial = @{@"tags": @[@"Animals", @"Art", @"Celebrities", @"Fantasy", @"Movies", @"Nature", @"Sports"]};
-	[defaults registerDefaults:initial];
+	NSDictionary* initialSettings = @{
+		@"tags": @[@"Animals", @"Art", @"Celebrities", @"Fantasy", @"Movies", @"Nature", @"Sports"],
+		@"root": @"~/Pictures"};
+	[defaults registerDefaults:initialSettings];
 	
-	NSString* root = @"/Users/jessejones/Documents/Desktop Pictures/Asian8";	// TODO: don't hard code this
-	_files = [[Files alloc] init:root];
 	_history = [NSMutableArray new];
 	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(_selectNewImage) userInfo:nil repeats:true];
 	
-	_controller = [[UIController alloc] init:_window];
+	NSString* dbPath = [self _findDbPath];
+	_controller = [[UIController alloc] init:_window dbPath:dbPath];
 	
-	[self _selectNewImage];
-	[self.window display];		// not sure why we need this, but without it we don't see the very first image
-
+	[_controller.window setTitle:@"Scanning…"];
 	[self _registerHotKeys];
+		
+	dispatch_queue_t concurrent = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	dispatch_queue_t main = dispatch_get_main_queue();
+	dispatch_async(concurrent,
+	   ^{
+		   NSString* root = [defaults stringForKey:@"root"];
+		   root = [root stringByStandardizingPath];
+		   Files* files = [[Files alloc] init:root dbPath:dbPath];
+		 
+		   dispatch_async(main, ^{[self _displayInitial:files];});
+	   });
+
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -43,40 +54,59 @@ const NSUInteger MaxHistory = 500;
 	[defaults synchronize];
 }
 
+- (void)_displayInitial:(Files*)files
+{
+	_files = files;
+	_history = [NSMutableArray new];
+	_index = 0;
+	
+	[self _selectNewImage];
+	[self.window display];		// not sure why we need this, but without it we don't see the very first image
+}
+
 // TODO: need to update UI window when the image changes
 - (void)_selectNewImage
 {
-	if (_history.count == 0 || _index+1 == _history.count)
+	if (_files)
 	{
-		NSString* path = [_files randomImagePath];
-		[_controller setPath:path];
-		
-		[_history addObject:path];
-		if (_history.count > 2*MaxHistory)
-			[_history removeObjectsInRange:NSMakeRange(0, MaxHistory)];
-		
-		_index = _history.count - 1;
-	}
-	else
-	{
-		[self _nextImage];
+		if (_history.count == 0 || _index+1 == _history.count)
+		{
+			NSString* path = [_files randomImagePath];
+			[_controller setPath:path];
+			
+			[_history addObject:path];
+			if (_history.count > 2*MaxHistory)
+				[_history removeObjectsInRange:NSMakeRange(0, MaxHistory)];
+			
+			_index = _history.count - 1;
+		}
+		else
+		{
+			[self _nextImage];
+		}
 	}
 }
 
 - (void)_prevImage
 {
-	if (_index > 0)
-		[_controller setPath:_history[--_index]];
-	else
-		NSBeep();
+	if (_files)
+	{
+		if (_index > 0)
+			[_controller setPath:_history[--_index]];
+		else
+			NSBeep();
+	}
 }
 
 - (void)_nextImage
 {
-	if (_index+1 < _history.count)
-		[_controller setPath:_history[++_index]];
-	else
-		[self _selectNewImage];
+	if (_files)
+	{
+		if (_index+1 < _history.count)
+			[_controller setPath:_history[++_index]];
+		else
+			[self _selectNewImage];
+	}
 }
 
 static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData)
@@ -121,6 +151,35 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
     key.signature = 'shf2';
     key.id = 2;
     RegisterEventHotKey(F19, 0, key, GetApplicationEventTarget(), 0, &ref);
+}
+
+- (NSString*)_findDbPath
+{
+	NSString* path = nil;
+	NSError* error = nil;
+	
+	NSArray* dirs = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, true);
+	if (dirs.count > 0)
+	{
+		NSFileManager* fm = [NSFileManager defaultManager];
+		bool exists = [fm fileExistsAtPath:dirs[0] isDirectory:NULL];
+		if (!exists)
+			exists = [fm createDirectoryAtPath:dirs[0] withIntermediateDirectories:true attributes:nil error:&error];
+		
+		if (exists)
+		{
+			NSString* root = dirs[0];
+			path = [root stringByAppendingPathComponent:@"shuffler.db"];
+		}
+	}
+	else
+	{
+		NSString* mesg = [NSString stringWithFormat:@"Couldn't find the application support directory."];
+		NSDictionary* dict = @{NSLocalizedFailureReasonErrorKey:mesg};
+		error = [NSError errorWithDomain:@"shuffler" code:4 userInfo:dict];
+	}
+	
+	return path;
 }
 
 @end

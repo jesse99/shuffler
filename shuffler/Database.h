@@ -16,6 +16,9 @@
 // is a chance that lots of rows can be returned.
 - (NSArray*)queryRows:(NSString*)command error:(NSError**)error;
 
+- (void)insertOrReplace:(NSString*)table values:(NSArray*)values;
+- (void)insertOrIgnore:(NSString*)table values:(NSArray*)values;
+
 // TODO: Continuum's Database class had some features that we may
 // want to add:
 // 1) Transactions (the Update method that took a callback).

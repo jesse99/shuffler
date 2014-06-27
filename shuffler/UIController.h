@@ -2,7 +2,7 @@
 
 @interface UIController : NSWindowController
 
-- (id)init:(MainWindow*)window;
+- (id)init:(MainWindow*)window dbPath:(NSString*)dbPath;
 
 - (void)setPath:(NSString*)path;
 

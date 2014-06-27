@@ -108,4 +108,40 @@ static int queryCallback(void* context, int numCols, char** values, char** names
 	return rows;
 }
 
+- (void)_insertOrReplace:(NSString*)table values:(NSArray*)values
+{
+	NSArray* quoted = [values map:
+	   ^id(NSString* element)
+	   {
+		   return [NSString stringWithFormat:@"\"%@\"", element.description];
+	   }];
+	NSString* joined = [quoted componentsJoinedByString:@", "];
+	NSString* sql = [NSString stringWithFormat:@"INSERT OR REPLACE INTO %@ VALUES (%@)", table, joined];
+	
+	NSError* error = nil;
+	if (![self update:sql error:&error])
+	{
+		NSString* reason = [error localizedFailureReason];
+		LOG_ERROR("'%s' failed: %s", STR(sql), STR(reason));
+	}
+}
+
+- (void)_insertOrIgnore:(NSString*)table values:(NSArray*)values
+{
+	NSArray* quoted = [values map:
+	   ^id(NSString* element)
+	   {
+		   return [NSString stringWithFormat:@"\"%@\"", element.description];
+	   }];
+	NSString* joined = [quoted componentsJoinedByString:@", "];
+	NSString* sql = [NSString stringWithFormat:@"INSERT OR IGNORE INTO %@ VALUES (%@)", table, joined];
+	
+	NSError* error = nil;
+	if (![self update:sql error:&error])
+	{
+		NSString* reason = [error localizedFailureReason];
+		LOG_ERROR("'%s' failed: %s", STR(sql), STR(reason));
+	}
+}
+
 @end

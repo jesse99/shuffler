@@ -12,14 +12,15 @@
 	NSString* _hash;
 }
 
-- (id)init:(MainWindow*)window
+- (id)init:(MainWindow*)window dbPath:(NSString*)dbPath
 {
 	self = [super initWithWindowNibName:@"UIWindow"];
 
     if (self)
 	{
 		_mainWindow = window;
-		_database = [self _createDatabase];
+		if (dbPath)
+			_database = [self _createDatabase:dbPath];
 		
         [self.window makeKeyAndOrderFront:self];	// note that we need to call the window method to load the controls
 		[_tagsPopup selectItem:nil];
@@ -49,41 +50,44 @@
 		hash[12], hash[13], hash[14], hash[15]];
 	
 	// Try to use which ever settings the user last set
-	NSError* error = nil;
-	NSString* sql = [NSString stringWithFormat:@"\
-		SELECT Indexing.rating, Indexing.tags, Appearance.scaling\
-		   FROM Indexing, Appearance\
-		WHERE\
-		   Indexing.hash = '%@' AND Appearance.hash = '%@'", _hash, _hash];
-	
 	NSInteger rating = 0;
 	NSMutableString* tags = [NSMutableString stringWithString:@""];
 	double scaling = 1.0;
-	NSArray* rows = [_database queryRows:sql error:&error];
-	if (rows)
+	if (_database)
 	{
-		if (rows.count > 0)
+		NSError* error = nil;
+		NSString* sql = [NSString stringWithFormat:@"\
+			SELECT Indexing.rating, Indexing.tags, Appearance.scaling\
+			   FROM Indexing, Appearance\
+			WHERE\
+			   Indexing.hash = '%@' AND Appearance.hash = '%@'", _hash, _hash];
+		
+		NSArray* rows = [_database queryRows:sql error:&error];
+		if (rows)
 		{
-			NSArray* row = rows[0];
+			if (rows.count > 0)
+			{
+				NSArray* row = rows[0];
 
-			NSString* field = row[0];
-			rating = [field integerValue];
+				NSString* field = row[0];
+				rating = [field integerValue];
 
-			tags = [NSMutableString stringWithString:row[1]];
-			[tags deleteCharactersInRange:NSMakeRange(tags.length - 1, 1)];
-			[tags replaceOccurrencesOfString:@":" withString:@" • " options:NSLiteralSearch range:NSMakeRange(0, tags.length)];
-			
-			field = row[2];
-			if ([field localizedCaseInsensitiveCompare:@"inf"] != NSOrderedSame)
-				scaling = [field doubleValue];
-			else
-				scaling = INFINITY;
+				tags = [NSMutableString stringWithString:row[1]];
+				[tags deleteCharactersInRange:NSMakeRange(tags.length - 1, 1)];
+				[tags replaceOccurrencesOfString:@":" withString:@" • " options:NSLiteralSearch range:NSMakeRange(0, tags.length)];
+				
+				field = row[2];
+				if ([field localizedCaseInsensitiveCompare:@"inf"] != NSOrderedSame)
+					scaling = [field doubleValue];
+				else
+					scaling = INFINITY;
+			}
 		}
-	}
-	else
-	{
-		NSString* reason = [error localizedFailureReason];
-		LOG_ERROR("'%s' failed: %s", STR(sql), STR(reason));
+		else
+		{
+			NSString* reason = [error localizedFailureReason];
+			LOG_ERROR("'%s' failed: %s", STR(sql), STR(reason));
+		}
 	}
 	
 	// Update our UI
@@ -104,7 +108,8 @@
 
 - (IBAction)selectRating:(id)sender
 {
-	[self _saveSettings];
+	if (_database)
+		[self _saveSettings];
 }
 
 - (IBAction)selectScaling:(id)sender
@@ -113,7 +118,9 @@
 	
 	NSData* data = [NSData dataWithContentsOfFile:_mainWindow.path];
 	[_mainWindow update:_mainWindow.path imageData:data scaling:scaling];
-	[self _saveSettings];
+
+	if (_database)
+		[self _saveSettings];
 }
 
 - (void)selectTag:(NSMenuItem*)sender
@@ -121,13 +128,16 @@
 	NSString* name = [sender title];
 	NSString* tags = [self _toggleTag:name];
 	[_tagsLabel setStringValue:tags];
-	[self _saveSettings];
+
+	if (_database)
+		[self _saveSettings];
 }
 
 - (IBAction)selectNoneTag:(NSMenuItem*)sender
 {
 	[_tagsLabel setStringValue:@"None"];
-	[self _saveSettings];
+	if (_database)
+		[self _saveSettings];
 }
 
 - (IBAction)selectNewTag:(NSMenuItem*)sender
@@ -137,18 +147,19 @@
 
 - (void)_saveSettings
 {
+	ASSERT(_database);
 	ASSERT(_mainWindow.path.length > 0);
 	
 	NSInteger index = _ratingPopup.indexOfSelectedItem;
 	NSString* tags = _tagsLabel.stringValue;
 	tags = [tags stringByReplacingOccurrencesOfString:@" • " withString:@":"];
 	tags = [tags stringByAppendingString:@":"];
-	[self _insertOrReplace:@"Indexing" values:@[_hash, [NSString stringWithFormat:@"%ld", (long)index], tags]];
+	[_database insertOrReplace:@"Indexing" values:@[_hash, [NSString stringWithFormat:@"%ld", (long)index], tags]];
 
 	double scaling = [self _getScaling];
-	[self _insertOrReplace:@"Appearance" values:@[_hash, @"0", [NSString stringWithFormat:@"%f", scaling]]];
+	[_database insertOrReplace:@"Appearance" values:@[_hash, @"0", [NSString stringWithFormat:@"%f", scaling]]];
 
-	[self _insertOrReplace:@"ImagePaths" values:@[_mainWindow.path, _hash]];
+	[_database insertOrReplace:@"ImagePaths" values:@[_mainWindow.path, _hash]];
 }
 
 - (double)_getScaling
@@ -210,36 +221,10 @@
 	return [tags componentsJoinedByString:@" • "];
 }
 
-- (Database*)_createDatabase
+- (Database*)_createDatabase:(NSString*)path
 {
-	Database* database = nil;
-	
-	NSString* path = nil;
 	NSError* error = nil;
-	
-	NSArray* dirs = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, true);
-	if (dirs.count > 0)
-	{
-		NSFileManager* fm = [NSFileManager defaultManager];
-		bool exists = [fm fileExistsAtPath:dirs[0] isDirectory:NULL];
-		if (!exists)
-			exists = [fm createDirectoryAtPath:dirs[0] withIntermediateDirectories:true attributes:nil error:&error];
-		
-		if (exists)
-		{
-			NSString* root = dirs[0];
-			path = [root stringByAppendingPathComponent:@"shuffler.db"];
-		}
-	}
-	else
-	{
-		NSString* mesg = [NSString stringWithFormat:@"Couldn't find the application support directory."];
-		NSDictionary* dict = @{NSLocalizedFailureReasonErrorKey:mesg};
-		error = [NSError errorWithDomain:@"shuffler" code:4 userInfo:dict];
-	}
-	
-	if (!error)
-		database = [[Database alloc] initWithPath:path error:&error];
+	Database* database = [[Database alloc] initWithPath:path error:&error];
 	
 	if (database)
 	{
@@ -306,24 +291,6 @@
 		[alert runModal];
 	}
 	return database;
-}
-
-- (void)_insertOrReplace:(NSString*)table values:(NSArray*)values
-{
-	NSArray* quoted = [values map:
-	   ^id(NSString* element)
-	   {
-		   return [NSString stringWithFormat:@"\"%@\"", element.description];
-	   }];
-	NSString* joined = [quoted componentsJoinedByString:@", "];
-	NSString* sql = [NSString stringWithFormat:@"INSERT OR REPLACE INTO %@ VALUES (%@)", table, joined];
-	
-	NSError* error = nil;
-	if (![_database update:sql error:&error])
-	{
-		NSString* reason = [error localizedFailureReason];
-		LOG_ERROR("'%s' failed: %s", STR(sql), STR(reason));
-	}
 }
 
 @end

@@ -1,23 +1,37 @@
 #import "Files.h"
 
+#import "Database.h"
 #import "Glob.h"
 
+// Note that these are created within a thread and then handed off to the main thread.
 @implementation Files
 {
 	Glob* _glob;
 	NSArray* _paths;
 }
 
-- (id)init:(NSString*)dirPath
+- (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath
 {
 	self = [super init];
 	
 	if (self)
 	{
+		// TODO:
+		// maybe we should read the files all in and then filter by Indexing?
+		// delegate could poke us when filtering changes
+		NSError* error = nil;
+		Database* database = nil;
+		if (dbPath)
+		{
+			// We're executing within a thread so we need our own Database instance.
+			database = [[Database alloc] initWithPath:dbPath error:&error];
+			LOG_ERROR("Couldn't create the database at '%s'", STR(dbPath));
+		}
+
 		// See https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsimagerep_Class/Reference/Reference.html#//apple_ref/occ/clm/NSImageRep/imageRepWithContentsOfFile:
 		NSArray* globs = @[@"*.tiff", @"*.gif", @"*.jpg", @"*.jpeg", @"*.pict", @"*.pdf", @"*.eps", @"*.png"];
 		_glob = [[Glob alloc] initWithGlobs:globs];
-		_paths = [self _findPaths:dirPath];	// TODO: popup a directory picker if nothing was found
+		_paths = [self _findPaths:dirPath database:database];	// TODO: popup a directory picker if nothing was found
 	}
 	
 	return self;
@@ -29,7 +43,7 @@
 	return _paths[index];
 }
 
-- (NSArray*)_findPaths:(NSString*)root;
+- (NSArray*)_findPaths:(NSString*)root database:(Database*)database;
 {
 	NSMutableArray* paths = [NSMutableArray new];
 	LOG_NORMAL("loading images from '%s'", STR(root));
@@ -37,12 +51,17 @@
 	
 	NSError* error = nil;
 	[self _enumerateDeepDir:root glob:_glob error:&error block:
-		^(NSString *item)
+		^(NSString *path)
 		{
-			if ([_glob matchName:item.lastPathComponent] == 1)
-				[paths addObject:item];
+			if ([_glob matchName:path.lastPathComponent] == 1)
+			{
+				[paths addObject:path];
+				[database insertOrIgnore:@"ImagePaths" values:@[path, @""]];
+			}
 			else
-				LOG_NORMAL("skipping '%s' (doesn't match image globs)", STR(item.lastPathComponent));
+			{
+				LOG_NORMAL("skipping '%s' (doesn't match image globs)", STR(path.lastPathComponent));
+			}
 		}];
 	
 	double elapsed = getTime() - start_time;

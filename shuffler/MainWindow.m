@@ -85,7 +85,7 @@
 		[_images[_index] setImage:image];
 		[_images[_index] setFrame:[self _doGetViewRect:size]];
 		_path = path;
-		LOG_VERBOSE("selected '%s' %s", STR(path), STR(NSStringFromSize(image.size)));
+		LOG_VERBOSE("selected '%s'", STR(path));
 	}
 	else
 	{

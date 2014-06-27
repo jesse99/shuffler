@@ -27,40 +27,24 @@ Images
 		30 minutes
 		Never
 
-
 * Work on filtering:
 	- use a thread (and a new db instance) to save uncategorized files
-	[self _insertOrIgnore:@"ImagePaths" values:@[path, @""]];
+	- be sure to time this
 	- may want to set the UI window title
 	- shuffle results and start at index 0
 	- make sure this much works
 	- need to disable next and such if we have no paths yet
 	- also need to disable UI if no paths were found
 	- use a thread (and a new db instance) to query indexing
+		tags are AND, escept for None and Uncategorized which are OR
+	- maybe can use a different checkmark for None and Uncaegorized
 	- query also needs to handle uncategorized
-	- use a weight, drop it according to rating, use the image where it goes to zero
+	- use a weight, drop it according to rating, use the image where it goes to zero, use a factor of 5
+	- be sure hash changing at a path is properly handled
+* Seems to be a bit of a race when changing a setting and timer firing
+	- new image doesn't appear
 * Get Next and Previous menu items working
 * Get Interval submenu working
-* Get show only rating working
-	- better ratings should appear more often
-	- probably each jump apepars 5x as often
-	- maybe just start with all the enumerated files
-	  prune them if they don't match the filters?
-	  could even do the pruning in a background task
-	  (though threaded database access would complicate things)
-* Get show only tags working
-* Don't select images that have been recently shown.
-* Add database support
-	- when the UI changes a setting write it out into the database
-	   maybe do this inside UIWindowController
-	- when changing images read settings from the database
-	- probably want to ignore database tags that the user isn't using atm
-	- hash at a path can change
-	  maybe also store size
-* Get filtering working:
-	- support filtering by tags
-		` for now always show missing
-	- support rating
 * Scaling popup should say how much Max actuall is
 * Do we need the ImagePaths table?
 	- probably useful when dealing with dupes
