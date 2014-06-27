@@ -184,12 +184,12 @@
 		372E953919568FF1004FC97D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				376BF50E19592239005149EB /* Icon.icns */,
-				372E954A19568FF1004FC97D /* Images.xcassets */,
-				372E953A19568FF1004FC97D /* shuffler-Info.plist */,
-				372E953B19568FF1004FC97D /* InfoPlist.strings */,
-				372E954019568FF1004FC97D /* shuffler-Prefix.pch */,
 				372E954119568FF1004FC97D /* Credits.rtf */,
+				372E954A19568FF1004FC97D /* Images.xcassets */,
+				372E953B19568FF1004FC97D /* InfoPlist.strings */,
+				376BF50E19592239005149EB /* Icon.icns */,
+				372E953A19568FF1004FC97D /* shuffler-Info.plist */,
+				372E954019568FF1004FC97D /* shuffler-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";

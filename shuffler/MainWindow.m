@@ -39,12 +39,12 @@
 	return self;
 }
 
-- (void)update:(NSString*)path scaling:(double)scaling
+- (void)update:(NSString*)path imageData:(NSData*)data scaling:(double)scaling
 {
 	if (!_images[0])
 		[self _postInit];
 	
-	NSImageRep* rep = [NSImageRep imageRepWithContentsOfFile:path];
+	NSImageRep* rep = [[NSBitmapImageRep alloc] initWithData:data];
 	if (rep)
 	{
 		NSSize size = NSMakeSize(rep.pixelsWide, rep.pixelsHigh);
@@ -82,10 +82,10 @@
 
 		// Set the frame and image for the new view. Note that we get nicer
 		// results if we do this after the fades.
-		[_images[_index] setFrame:[self _doGetViewRect:size]];
 		[_images[_index] setImage:image];
+		[_images[_index] setFrame:[self _doGetViewRect:size]];
 		_path = path;
-		LOG_VERBOSE("selected '%s'", STR(path));
+		LOG_VERBOSE("selected '%s' %s", STR(path), STR(NSStringFromSize(image.size)));
 	}
 	else
 	{

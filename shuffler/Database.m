@@ -102,6 +102,7 @@ static int queryCallback(void* context, int numCols, char** values, char** names
 		NSString* mesg = [NSString stringWithFormat:@"Failed to run '%@': %@.", command, underlying];
 		NSDictionary* dict = @{NSLocalizedFailureReasonErrorKey:mesg};
 		*error = [NSError errorWithDomain:@"mimsy" code:6 userInfo:dict];
+		rows = nil;
 	}
 	
 	return rows;
