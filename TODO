@@ -4,10 +4,10 @@ Images
 	Get Database Info	shift-I
 	---
 	Show Only Rating
-		Normal
-		Good
-		Great
-		Fantastic
+		Normal			1
+		Good			5
+		Great			25
+		Fantastic		125
 	Show Only Tags
 		blah
 		blah
@@ -28,10 +28,28 @@ Images
 		Never
 
 
+* Work on filtering:
+	- use a thread (and a new db instance) to save uncategorized files
+	[self _insertOrIgnore:@"ImagePaths" values:@[path, @""]];
+	- may want to set the UI window title
+	- shuffle results and start at index 0
+	- make sure this much works
+	- need to disable next and such if we have no paths yet
+	- also need to disable UI if no paths were found
+	- use a thread (and a new db instance) to query indexing
+	- query also needs to handle uncategorized
+	- use a weight, drop it according to rating, use the image where it goes to zero
 * Get Next and Previous menu items working
 * Get Interval submenu working
 * Get show only rating working
+	- better ratings should appear more often
+	- probably each jump apepars 5x as often
+	- maybe just start with all the enumerated files
+	  prune them if they don't match the filters?
+	  could even do the pruning in a background task
+	  (though threaded database access would complicate things)
 * Get show only tags working
+* Don't select images that have been recently shown.
 * Add database support
 	- when the UI changes a setting write it out into the database
 	   maybe do this inside UIWindowController
@@ -54,7 +72,7 @@ Images
 * Indicate dupes somehow.
 	- maybe show in finder could show them both
 * Support opening
-* Need an icon
+* Need to watch the directory
 * Probably want to support margins on all sides
 * Preference for which directory to use.
 * Default to user's pictures directory.
