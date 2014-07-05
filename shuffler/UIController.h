@@ -17,4 +17,6 @@
 @property (strong) IBOutlet NSMenu *tagsMenu;
 @property (strong) IBOutlet NSTextField *tagsLabel;
 
+@property (readonly) NSString *path;
+
 @end

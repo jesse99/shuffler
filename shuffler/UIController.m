@@ -37,6 +37,11 @@
 	return self;
 }
 
+- (NSString*)path
+{
+	return _mainWindow.path;
+}
+
 - (void)setPath:(NSString*)path
 {
 	// Compute the hash (we do it each time because the file may have been edited)

@@ -16,6 +16,9 @@ const NSUInteger MaxHistory = 500;
 
 	Files* _files;
 	NSString* _rating;
+	NSMutableArray* _tags;
+	bool _includeNone;
+	bool _includeUncategorized;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -25,14 +28,22 @@ const NSUInteger MaxHistory = 500;
 		@"tags": @[@"Animals", @"Art", @"Celebrities", @"Fantasy", @"Movies", @"Nature", @"Sports"],
 		@"root": @"~/Pictures"};
 	[defaults registerDefaults:initialSettings];
-	
+		
 	_rating = @"Normal";
+	_tags = [NSMutableArray new];
 	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(_nextImage) userInfo:nil repeats:true];
 	
 	NSString* root = [defaults stringForKey:@"root"];
 	root = [root stringByStandardizingPath];
 	NSString* dbPath = [root stringByAppendingPathComponent:@"shuffler.db"];
 	_controller = [[UIController alloc] init:_window dbPath:dbPath];
+	
+	NSArray* tags = [[defaults arrayForKey:@"tags"] reverse];
+	for (NSString* tag in tags)
+	{
+		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:tag action:@selector(toggleTag:) keyEquivalent:@""];
+		[_tagsMenu insertItem:item atIndex:0];
+	}
 	
 	[_controller.window setTitle:@"Scanning…"];
 	[self _registerHotKeys];
@@ -45,7 +56,6 @@ const NSUInteger MaxHistory = 500;
 		 
 		   dispatch_async(main, ^{[self _displayInitial:files];});
 	   });
-
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -72,6 +82,46 @@ const NSUInteger MaxHistory = 500;
 	}
 }
 
+- (IBAction)copyPath:(id)sender
+{
+	NSString* path = _controller.path;
+	
+	NSPasteboard* pb = [NSPasteboard generalPasteboard];
+	NSArray* types = @[NSStringPboardType];
+	[pb declareTypes:types owner:self];
+	
+	[pb setString:path forType:NSStringPboardType];
+}
+
+- (IBAction)openFile:(id)sender
+{
+	NSString* path = _controller.path;
+	
+	[[NSWorkspace sharedWorkspace] openFile:path];
+}
+
+- (IBAction)showFileInFinder:(id)sender
+{
+	NSString* path = _controller.path;
+	
+	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:@""];
+}
+
+- (IBAction)trashFile:(id)sender
+{
+	NSString* path = _controller.path;
+	
+	[self _nextImage];
+	[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+	
+	NSURL* url = [[NSURL alloc] initFileURLWithPath:path];
+	NSURL* newURL = nil;
+	NSError* error = nil;
+	BOOL trashed = [[NSFileManager defaultManager] trashItemAtURL:url resultingItemURL:&newURL error:&error];
+	if (!trashed)
+		LOG_ERROR("failed to trash %s: %s", STR(path), STR(error.localizedFailureReason));
+}
+
 - (IBAction)changeRating:(NSMenuItem *)sender
 {
 	if (_files && [_rating compare:sender.title] != NSOrderedSame)
@@ -80,8 +130,41 @@ const NSUInteger MaxHistory = 500;
 		
 		// For now we do this in the main thread because it gets all squirrelly if
 		// we queue up multiple threads and have them finish at different times.
-		[_files filterBy:_rating];
+		if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+			[_controller.window setTitle:@"No Matches"];
 	}
+}
+
+- (void)toggleTag:(NSMenuItem*)sender
+{
+	NSString* tag = sender.title;
+	NSUInteger index = [_tags indexOfObject:tag];
+	if (index != NSNotFound)
+	{
+		[_tags removeObjectAtIndex:index];
+	}
+	else
+	{
+		[_tags addObject:tag];
+		[_tags sortUsingSelector:@selector(compare:)];
+	}
+
+	if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+		[_controller.window setTitle:@"No Matches"];
+}
+
+- (IBAction)toggleNoneTag:(id)sender
+{
+	_includeNone = !_includeNone;
+	if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+		[_controller.window setTitle:@"No Matches"];
+}
+
+- (IBAction)toggleUncategorizedTag:(id)sender
+{
+	_includeUncategorized = !_includeUncategorized;
+	if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+		[_controller.window setTitle:@"No Matches"];
 }
 
 - (void)_nextImage
@@ -116,6 +199,18 @@ const NSUInteger MaxHistory = 500;
 	{
 		[item setState:[_rating compare:item.title] == NSOrderedSame];
 		enabled = _files != nil;
+	}
+	else if (item.action == @selector(toggleTag:))
+	{
+		[item setState:[_tags containsObject:item.title]];
+	}
+	else if (item.action == @selector(toggleNoneTag:))
+	{
+		[item setState:_includeNone];
+	}
+	else if (item.action == @selector(toggleUncategorizedTag:))
+	{
+		[item setState:_includeUncategorized];
 	}
 	
 	return enabled;

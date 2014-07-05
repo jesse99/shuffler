@@ -27,38 +27,46 @@ Images
 		30 minutes
 		Never
 
+
+9.155	NORMAL	found 43684 images in 8.9s
+
+* Support trashing
+* Add a tag for Victoria
+	- may want to support the New… menu item in the tags menu.
+* Preferentially show better rated images:
+	- delegate needs a history
+	- files should randomly pick a file (no need to shuffle)
+	- then step until weight goes to zero
+	- uncategorized should have max weight, 5*5*5*5
+* Would be nice if great and uncategorized played better together
 * Work on filtering:
-	- need to disable next and such if we have no paths yet
-	- also need to disable UI if no paths were found
-	- use a thread (and a new db instance) to query indexing
-		tags are AND, escept for None and Uncategorized which are OR
-	- maybe can use a different checkmark for None and Uncaegorized
-	- query also needs to handle uncategorized
-	- use a weight, drop it according to rating, use the image where it goes to zero, use a factor of 5
 	- be sure hash changing at a path is properly handled
+* Desktop icons aren't showing up
+* Prune filtered when tags change
+	- may want to test to see if the new tags are inapplicable
 * Seems to be a bit of a race when changing a setting and timer firing
 	- new image doesn't appear
 * Get Next and Previous menu items working
 * Get Interval submenu working
-* Scaling popup should say how much Max actuall is
-* Do we need the ImagePaths table?
-	- probably useful when dealing with dupes
-* May want a menu item to not show missing
-* May want an option to shift the picture a bit (put this in a menu?)
-* Support trashing
+* Scaling popup should say how much Max actually is
 * Support other file menu items
 * Support other images menu items.
 * Indicate dupes somehow.
 	- maybe show in finder could show them both
 * Support opening
-* Need to watch the directory
+* Need to watch the directory:
+	- need to special case trashFile
+	- or maybe just handle it as part of watching
+* May want an option to shift the picture a bit (put this in a menu?)
 * Probably want to support margins on all sides
 * Preference for which directory to use.
+* May want a pref for rating scaling.
 * Default to user's pictures directory.
 	- If that's empty could default to a shuffler directory with a few pics (have to make sure that they are not copy righted)
 	- maybe some wiki commons pictures
 * Should we use transactions?
 * Preference for which monitor to use.
+* Quit if lose the monitor.
 * Add a license. Maybe not MIT.
 * Some sort of help. Maybe quickstart that pops up first time.
 	` quickstart should mention where to find the file

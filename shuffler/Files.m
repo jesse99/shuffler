@@ -63,51 +63,112 @@ static int ratingToLevel(NSString* rating)
 
 - (NSString*)nextPath
 {
-	NSString* path = nil;
-	
 	if (_filtered && _filtered.count > 0)
 	{
-		_index = ++_index % _filtered.count;
-		path = _filtered[_index];
+		// We'll get notified and rebuild our lists as files get deleted,
+		// but not immediately...
+		NSFileManager* fm = [NSFileManager defaultManager];
+		for (NSUInteger i = 0; i < _filtered.count; ++i)
+		{
+			_index = ++_index % _filtered.count;
+			NSString* path = _filtered[_index];
+			if ([fm fileExistsAtPath:path])
+				return path;
+		}
 	}
 	
-	return path;
+	return nil;
 }
 
 - (NSString*)prevPath
 {
-	NSString* path = nil;
-	
 	if (_filtered && _filtered.count > 0)
 	{
-		_index = --_index % _filtered.count;
-		path = _filtered[_index];
+		NSFileManager* fm = [NSFileManager defaultManager];
+		for (NSUInteger i = 0; i < _filtered.count; ++i)
+		{
+			_index = --_index % _filtered.count;
+			NSString* path = _filtered[_index];
+			if ([fm fileExistsAtPath:path])
+				return path;
+		}
 	}
 	
-	return path;
+	return nil;
+}
+
+- (NSArray*)_getTagsClauses:(NSArray*)tags withNone:(bool)withNone
+{
+	NSMutableArray* clauses = [NSMutableArray new];	
+	
+	if (withNone)
+	{
+		[clauses addObject:@"Indexing.tags GLOB '*None:*'"];
+	}
+	
+	if (tags.count > 0)
+	{
+		tags = [tags map:^id(NSString* tag) {return [NSString stringWithFormat:@"*%@:*", tag];}];
+		NSString* globs = [tags componentsJoinedByString:@""];
+		[clauses addObject:[NSString stringWithFormat:@"Indexing.tags GLOB '%@'", globs]];
+	}
+	
+	return clauses;
 }
 
 // Note that this is main thread code.
-- (void)filterBy:(NSString*)rating
+- (bool)filterBy:(NSString*)rating andTags:(NSArray*)tags withNone:(bool)withNone withUncategorized:(bool)withUncategorized
 {
 	double startTime = getTime();
 
 	int level = ratingToLevel(rating);
-	NSString* sql = [NSString stringWithFormat:@"\
-		SELECT path\
-		   FROM Indexing, ImagePaths\
-		WHERE Indexing.rating >= %d AND Indexing.hash == ImagePaths.hash", level];
+	NSMutableArray* predicates = [NSMutableArray new];
+	if (level > 0)
+		[predicates addObject:[NSString stringWithFormat:@"Indexing.rating >= %d", level]];
 	
-	NSError* error = nil;
-	NSMutableArray* filtered = [_database queryRows1:sql error:&error];
-	[filtered shuffle];
-	_filtered = filtered;
+	NSArray* clauses = [self _getTagsClauses:tags withNone:withNone];
+	if (clauses.count == 1)
+	{
+		[predicates addObject:clauses[0]];
+	}
+	else if (clauses.count > 1)
+	{
+		NSString* clause = [clauses componentsJoinedByString:@" OR "];
+		[predicates addObject:[NSString stringWithFormat:@"(%@)", clause]];
+	}
 	
-	double elapsed = getTime() - startTime;
-	if (_filtered)
-		LOG_NORMAL("filtered %lu images to %lu images in %.1fs", _paths.count, _filtered.count, elapsed);
+	if (predicates.count > 0)
+	{
+		NSString* where;
+		if (withUncategorized)
+			where = [NSString stringWithFormat:@"(%@) OR length(ImagePaths.hash) = 0", [predicates componentsJoinedByString:@" AND "]];
+		else
+			where = [NSString stringWithFormat:@"%@ AND Indexing.hash == ImagePaths.hash", [predicates componentsJoinedByString:@" AND "]];
+		
+		NSString* sql = [NSString stringWithFormat:@"\
+			SELECT path\
+			   FROM Indexing, ImagePaths\
+			WHERE %@", where];
+		
+		NSError* error = nil;
+		NSMutableArray* filtered = [_database queryRows1:sql error:&error];
+		[filtered shuffle];
+		_filtered = filtered;
+		_index = 0;
+		
+		double elapsed = getTime() - startTime;
+		if (_filtered)
+			LOG_NORMAL("filtered %lu images to %lu images in %.1fs", _paths.count, _filtered.count, elapsed);
+		else
+			LOG_ERROR("Couldn't filter rows: %s", STR(error.localizedFailureReason));
+	}
 	else
-		LOG_ERROR("Couldn't filter rows: %s", STR(error.localizedFailureReason));
+	{
+		_filtered = _paths;
+		_index = random() % _filtered.count;
+	}
+	
+	return _filtered.count > 0;
 }
 
 - (NSArray*)_findPaths:(NSString*)root database:(Database*)database;
@@ -196,7 +257,8 @@ static int ratingToLevel(NSString* rating)
 		// We're executing within a thread so we need our own Database instance.
 		NSError* error = nil;
 		database = [[Database alloc] initWithPath:dbPath error:&error];
-		LOG_ERROR("Couldn't create the database at '%s': %s", STR(dbPath), STR(error.localizedFailureReason));
+		if (!database)
+			LOG_ERROR("Couldn't create the database at '%s': %s", STR(dbPath), STR(error.localizedFailureReason));
 	}
 		
 	return database;

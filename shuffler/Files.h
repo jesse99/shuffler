@@ -3,7 +3,7 @@
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath;
 
-- (void)filterBy:(NSString*)rating;
+- (bool)filterBy:(NSString*)rating andTags:(NSArray*)tags withNone:(bool)withNone withUncategorized:(bool)withUncategorized;
 
 - (NSString*)nextPath;
 - (NSString*)prevPath;
