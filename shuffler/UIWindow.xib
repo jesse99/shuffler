@@ -106,19 +106,19 @@
                     <popUpButton verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D5O-bL-IKI" userLabel="Tags Popup">
                         <rect key="frame" x="245" y="20" width="31" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" preferredEdge="maxY" selectedItem="0Lu-oH-KRw" id="yvO-QJ-2GZ">
+                        <popUpButtonCell key="cell" type="push" title="New…" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" preferredEdge="maxY" selectedItem="sCf-gn-rfS" id="yvO-QJ-2GZ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="3he-vk-vxg">
                                 <items>
-                                    <menuItem title="None" state="on" id="0Lu-oH-KRw">
+                                    <menuItem title="None" id="0Lu-oH-KRw">
                                         <connections>
                                             <action selector="selectNoneTag:" target="-2" id="ga2-zY-OOS"/>
                                         </connections>
                                     </menuItem>
                                     <menuItem isSeparatorItem="YES" id="CHr-Nk-5eg"/>
                                     <menuItem isSeparatorItem="YES" id="XFs-3q-u99"/>
-                                    <menuItem title="New…" id="sCf-gn-rfS">
+                                    <menuItem title="New…" state="on" id="sCf-gn-rfS">
                                         <connections>
                                             <action selector="selectNewTag:" target="-2" id="SDs-ca-c62"/>
                                         </connections>

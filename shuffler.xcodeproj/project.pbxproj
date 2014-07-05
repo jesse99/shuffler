@@ -31,6 +31,8 @@
 		3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3756CB44195BD3F30008C300 /* ArrayCategory.m */; };
 		376BF50D195909AA005149EB /* UIController.m in Sources */ = {isa = PBXBuildFile; fileRef = 376BF50C195909AA005149EB /* UIController.m */; };
 		376BF50F19592239005149EB /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 376BF50E19592239005149EB /* Icon.icns */; };
+		37B008FC1967ADE000919A77 /* NewTag.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37B008FB1967ADE000919A77 /* NewTag.xib */; };
+		37B008FF1967AF9500919A77 /* NewTagController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B008FE1967AF9500919A77 /* NewTagController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +87,9 @@
 		376BF50B195909AA005149EB /* UIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIController.h; sourceTree = "<group>"; };
 		376BF50C195909AA005149EB /* UIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIController.m; sourceTree = "<group>"; };
 		376BF50E19592239005149EB /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
+		37B008FB1967ADE000919A77 /* NewTag.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewTag.xib; sourceTree = "<group>"; };
+		37B008FD1967AF9500919A77 /* NewTagController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTagController.h; sourceTree = "<group>"; };
+		37B008FE1967AF9500919A77 /* NewTagController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTagController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +177,9 @@
 				372E954719568FF1004FC97D /* MainMenu.xib */,
 				372A6E171957AEBA00ABC430 /* MainWindow.h */,
 				372A6E181957AEBA00ABC430 /* MainWindow.m */,
+				37B008FB1967ADE000919A77 /* NewTag.xib */,
+				37B008FD1967AF9500919A77 /* NewTagController.h */,
+				37B008FE1967AF9500919A77 /* NewTagController.m */,
 				372A6E141957A8FD00ABC430 /* Shuffler.h */,
 				372A6E1A195901B300ABC430 /* UIWindow.xib */,
 				376BF50B195909AA005149EB /* UIController.h */,
@@ -296,6 +304,7 @@
 				372E954319568FF1004FC97D /* Credits.rtf in Resources */,
 				372E954919568FF1004FC97D /* MainMenu.xib in Resources */,
 				3756CB3A195A7B910008C300 /* Tables.rtf in Resources */,
+				37B008FC1967ADE000919A77 /* NewTag.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +326,7 @@
 				372A6E0C195767DB00ABC430 /* Files.m in Sources */,
 				372A6E0F1957687E00ABC430 /* Glob.m in Sources */,
 				3756CB3D195A7C130008C300 /* Database.m in Sources */,
+				37B008FF1967AF9500919A77 /* NewTagController.m in Sources */,
 				3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */,
 				3756CB40195A7C600008C300 /* Assert.m in Sources */,
 				372A6E191957AEBA00ABC430 /* MainWindow.m in Sources */,

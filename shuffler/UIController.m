@@ -4,6 +4,7 @@
 
 #import "Database.h"
 #import "MainWindow.h"
+#import "NewTagController.h"
 
 @implementation UIController
 {
@@ -25,13 +26,7 @@
         [self.window makeKeyAndOrderFront:self];	// note that we need to call the window method to load the controls
 		[_tagsPopup selectItem:nil];
 		[_tagsLabel setStringValue:@""];
-		
-		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-		NSArray* tags = [defaults objectForKey:@"tags"];
-		for (NSUInteger i = tags.count - 1; i < tags.count; --i)
-		{
-			[_tagsMenu insertItemWithTitle:tags[i] action:@selector(selectTag:) keyEquivalent:@"" atIndex:2];
-		}
+		[self _populateTagsMenu];
     }
     
 	return self;
@@ -147,7 +142,43 @@
 
 - (IBAction)selectNewTag:(NSMenuItem*)sender
 {
-	// TODO: implement this
+	NewTagController* controller = [[NewTagController alloc] init];
+	NSInteger button = [NSApp runModalForWindow:controller.window];
+	if (button == NSOKButton)
+	{
+		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+		NSMutableArray* tags = [[defaults objectForKey:@"tags"] mutableCopy];
+		[tags addObject:controller.textField.stringValue];
+		[tags sortUsingSelector:@selector(compare:)];
+		
+		[defaults setObject:tags forKey:@"tags"];
+		[defaults synchronize];
+		
+		[self _clearTagsMenu];
+		[self _populateTagsMenu];
+	}
+}
+
+- (void)_clearTagsMenu
+{
+	while (true)
+	{
+		NSMenuItem* item = [_tagsMenu itemAtIndex:2];
+		if ([item isSeparatorItem])
+			break;
+		
+		[_tagsMenu removeItemAtIndex:2];
+	}
+}
+
+- (void)_populateTagsMenu
+{
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	NSArray* tags = [defaults objectForKey:@"tags"];
+	for (NSUInteger i = tags.count - 1; i < tags.count; --i)
+	{
+		[_tagsMenu insertItemWithTitle:tags[i] action:@selector(selectTag:) keyEquivalent:@"" atIndex:2];
+	}
 }
 
 - (void)_saveSettings
@@ -201,6 +232,10 @@
 		NSArray* tags = [_tagsLabel.stringValue componentsSeparatedByString:@" • "];
 		[item setState:[tags containsObject:item.title]];
 	}
+	else if (item.action == @selector(selectNewTag:))
+	{
+		[item setState:0];
+	} 
 	
 	return enabled;
 }
