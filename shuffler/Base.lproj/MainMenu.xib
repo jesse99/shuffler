@@ -73,6 +73,12 @@
                                     <action selector="openFile:" target="Voe-Tx-rLC" id="LiU-AA-aEO"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Close Window" keyEquivalent="w" id="fGT-HD-i8i">
+                                <connections>
+                                    <action selector="orderOut:" target="-1" id="aA9-Re-7oB"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="vI6-Hd-dzI"/>
                             <menuItem title="Show in Finder" keyEquivalent="f" id="pxx-59-PXV">
                                 <connections>
                                     <action selector="showFileInFinder:" target="Voe-Tx-rLC" id="mWs-M3-vYp"/>
@@ -101,7 +107,11 @@
                             <menuItem title="Previous" keyEquivalent="" id="UH5-ea-bvj">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                             </menuItem>
-                            <menuItem title="Get Database Info" keyEquivalent="I" id="o9m-91-smV"/>
+                            <menuItem title="Database Info" keyEquivalent="i" id="o9m-91-smV">
+                                <connections>
+                                    <action selector="showInfo:" target="Voe-Tx-rLC" id="Rx6-3e-75I"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="cqS-U1-KBD"/>
                             <menuItem title="Show Only Rating" id="Fcs-0Z-mT3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -138,14 +148,15 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Show Only Tags" id="WNN-2h-sfS">
                                     <items>
-                                        <menuItem isSeparatorItem="YES" id="6Tl-79-OzD"/>
                                         <menuItem title="None" id="snu-N0-UBf">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="toggleNoneTag:" target="Voe-Tx-rLC" id="wq0-iW-wbc"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Uncategorized" id="570-sL-Pep">
+                                        <menuItem isSeparatorItem="YES" id="6Tl-79-OzD"/>
+                                        <menuItem isSeparatorItem="YES" id="LH4-tV-Ond"/>
+                                        <menuItem title="Include Uncategorized" id="570-sL-Pep">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="toggleUncategorizedTag:" target="Voe-Tx-rLC" id="5Op-3p-SVY"/>

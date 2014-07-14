@@ -2,6 +2,7 @@
 
 #include "Carbon/Carbon.h"
 
+#import "DatabaseInfoController.h"
 #import "Files.h"
 #import "MainWindow.h"
 #import "UIController.h"
@@ -14,10 +15,12 @@ const NSUInteger MaxHistory = 500;
 	NSTimer* _timer;
 	UIController* _controller;
 
+	NSMutableArray* _shown;
+	NSUInteger _index;
+	
 	Files* _files;
 	NSString* _rating;
 	NSMutableArray* _tags;
-	bool _includeNone;
 	bool _includeUncategorized;
 }
 
@@ -31,7 +34,10 @@ const NSUInteger MaxHistory = 500;
 		
 	_rating = @"Normal";
 	_tags = [NSMutableArray new];
+	_includeUncategorized = true;
+	
 	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(_nextImage) userInfo:nil repeats:true];
+	_shown = [NSMutableArray new];
 	
 	NSString* root = [defaults stringForKey:@"root"];
 	root = [root stringByStandardizingPath];
@@ -42,7 +48,7 @@ const NSUInteger MaxHistory = 500;
 	for (NSString* tag in tags)
 	{
 		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:tag action:@selector(toggleTag:) keyEquivalent:@""];
-		[_tagsMenu insertItem:item atIndex:0];
+		[_tagsMenu insertItem:item atIndex:2];
 	}
 	
 	[_controller.window setTitle:@"Scanning…"];
@@ -67,6 +73,9 @@ const NSUInteger MaxHistory = 500;
 - (void)_displayInitial:(Files*)files
 {
 	_files = files;
+		
+	if (_files && _files.numUnfiltered > 0)
+		(void) [_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized];
 	
 	if (_files && _files.numFiltered > 0)
 	{
@@ -80,6 +89,11 @@ const NSUInteger MaxHistory = 500;
 		else
 			[_controller.window setTitle:@"No Matches"];
 	}
+}
+
+- (IBAction)showInfo:(id)sender
+{
+	[DatabaseInfoController show];
 }
 
 - (IBAction)copyPath:(id)sender
@@ -109,17 +123,26 @@ const NSUInteger MaxHistory = 500;
 
 - (IBAction)trashFile:(id)sender
 {
-	NSString* path = _controller.path;
-	
-	[self _nextImage];
-	[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
-	
-	NSURL* url = [[NSURL alloc] initFileURLWithPath:path];
-	NSURL* newURL = nil;
-	NSError* error = nil;
-	BOOL trashed = [[NSFileManager defaultManager] trashItemAtURL:url resultingItemURL:&newURL error:&error];
-	if (!trashed)
-		LOG_ERROR("failed to trash %s: %s", STR(path), STR(error.localizedFailureReason));
+	if (_index < _shown.count)
+	{
+		NSString* path = _shown[_index];
+		[_shown removeObjectAtIndex:_index];
+		--_index;
+		
+		[self _nextImage];
+		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+		
+		NSURL* url = [[NSURL alloc] initFileURLWithPath:path];
+		NSURL* newURL = nil;
+		NSError* error = nil;
+		BOOL trashed = [[NSFileManager defaultManager] trashItemAtURL:url resultingItemURL:&newURL error:&error];
+		if (!trashed)
+			LOG_ERROR("failed to trash %s: %s", STR(path), STR(error.localizedFailureReason));
+	}
+	else
+	{
+		NSBeep();
+	}
 }
 
 - (IBAction)changeRating:(NSMenuItem *)sender
@@ -127,10 +150,11 @@ const NSUInteger MaxHistory = 500;
 	if (_files && [_rating compare:sender.title] != NSOrderedSame)
 	{
 		_rating = sender.title;
+		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 		
 		// For now we do this in the main thread because it gets all squirrelly if
 		// we queue up multiple threads and have them finish at different times.
-		if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+		if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 			[_controller.window setTitle:@"No Matches"];
 	}
 }
@@ -145,33 +169,64 @@ const NSUInteger MaxHistory = 500;
 	}
 	else
 	{
+		index = [_tags indexOfObject:@"None"];
+		if (index != NSNotFound)
+			[_tags removeObjectAtIndex:index];
+
 		[_tags addObject:tag];
 		[_tags sortUsingSelector:@selector(compare:)];
 	}
 
-	if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
+	else
+		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
 - (IBAction)toggleNoneTag:(id)sender
 {
-	_includeNone = !_includeNone;
-	if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+	[_tags removeAllObjects];
+	[_tags addObject:@"None"];
+	
+	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
+	else
+		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
 - (IBAction)toggleUncategorizedTag:(id)sender
 {
 	_includeUncategorized = !_includeUncategorized;
-	if (![_files filterBy:_rating andTags:_tags withNone:_includeNone withUncategorized:_includeUncategorized])
+	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
+	else
+		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
 - (void)_nextImage
 {
 	if (_files)
 	{
-		NSString* path = [_files nextPath];
+		NSString* path = nil;
+		if (_index + 1 < _shown.count)
+		{
+			path = _shown[++_index];
+		}
+		else
+		{
+			path = [_files randomPath:_shown];
+			if (path)
+			{
+				[_shown addObject:path];
+				
+				NSUInteger max = MIN(_files.numFiltered/2, 2000);
+				if (_shown.count > max)
+					[_shown removeObjectsInRange:NSMakeRange(0, max/2)];
+				
+				_index = _shown.count - 1;
+			}
+		}
+
 		if (path)
 			[_controller setPath:path];
 		else
@@ -181,13 +236,14 @@ const NSUInteger MaxHistory = 500;
 
 - (void)_prevImage
 {
-	if (_files)
+	if (_index > 0)
 	{
-		NSString* path = [_files prevPath];
-		if (path)
-			[_controller setPath:path];
-		else
-			NSBeep();
+		NSString* path = _shown[--_index];
+		[_controller setPath:path];
+	}
+	else
+	{
+		NSBeep();
 	}
 }
 
@@ -200,13 +256,9 @@ const NSUInteger MaxHistory = 500;
 		[item setState:[_rating compare:item.title] == NSOrderedSame];
 		enabled = _files != nil;
 	}
-	else if (item.action == @selector(toggleTag:))
+	else if (item.action == @selector(toggleTag:) || item.action == @selector(toggleNoneTag:))
 	{
 		[item setState:[_tags containsObject:item.title]];
-	}
-	else if (item.action == @selector(toggleNoneTag:))
-	{
-		[item setState:_includeNone];
 	}
 	else if (item.action == @selector(toggleUncategorizedTag:))
 	{

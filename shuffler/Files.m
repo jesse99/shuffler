@@ -3,19 +3,48 @@
 #import "Database.h"
 #import "Glob.h"
 
-static int ratingToLevel(NSString* rating)
+const NSUInteger NormalRating        = 0;
+const NSUInteger GoodRating          = 1;
+const NSUInteger GreatRating         = 2;
+const NSUInteger FantasticRating     = 3;
+const NSUInteger UncategorizedRating = 4;
+
+const NSUInteger WorstRating = NormalRating;
+const NSUInteger TopRating   = UncategorizedRating;
+
+static NSUInteger nameToRating(NSString* name)
 {
-	if ([rating compare:@"Normal"] == NSOrderedSame)
-		return 0;
+	if ([name compare:@"Normal"] == NSOrderedSame)
+		return NormalRating;
 	
-	else if ([rating compare:@"Good"] == NSOrderedSame)
-		return 1;
+	else if ([name compare:@"Good"] == NSOrderedSame)
+		return GoodRating;
 	
-	else if ([rating compare:@"Great"] == NSOrderedSame)
-		return 2;
+	else if ([name compare:@"Great"] == NSOrderedSame)
+		return GreatRating;
 	
-	else if ([rating compare:@"Fantastic"] == NSOrderedSame)
-		return 3;
+	else if ([name compare:@"Fantastic"] == NSOrderedSame)
+		return FantasticRating;
+	
+	ASSERT(false);
+}
+
+NSString* ratingToName(NSUInteger rating)
+{
+	if (rating == NormalRating)
+		return @"Normal";
+	
+	else if (rating == GoodRating)
+		return @"Good";
+	
+	else if (rating == GreatRating)
+		return @"Great";
+	
+	else if (rating == FantasticRating)
+		return @"Fantastic";
+	
+	else if (rating == UncategorizedRating)
+		return @"Uncategorized";
 
 	ASSERT(false);
 }
@@ -23,11 +52,14 @@ static int ratingToLevel(NSString* rating)
 // Note that these are created within a thread and then handed off to the main thread.
 @implementation Files
 {
+	NSString* _root;
 	Database* _database;
 	Glob* _glob;
-	NSArray* _paths;
-	NSArray* _filtered;
-	NSUInteger _index;
+	NSMutableArray* _paths;
+	
+	NSUInteger _numFiltered;
+	NSMutableArray* _filtered[TopRating+1];		// [[path]]
+	NSUInteger _numShown[TopRating+1];			// [count]
 }
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath
@@ -36,19 +68,43 @@ static int ratingToLevel(NSString* rating)
 	
 	if (self)
 	{
-		// TODO:
-		// maybe we should read the files all in and then filter by Indexing?
-		// delegate could poke us when filtering changes
+		_root = [dbPath stringByDeletingLastPathComponent];
 		_database = [self _createDatabase:dbPath];
 
 		// See https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsimagerep_Class/Reference/Reference.html#//apple_ref/occ/clm/NSImageRep/imageRepWithContentsOfFile:
 		NSArray* globs = @[@"*.tiff", @"*.gif", @"*.jpg", @"*.jpeg", @"*.pict", @"*.pdf", @"*.eps", @"*.png"];
 		_glob = [[Glob alloc] initWithGlobs:globs];
+		
 		_paths = [self _findPaths:dirPath database:_database];	// TODO: popup a directory picker if nothing was found
-		_filtered = _paths;
+
+		for (NSUInteger i = WorstRating + 1; i <= TopRating; ++i)
+		{
+			_filtered[i] = [[NSMutableArray alloc] initWithCapacity:1000];
+			_numShown[i] = 0;
+		}
+		_filtered[WorstRating] = [_paths mutableCopy];
+		_numFiltered = _paths.count;
 	}
 	
 	return self;
+}
+
+- (NSString*)root
+{
+	return _root;
+}
+
+- (NSUInteger)numShownForRating:(NSUInteger)rating
+{
+	ASSERT(rating <= TopRating);
+	return _numShown[rating];
+}
+
+- (NSUInteger)totalForRating:(NSUInteger)rating
+{
+	ASSERT(rating <= TopRating);
+	NSArray* filtered = _filtered[rating];
+	return filtered.count;
 }
 
 - (NSUInteger)numUnfiltered
@@ -58,75 +114,154 @@ static int ratingToLevel(NSString* rating)
 
 - (NSUInteger)numFiltered
 {
-	return _filtered.count;
+	return _numFiltered;
 }
 
-- (NSString*)nextPath
+- (NSString*)randomPath:(NSArray*)shown
 {
-	if (_filtered && _filtered.count > 0)
-	{
-		// We'll get notified and rebuild our lists as files get deleted,
-		// but not immediately...
-		NSFileManager* fm = [NSFileManager defaultManager];
-		for (NSUInteger i = 0; i < _filtered.count; ++i)
-		{
-			_index = ++_index % _filtered.count;
-			NSString* path = _filtered[_index];
-			if ([fm fileExistsAtPath:path])
-				return path;
-		}
-	}
+	NSString* path = nil;
 	
-	return nil;
-}
-
-- (NSString*)prevPath
-{
-	if (_filtered && _filtered.count > 0)
+	if (_numFiltered > 0)
 	{
 		NSFileManager* fm = [NSFileManager defaultManager];
-		for (NSUInteger i = 0; i < _filtered.count; ++i)
+		
+		NSUInteger rating = [self _findRandomRating];
+		NSUInteger numRatings = TopRating - WorstRating + 1;
+		for (NSUInteger i = 0; i < numRatings && path == nil; ++i)
 		{
-			_index = --_index % _filtered.count;
-			NSString* path = _filtered[_index];
-			if ([fm fileExistsAtPath:path])
-				return path;
+			NSArray* filtered = _filtered[rating];
+			if (filtered.count > 0)
+			{
+				LOG_VERBOSE("   trying %s images", STR(ratingToName(rating)));
+				
+				NSUInteger offset = random() % filtered.count;
+				for (NSUInteger j = 0; j < filtered.count && path == nil; ++j)
+				{
+					NSUInteger index = (offset + j) % filtered.count;
+					NSString* candidate = filtered[index];
+					
+					// We'll get notified and rebuild our lists as files get deleted,
+					// but not immediately...
+					if (![shown containsObject:candidate])
+					{
+						if ([fm fileExistsAtPath:candidate])
+						{
+							path = candidate;
+							_numShown[rating] += 1;
+							
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+						}
+					}
+				}
+			}
+			
+			if (--rating > TopRating)
+				rating = TopRating;
 		}
 	}
-	
-	return nil;
+
+	return path;
 }
 
-- (NSArray*)_getTagsClauses:(NSArray*)tags withNone:(bool)withNone
+- (NSUInteger)_findRandomRating
 {
-	NSMutableArray* clauses = [NSMutableArray new];	
+	ASSERT(TopRating - WorstRating + 1 == 5);	// or maxWeight is busted
 	
-	if (withNone)
+	long scaling = 5;			// fantastic images are 625x more likely to appear than normal images
+	long maxWeight = scaling*scaling*scaling*scaling*scaling;
+	long weight = random() % maxWeight;
+	
+	for (NSUInteger i = WorstRating; i <= TopRating; ++i)
 	{
-		[clauses addObject:@"Indexing.tags GLOB '*None:*'"];
+		if (weight <= scaling)
+			return i;
+		else
+			weight /= scaling;
 	}
 	
-	if (tags.count > 0)
-	{
-		tags = [tags map:^id(NSString* tag) {return [NSString stringWithFormat:@"*%@:*", tag];}];
-		NSString* globs = [tags componentsJoinedByString:@""];
-		[clauses addObject:[NSString stringWithFormat:@"Indexing.tags GLOB '%@'", globs]];
-	}
-	
-	return clauses;
+	return TopRating;
 }
 
 // Note that this is main thread code.
-- (bool)filterBy:(NSString*)rating andTags:(NSArray*)tags withNone:(bool)withNone withUncategorized:(bool)withUncategorized
+- (bool)filterBy:(NSString*)rating andTags:(NSArray*)tags includeUncategorized:(bool)includeUncategorized
 {
 	double startTime = getTime();
-
-	int level = ratingToLevel(rating);
-	NSMutableArray* predicates = [NSMutableArray new];
-	if (level > 0)
-		[predicates addObject:[NSString stringWithFormat:@"Indexing.rating >= %d", level]];
 	
-	NSArray* clauses = [self _getTagsClauses:tags withNone:withNone];
+	_numFiltered = 0;
+	for (NSUInteger i = WorstRating; i <= TopRating; ++i)
+	{
+		NSMutableArray* filtered = _filtered[i];
+		[filtered removeAllObjects];
+		_numShown[i] = 0;
+	}
+	
+	[self _addCategorized:rating andTags:tags];
+	if (includeUncategorized)
+		[self _addUnCategorized];
+	
+	double elapsed = getTime() - startTime;
+	if (_numFiltered > 0)
+		LOG_NORMAL("filtered %lu images to %lu images in %.1fs", _paths.count, _numFiltered, elapsed);
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+
+	return _numFiltered > 0;
+}
+
+- (void)_addCategorized:(NSString*)rating andTags:(NSArray*)tags
+{
+	NSError* error = nil;
+	NSString* sql = [self _getQuery:rating andTags:tags];
+	NSMutableArray* rows = [_database queryRows:sql error:&error];
+	for (NSUInteger i = 0; rows && i < rows.count; ++i)
+	{
+		NSArray* row = rows[i];
+		NSString* path = row[0];
+		NSString* ii   = row[1];
+		
+		NSUInteger index = (NSUInteger) [ii integerValue];
+		if (index <= TopRating)		// should always be true...
+		{
+			NSMutableArray* filtered = _filtered[index];
+			[filtered addObject:path];
+			_numFiltered += 1;
+		}
+	}
+
+	if (!rows)
+		LOG_ERROR("Categorized query failed: %s", STR(error.localizedFailureReason));
+}
+
+// Much faster to use separate queries for categorized and uncategorized.
+- (void)_addUnCategorized
+{
+	NSMutableArray* filtered = _filtered[TopRating];
+
+	NSError* error = nil;
+	NSString* sql = @"SELECT path FROM ImagePaths WHERE length(hash) == 0";
+	NSMutableArray* rows = [_database queryRows1:sql error:&error];
+	for (NSUInteger i = 0; rows && i < rows.count; ++i)
+	{
+		NSString* path = rows[i];
+		
+		[filtered addObject:path];
+		_numFiltered += 1;
+	}
+	
+	if (!rows)
+		LOG_ERROR("Uncategorized query failed: %s", STR(error.localizedFailureReason));
+}
+
+// This is where we get categorized paths, i.e. those with a rating and tags.
+- (NSString*)_getQuery:(NSString*)rating andTags:(NSArray*)tags
+{
+	NSMutableArray* predicates = [NSMutableArray new];
+
+	int level = (int) nameToRating(rating);
+	if (level > NormalRating)
+		[predicates addObject:[NSString stringWithFormat:@"rating >= %d", level]];
+	
+	NSArray* clauses = [self _getTagsClauses:tags];
 	if (clauses.count == 1)
 	{
 		[predicates addObject:clauses[0]];
@@ -137,41 +272,30 @@ static int ratingToLevel(NSString* rating)
 		[predicates addObject:[NSString stringWithFormat:@"(%@)", clause]];
 	}
 	
-	if (predicates.count > 0)
-	{
-		NSString* where;
-		if (withUncategorized)
-			where = [NSString stringWithFormat:@"(%@) OR length(ImagePaths.hash) = 0", [predicates componentsJoinedByString:@" AND "]];
-		else
-			where = [NSString stringWithFormat:@"%@ AND Indexing.hash == ImagePaths.hash", [predicates componentsJoinedByString:@" AND "]];
-		
-		NSString* sql = [NSString stringWithFormat:@"\
-			SELECT path\
-			   FROM Indexing, ImagePaths\
-			WHERE %@", where];
-		
-		NSError* error = nil;
-		NSMutableArray* filtered = [_database queryRows1:sql error:&error];
-		[filtered shuffle];
-		_filtered = filtered;
-		_index = 0;
-		
-		double elapsed = getTime() - startTime;
-		if (_filtered)
-			LOG_NORMAL("filtered %lu images to %lu images in %.1fs", _paths.count, _filtered.count, elapsed);
-		else
-			LOG_ERROR("Couldn't filter rows: %s", STR(error.localizedFailureReason));
-	}
-	else
-	{
-		_filtered = _paths;
-		_index = random() % _filtered.count;
-	}
+	[predicates addObject:@"Indexing.hash == ImagePaths.hash"];
+
+	NSString* sql = [NSString stringWithFormat:@"SELECT path, rating FROM Indexing, ImagePaths WHERE %@",
+		[predicates componentsJoinedByString:@" AND "]];
+	LOG_VERBOSE("%s", STR(sql));
 	
-	return _filtered.count > 0;
+	return sql;
 }
 
-- (NSArray*)_findPaths:(NSString*)root database:(Database*)database;
+- (NSArray*)_getTagsClauses:(NSArray*)tags
+{
+	NSMutableArray* clauses = [NSMutableArray new];
+	
+	if (tags.count > 0)
+	{
+		tags = [tags map:^id(NSString* tag) {return [NSString stringWithFormat:@"*%@:*", tag];}];
+		NSString* globs = [tags componentsJoinedByString:@""];
+		[clauses addObject:[NSString stringWithFormat:@"tags GLOB '%@'", globs]];
+	}
+	
+	return clauses;
+}
+
+- (NSMutableArray*)_findPaths:(NSString*)root database:(Database*)database;
 {
 	NSMutableArray* paths = [NSMutableArray new];
 	LOG_NORMAL("loading images from '%s'", STR(root));
@@ -191,9 +315,7 @@ static int ratingToLevel(NSString* rating)
 				LOG_NORMAL("skipping '%s' (doesn't match image globs)", STR(path.lastPathComponent));
 			}
 		}];
-	
-	[paths shuffle];
-	
+		
 	double elapsed = getTime() - startTime;
 	LOG_NORMAL("found %lu images in %.1fs", paths.count, elapsed);
 

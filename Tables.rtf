@@ -1,13 +1,13 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf200
-{\fonttbl\f0\fnil\fcharset0 Verdana;}
-{\colortbl;\red255\green255\blue255;}
+{\fonttbl\f0\fnil\fcharset0 Verdana;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 \viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
 \f0\fs36 \cf0 Field names appended with # are part of the primary key. All times are in DateTime ticks.\
-\
 
-\b Indexing
+\b \
+Indexing
 \b0 \
 hash#		rating		tags\
 \
@@ -39,4 +39,11 @@ path#		hash\
 \
 * path is the full path to an image file.\
 * hash is an md5sum of the image. Empty if the file is uncategorized.\
+\
+You can interactively explore the database using sqlite3:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f1\fs28 \cf2 > sqlite3 ~/Documents/Desktop\\ Pictures/shuffler.db\
+sqlite> SELECT path, ImagePaths.hash, rating FROM Indexing, ImagePaths LIMIT 20;\
+sqlite> .quit\
 }

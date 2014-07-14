@@ -33,6 +33,9 @@
 		376BF50F19592239005149EB /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 376BF50E19592239005149EB /* Icon.icns */; };
 		37B008FC1967ADE000919A77 /* NewTag.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37B008FB1967ADE000919A77 /* NewTag.xib */; };
 		37B008FF1967AF9500919A77 /* NewTagController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B008FE1967AF9500919A77 /* NewTagController.m */; };
+		37B0090119730E5500919A77 /* DatabaseInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37B0090019730E5500919A77 /* DatabaseInfo.xib */; };
+		37B0090419730FF300919A77 /* DatabaseInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B0090319730FF300919A77 /* DatabaseInfoController.m */; };
+		37B009071973472600919A77 /* StringCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B009061973472600919A77 /* StringCategory.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +93,11 @@
 		37B008FB1967ADE000919A77 /* NewTag.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewTag.xib; sourceTree = "<group>"; };
 		37B008FD1967AF9500919A77 /* NewTagController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTagController.h; sourceTree = "<group>"; };
 		37B008FE1967AF9500919A77 /* NewTagController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTagController.m; sourceTree = "<group>"; };
+		37B0090019730E5500919A77 /* DatabaseInfo.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DatabaseInfo.xib; sourceTree = "<group>"; };
+		37B0090219730FF300919A77 /* DatabaseInfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseInfoController.h; sourceTree = "<group>"; };
+		37B0090319730FF300919A77 /* DatabaseInfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatabaseInfoController.m; sourceTree = "<group>"; };
+		37B009051973472600919A77 /* StringCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringCategory.h; sourceTree = "<group>"; };
+		37B009061973472600919A77 /* StringCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringCategory.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +175,9 @@
 				3756CB3F195A7C600008C300 /* Assert.m */,
 				3756CB3B195A7C130008C300 /* Database.h */,
 				3756CB3C195A7C130008C300 /* Database.m */,
+				37B0090019730E5500919A77 /* DatabaseInfo.xib */,
+				37B0090219730FF300919A77 /* DatabaseInfoController.h */,
+				37B0090319730FF300919A77 /* DatabaseInfoController.m */,
 				372A6E0A195767DB00ABC430 /* Files.h */,
 				372A6E0B195767DB00ABC430 /* Files.m */,
 				372A6E0D1957687D00ABC430 /* Glob.h */,
@@ -181,6 +192,8 @@
 				37B008FD1967AF9500919A77 /* NewTagController.h */,
 				37B008FE1967AF9500919A77 /* NewTagController.m */,
 				372A6E141957A8FD00ABC430 /* Shuffler.h */,
+				37B009051973472600919A77 /* StringCategory.h */,
+				37B009061973472600919A77 /* StringCategory.m */,
 				372A6E1A195901B300ABC430 /* UIWindow.xib */,
 				376BF50B195909AA005149EB /* UIController.h */,
 				376BF50C195909AA005149EB /* UIController.m */,
@@ -297,6 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				372E953D19568FF1004FC97D /* InfoPlist.strings in Resources */,
+				37B0090119730E5500919A77 /* DatabaseInfo.xib in Resources */,
 				372A6E1B195901B300ABC430 /* UIWindow.xib in Resources */,
 				372A6E091956928400ABC430 /* TODO in Resources */,
 				372E954B19568FF1004FC97D /* Images.xcassets in Resources */,
@@ -327,8 +341,10 @@
 				372A6E0F1957687E00ABC430 /* Glob.m in Sources */,
 				3756CB3D195A7C130008C300 /* Database.m in Sources */,
 				37B008FF1967AF9500919A77 /* NewTagController.m in Sources */,
+				37B0090419730FF300919A77 /* DatabaseInfoController.m in Sources */,
 				3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */,
 				3756CB40195A7C600008C300 /* Assert.m in Sources */,
+				37B009071973472600919A77 /* StringCategory.m in Sources */,
 				372A6E191957AEBA00ABC430 /* MainWindow.m in Sources */,
 				372E954619568FF1004FC97D /* AppDelegate.m in Sources */,
 				372E953F19568FF1004FC97D /* main.m in Sources */,

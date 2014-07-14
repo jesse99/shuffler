@@ -1,57 +1,17 @@
-Images
-	Next		right arrow
-	Previous	left arrow
-	Get Database Info	shift-I
-	---
-	Show Only Rating
-		Normal			1
-		Good			5
-		Great			25
-		Fantastic		125
-	Show Only Tags
-		blah
-		blah
-		---
-		none
-		uncategorized
-	---
-	Interval
-		1 second
-		5 seconds
-		10 seconds
-		30 seconds
-		1 minute
-		2 minutes
-		5 minutes
-		10 minutes
-		30 minutes
-		Never
-
-
-* Add a tag for Victoria
-	- may want to support the New… menu item in the tags menu.
-* Preferentially show better rated images:
-	- delegate needs a history
-	- files should randomly pick a file (no need to shuffle)
-	- then step until weight goes to zero
-	- uncategorized should have max weight, 5*5*5*5
-* Would be nice if great and uncategorized played better together
 * Work on filtering:
 	- be sure hash changing at a path is properly handled
-* Desktop icons aren't showing up
 * Prune filtered when tags change
 	- may want to test to see if the new tags are inapplicable
+* Get Next and Previous menu items working
+* Scaling popup should say how much Max actually is
+* Don't think selectNewTag updates main menu
+* Get Interval submenu working
 * Seems to be a bit of a race when changing a setting and timer firing
 	- new image doesn't appear
-* Get Next and Previous menu items working
 * Should disable UI window while scanning.
-* Get Interval submenu working
-* Scaling popup should say how much Max actually is
-* Support other file menu items
 * Support other images menu items.
 * Indicate dupes somehow.
 	- maybe show in finder could show them both
-* Support opening
 * Need to watch the directory:
 	- need to special case trashFile
 	- or maybe just handle it as part of watching
