@@ -4,6 +4,7 @@
 
 - (id)init:(MainWindow*)window dbPath:(NSString*)dbPath;
 
+- (void)trashedFile:(NSString*)path;
 - (void)setPath:(NSString*)path;
 
 - (IBAction)selectRating:(id)sender;

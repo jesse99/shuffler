@@ -136,7 +136,9 @@ const NSUInteger MaxHistory = 500;
 		NSURL* newURL = nil;
 		NSError* error = nil;
 		BOOL trashed = [[NSFileManager defaultManager] trashItemAtURL:url resultingItemURL:&newURL error:&error];
-		if (!trashed)
+		if (trashed)
+			[_controller trashedFile:path];
+		else
 			LOG_ERROR("failed to trash %s: %s", STR(path), STR(error.localizedFailureReason));
 	}
 	else
@@ -148,7 +150,7 @@ const NSUInteger MaxHistory = 500;
 - (IBAction)changeRating:(NSMenuItem *)sender
 {
 	if (_files && [_rating compare:sender.title] != NSOrderedSame)
-	{
+	{		
 		_rating = sender.title;
 		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 		

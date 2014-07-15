@@ -1,7 +1,4 @@
-* Work on filtering:
-	- be sure hash changing at a path is properly handled
-* Prune filtered when tags change
-	- may want to test to see if the new tags are inapplicable
+* Do a commit
 * Get Next and Previous menu items working
 * Scaling popup should say how much Max actually is
 * Don't think selectNewTag updates main menu
@@ -31,6 +28,7 @@
 	` quickstart should talk about missing tags
 * Handle new files appearing.
 * Should have a Get Info command. Probably for the database as a whole.
+* Add some sort of auto update support.
 * Should we support a way to organize files by tag?
 	- old-shuffler has some ideas about this
 * Can we get files from a remote source?

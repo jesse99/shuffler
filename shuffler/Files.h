@@ -11,6 +11,9 @@ NSString* ratingToName(NSUInteger rating);
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath;
 
+- (void)trashedFile:(NSString*)path withRating:(NSString*)rating;
+- (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating for:(NSString*)path;
+
 - (bool)filterBy:(NSString*)rating andTags:(NSArray*)tag includeUncategorized:(bool)withUncategorized;
 
 - (NSString*)root;

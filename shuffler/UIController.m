@@ -2,7 +2,9 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
+#import "AppDelegate.h"
 #import "Database.h"
+#import "Files.h"
 #import "MainWindow.h"
 #import "NewTagController.h"
 
@@ -11,6 +13,8 @@
 	MainWindow* _mainWindow;
 	Database* _database;
 	NSString* _hash;
+	
+	NSString* _rating;
 }
 
 - (id)init:(MainWindow*)window dbPath:(NSString*)dbPath
@@ -57,7 +61,7 @@
 	{
 		NSError* error = nil;
 		NSString* sql = [NSString stringWithFormat:@"\
-			SELECT Indexing.rating, Indexing.tags, Appearance.scaling\
+			SELECT rating, tags, scaling\
 			   FROM Indexing, Appearance\
 			WHERE\
 			   Indexing.hash = '%@' AND Appearance.hash = '%@'", _hash, _hash];
@@ -65,6 +69,8 @@
 		NSArray* rows = [_database queryRows:sql error:&error];
 		if (rows)
 		{
+			// If the user has edited the image its hash will change and he will have
+			// to re-enter tags and whatnot.
 			if (rows.count > 0)
 			{
 				NSArray* row = rows[0];
@@ -94,6 +100,7 @@
 	[self.window setTitle:path.lastPathComponent];
 	[_ratingPopup selectItemAtIndex:rating];
 	[_tagsLabel setStringValue:tags];
+	_rating = [_ratingPopup titleOfSelectedItem];
 	
 	if (scaling == 1.0)
 		[_scalingPopup selectItemWithTitle:@"None"];
@@ -106,10 +113,27 @@
 	[_mainWindow update:path imageData:data scaling:scaling];
 }
 
+- (void)trashedFile:(NSString*)path
+{
+	NSString* rating = [_ratingPopup titleOfSelectedItem];
+	
+	AppDelegate* app = [NSApp delegate];
+	[app.files trashedFile:path withRating:rating];
+}
+
 - (IBAction)selectRating:(id)sender
 {
-	if (_database)
-		[self _saveSettings];
+	NSString* newRating = [_ratingPopup titleOfSelectedItem];
+	if ([newRating compare:_rating] != NSOrderedSame)
+	{
+		AppDelegate* app = [NSApp delegate];
+		[app.files changedRatingFrom:_rating to:newRating for:_mainWindow.path];
+
+		if (_database)
+			[self _saveSettings];
+		
+		_rating = newRating;
+	}
 }
 
 - (IBAction)selectScaling:(id)sender

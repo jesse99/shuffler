@@ -60,6 +60,7 @@ NSString* ratingToName(NSUInteger rating)
 	NSUInteger _numFiltered;
 	NSMutableArray* _filtered[TopRating+1];		// [[path]]
 	NSUInteger _numShown[TopRating+1];			// [count]
+	NSUInteger _numTotal[TopRating+1];			// [count]
 }
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath
@@ -80,7 +81,6 @@ NSString* ratingToName(NSUInteger rating)
 		for (NSUInteger i = WorstRating + 1; i <= TopRating; ++i)
 		{
 			_filtered[i] = [[NSMutableArray alloc] initWithCapacity:1000];
-			_numShown[i] = 0;
 		}
 		_filtered[WorstRating] = [_paths mutableCopy];
 		_numFiltered = _paths.count;
@@ -94,6 +94,73 @@ NSString* ratingToName(NSUInteger rating)
 	return _root;
 }
 
+// We update the stats used by the Database Info window but we don't
+// update _filtered. For example, if the user changes the tag to
+// Puppies or changes the rating from Great to Normal we'll leave
+// it in _filtered and may wind up showing it when we shouldn't.
+//
+// We could update _filtered. For example we could re-run the
+// query with the addition of ImagePaths.hash == image's hash.
+// This would tell us if the image still belongs in _filtered
+// and where it belongs. But then we'd have to remove the old
+// entry which kind of sucks for poeple with lots of images
+// because it's O(N). 
+- (void)trashedFile:(NSString*)path withRating:(NSString*)rating
+{
+	NSArray* filtered;
+	
+	NSUInteger index = nameToRating(rating);
+	if (index == NormalRating)
+	{
+		filtered = _filtered[NormalRating];
+		if (![filtered containsObject:path])
+		{
+			index = UncategorizedRating;
+		}
+	}
+	
+	filtered = _filtered[index];
+	if (filtered.count > 0)			// only adjust the counts if we're using them
+	{
+		_numShown[index] -= 1;
+		_numTotal[index] -= 1;
+	}
+		
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+}
+
+- (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating for:(NSString*)path
+{
+	NSArray* filtered;
+	
+	NSUInteger index = nameToRating(oldRating);
+	if (index == NormalRating)
+	{
+		filtered = _filtered[NormalRating];
+		if (![filtered containsObject:path])
+		{
+			index = UncategorizedRating;
+		}
+	}
+
+	filtered = _filtered[index];
+	if (filtered.count > 0)			// only adjust the counts if we're using them
+	{
+		_numShown[index] -= 1;
+		_numTotal[index] -= 1;
+	}
+	
+	index = nameToRating(newRating);
+	filtered = _filtered[index];
+	if (filtered.count > 0)
+	{
+		_numShown[index] += 1;
+		_numTotal[index] += 1;
+	}
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+}
+
 - (NSUInteger)numShownForRating:(NSUInteger)rating
 {
 	ASSERT(rating <= TopRating);
@@ -103,8 +170,7 @@ NSString* ratingToName(NSUInteger rating)
 - (NSUInteger)totalForRating:(NSUInteger)rating
 {
 	ASSERT(rating <= TopRating);
-	NSArray* filtered = _filtered[rating];
-	return filtered.count;
+	return _numTotal[rating];
 }
 
 - (NSUInteger)numUnfiltered
@@ -193,6 +259,7 @@ NSString* ratingToName(NSUInteger rating)
 		NSMutableArray* filtered = _filtered[i];
 		[filtered removeAllObjects];
 		_numShown[i] = 0;
+		_numTotal[i] = 0;
 	}
 	
 	[self _addCategorized:rating andTags:tags];
@@ -225,6 +292,7 @@ NSString* ratingToName(NSUInteger rating)
 			NSMutableArray* filtered = _filtered[index];
 			[filtered addObject:path];
 			_numFiltered += 1;
+			_numTotal[index] += 1;
 		}
 	}
 
@@ -246,6 +314,7 @@ NSString* ratingToName(NSUInteger rating)
 		
 		[filtered addObject:path];
 		_numFiltered += 1;
+		_numTotal[TopRating] += 1;
 	}
 	
 	if (!rows)
