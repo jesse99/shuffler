@@ -1,18 +1,16 @@
 SELECT COUNT(hash) FROM Indexing WHERE rating >= 1 AND tags GLOB '*Dogs:*';
 
-SELECT path FROM Indexing, ImagePaths WHERE rating >= 1 AND tags GLOB '*Asian:*' AND ImagePaths.hash == Indexing.hash LIMIT 1 OFFSET 100
+SELECT path FROM Indexing, ImagePaths WHERE rating >= 1 AND tags GLOB '*Dogs:*' AND ImagePaths.hash == Indexing.hash LIMIT 1 OFFSET 100
 
 SELECT path FROM Indexing, ImagePaths WHERE ImagePaths.hash == Indexing.hash ORDER BY RANDOM() LIMIT 1
 
 
 
-* Add a (threaded) compact option:
-	- pop up an alert saying how many records were removed
-	- be sure to pop up something sensible if nothing was removed
 * Maybe we should let the db handle state?
-	- could just do a query for random image
-	- or maybe build a temporary table? or a temp database?
-	- maybe database info could have its own db connection and use a thread
+	- shown works as now
+	- max is a query
+	- filtered is as now except using limited random query
+	- if fail to find unshown image, pick the first
 * Trash should update the db
 * Showing great victoria images is fubar:
 	- doesn't recycle (just beeps at 5 of 9)
@@ -37,6 +35,7 @@ SELECT path FROM Indexing, ImagePaths WHERE ImagePaths.hash == Indexing.hash ORD
 * Probably want to support margins on all sides
 * Preference for which directory to use.
 * May want a pref for rating scaling.
+* Compact database is awfully fast. Maybe it should just be run every hour.
 * Default to user's pictures directory.
 	- If that's empty could default to a shuffler directory with a few pics (have to make sure that they are not copy righted)
 	- maybe some wiki commons pictures

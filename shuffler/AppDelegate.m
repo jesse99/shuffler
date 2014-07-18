@@ -95,6 +95,12 @@ const NSUInteger MaxHistory = 500;
 
 - (IBAction)showInfo:(id)sender
 {
+	// Showing the database info should be relatively uncommon so
+	// we'll take the opportunity to clean up the database. Note
+	// that this is 1) in the background 2) very fast, 40K images
+	// takes under a second on a 2009 Mac Pro.
+	[self compactDatabase];
+	
 	[DatabaseInfoController show];
 }
 
@@ -251,8 +257,10 @@ const NSUInteger MaxHistory = 500;
 	}
 }
 
-- (void)compactDatabase:(id)sender
+- (void)compactDatabase
 {
+	LOG_NORMAL("compacting database");
+	
 	dispatch_queue_t concurrent = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	dispatch_queue_t main = dispatch_get_main_queue();
 	dispatch_async(concurrent,
@@ -267,18 +275,10 @@ const NSUInteger MaxHistory = 500;
 		   }
 		   
 		   int count = [self _compactDatabase:db];
+		   LOG_NORMAL("removed %d records", count);
 		   
 		   dispatch_async(main, ^{
-			   NSAlert* alert = [[NSAlert alloc] init];
-			   [alert setAlertStyle:NSInformationalAlertStyle];
-			   [alert setMessageText:@"Finished database compaction."];
-			   if (count > 1)
-				   [alert setInformativeText:[NSString stringWithFormat:@"Removed %d records where the image file no longer exists.", count]];
-			   else if (count == 1)
-				   [alert setInformativeText:@"Removed 1 record where the image file no longer exists."];
-			   else
-				   [alert setInformativeText:@"Didn't find any records with missing image files."];
-			   [alert runModal];
+			   [[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 		   });
 	   });
 }
@@ -291,7 +291,7 @@ const NSUInteger MaxHistory = 500;
 	// Enumerate path and hash from ImagePaths,
 	NSFileManager* fm = [NSFileManager defaultManager];
 	NSString* sql = @"SELECT path, hash FROM ImagePaths";
-	NSMutableArray* rows = [db queryRows:sql error:&error];	// TODO: would be faster to use a callback version of this
+	NSMutableArray* rows = [db queryRows:sql error:&error];
 	for (NSUInteger i = 0; rows && i < rows.count; ++i)
 	{
 		NSArray* row = rows[i];
