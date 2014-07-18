@@ -2,6 +2,7 @@
 
 #include "Carbon/Carbon.h"
 
+#import "Database.h"
 #import "DatabaseInfoController.h"
 #import "Files.h"
 #import "MainWindow.h"
@@ -14,6 +15,7 @@ const NSUInteger MaxHistory = 500;
 {
 	NSTimer* _timer;
 	UIController* _controller;
+	NSString* _dbPath;
 
 	NSMutableArray* _shown;
 	NSUInteger _index;
@@ -41,8 +43,8 @@ const NSUInteger MaxHistory = 500;
 	
 	NSString* root = [defaults stringForKey:@"root"];
 	root = [root stringByStandardizingPath];
-	NSString* dbPath = [root stringByAppendingPathComponent:@"shuffler.db"];
-	_controller = [[UIController alloc] init:_window dbPath:dbPath];
+	_dbPath = [root stringByAppendingPathComponent:@"shuffler.db"];
+	_controller = [[UIController alloc] init:_window dbPath:_dbPath];
 	
 	NSArray* tags = [[defaults arrayForKey:@"tags"] reverse];
 	for (NSString* tag in tags)
@@ -58,7 +60,7 @@ const NSUInteger MaxHistory = 500;
 	dispatch_queue_t main = dispatch_get_main_queue();
 	dispatch_async(concurrent,
 	   ^{
-		   Files* files = [[Files alloc] init:root dbPath:dbPath];
+		   Files* files = [[Files alloc] init:root dbPath:_dbPath];
 		 
 		   dispatch_async(main, ^{[self _displayInitial:files];});
 	   });
@@ -247,6 +249,84 @@ const NSUInteger MaxHistory = 500;
 	{
 		NSBeep();
 	}
+}
+
+- (void)compactDatabase:(id)sender
+{
+	dispatch_queue_t concurrent = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+	dispatch_queue_t main = dispatch_get_main_queue();
+	dispatch_async(concurrent,
+	   ^{
+		   NSError* error = nil;
+		   Database* db = [[Database alloc] initWithPath:_dbPath error:&error];
+		   if (!db)
+		   {
+			   LOG_ERROR("Couldn't create the database at '%s': %s", STR(_dbPath), STR(error.localizedFailureReason));
+			   NSBeep();
+			   return;
+		   }
+		   
+		   int count = [self _compactDatabase:db];
+		   
+		   dispatch_async(main, ^{
+			   NSAlert* alert = [[NSAlert alloc] init];
+			   [alert setAlertStyle:NSInformationalAlertStyle];
+			   [alert setMessageText:@"Finished database compaction."];
+			   if (count > 1)
+				   [alert setInformativeText:[NSString stringWithFormat:@"Removed %d records where the image file no longer exists.", count]];
+			   else if (count == 1)
+				   [alert setInformativeText:@"Removed 1 record where the image file no longer exists."];
+			   else
+				   [alert setInformativeText:@"Didn't find any records with missing image files."];
+			   [alert runModal];
+		   });
+	   });
+}
+
+- (int)_compactDatabase:(Database*)db
+{
+	int count = 0;
+	NSError* error = nil;
+	
+	// Enumerate path and hash from ImagePaths,
+	NSFileManager* fm = [NSFileManager defaultManager];
+	NSString* sql = @"SELECT path, hash FROM ImagePaths";
+	NSMutableArray* rows = [db queryRows:sql error:&error];	// TODO: would be faster to use a callback version of this
+	for (NSUInteger i = 0; rows && i < rows.count; ++i)
+	{
+		NSArray* row = rows[i];
+		NSString* path = row[0];
+		NSString* hash = row[1];
+		
+		// if path does not exist then,
+		if (![fm fileExistsAtPath:path])
+		{
+			// update ImagePaths,
+			path = [path stringByReplacingOccurrencesOfString:@"'" withString:@"''"];
+			[self _compactRow:db table:@"ImagePaths" key:@"path" value:path];
+			++count;
+			
+			// and if the hash is not empty then,
+			if (hash.length > 0)
+			{
+				// update Indexing and Appearance.
+				[self _compactRow:db table:@"Indexing" key:@"hash" value:hash];
+				[self _compactRow:db table:@"Appearance" key:@"hash" value:hash];
+			}
+		}
+	}
+	
+	if (error)
+		LOG_ERROR("Compaction error: %s", STR(error.localizedFailureReason));
+	return count;
+}
+
+- (void)_compactRow:(Database*)db table:(NSString*)table key:(NSString*)key value:(NSString*)value
+{
+	NSError* error = nil;
+	NSString* sql = [NSString stringWithFormat:@"DELETE FROM %@ WHERE %@=='%@'", table, key, value];
+	if (![db update:sql error:&error])
+		LOG_ERROR("Compaction error for row: %s", STR(error.localizedFailureReason));
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item

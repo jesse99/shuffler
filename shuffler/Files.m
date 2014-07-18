@@ -104,7 +104,7 @@ NSString* ratingToName(NSUInteger rating)
 // This would tell us if the image still belongs in _filtered
 // and where it belongs. But then we'd have to remove the old
 // entry which kind of sucks for poeple with lots of images
-// because it's O(N). 
+// because it's O(N).
 - (void)trashedFile:(NSString*)path withRating:(NSString*)rating
 {
 	NSArray* filtered;

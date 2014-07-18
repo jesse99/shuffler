@@ -1,4 +1,25 @@
-* Do a commit
+SELECT COUNT(hash) FROM Indexing WHERE rating >= 1 AND tags GLOB '*Dogs:*';
+
+SELECT path FROM Indexing, ImagePaths WHERE rating >= 1 AND tags GLOB '*Asian:*' AND ImagePaths.hash == Indexing.hash LIMIT 1 OFFSET 100
+
+SELECT path FROM Indexing, ImagePaths WHERE ImagePaths.hash == Indexing.hash ORDER BY RANDOM() LIMIT 1
+
+
+
+* Add a (threaded) compact option:
+	- pop up an alert saying how many records were removed
+	- be sure to pop up something sensible if nothing was removed
+* Maybe we should let the db handle state?
+	- could just do a query for random image
+	- or maybe build a temporary table? or a temp database?
+	- maybe database info could have its own db connection and use a thread
+* Trash should update the db
+* Showing great victoria images is fubar:
+	- doesn't recycle (just beeps at 5 of 9)
+* Maybe on updates we should just do a new query?
+	- crazy to do a full query
+	- maybe a partial query?
+* If uncategorized and rating or scaling is changed then set tags to none
 * Get Next and Previous menu items working
 * Scaling popup should say how much Max actually is
 * Don't think selectNewTag updates main menu
@@ -12,7 +33,7 @@
 * Need to watch the directory:
 	- need to special case trashFile
 	- or maybe just handle it as part of watching
-* May want an option to shift the picture a bit (put this in a menu?)
+* May want a preference to shift the picture a bit (put this in a menu?)
 * Probably want to support margins on all sides
 * Preference for which directory to use.
 * May want a pref for rating scaling.
@@ -27,7 +48,6 @@
 	` quickstart should mention where to find the file
 	` quickstart should talk about missing tags
 * Handle new files appearing.
-* Should have a Get Info command. Probably for the database as a whole.
 * Add some sort of auto update support.
 * Should we support a way to organize files by tag?
 	- old-shuffler has some ideas about this

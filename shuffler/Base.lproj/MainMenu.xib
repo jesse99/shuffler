@@ -112,6 +112,12 @@
                                     <action selector="showInfo:" target="Voe-Tx-rLC" id="Rx6-3e-75I"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Compact Database" id="6lo-La-svq">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="compactDatabase:" target="-1" id="h3O-Az-sUK"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="cqS-U1-KBD"/>
                             <menuItem title="Show Only Rating" id="Fcs-0Z-mT3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
