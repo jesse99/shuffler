@@ -55,12 +55,11 @@ NSString* ratingToName(NSUInteger rating)
 	NSString* _root;
 	Database* _database;
 	Glob* _glob;
-	NSMutableArray* _paths;
 	
-	NSUInteger _numFiltered;
-	NSMutableArray* _filtered[TopRating+1];		// [[path]]
-	NSUInteger _numShown[TopRating+1];			// [count]
-	NSUInteger _numTotal[TopRating+1];			// [count]
+	NSUInteger _currentRating;
+	NSArray* _currentTags;
+	bool _includeUncategorized;
+	NSUInteger _numShown[TopRating+1];	// [count]
 }
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath
@@ -76,14 +75,10 @@ NSString* ratingToName(NSUInteger rating)
 		NSArray* globs = @[@"*.tiff", @"*.gif", @"*.jpg", @"*.jpeg", @"*.pict", @"*.pdf", @"*.eps", @"*.png"];
 		_glob = [[Glob alloc] initWithGlobs:globs];
 		
-		_paths = [self _findPaths:dirPath database:_database];	// TODO: popup a directory picker if nothing was found
-
-		for (NSUInteger i = WorstRating + 1; i <= TopRating; ++i)
-		{
-			_filtered[i] = [[NSMutableArray alloc] initWithCapacity:1000];
-		}
-		_filtered[WorstRating] = [_paths mutableCopy];
-		_numFiltered = _paths.count;
+		_currentTags = @[];
+		_includeUncategorized = true;
+		
+		[self _addUncategorized:dirPath database:_database];	// TODO: popup a directory picker if nothing was found
 	}
 	
 	return self;
@@ -94,71 +89,94 @@ NSString* ratingToName(NSUInteger rating)
 	return _root;
 }
 
-// We update the stats used by the Database Info window but we don't
-// update _filtered. For example, if the user changes the tag to
-// Puppies or changes the rating from Great to Normal we'll leave
-// it in _filtered and may wind up showing it when we shouldn't.
-//
-// We could update _filtered. For example we could re-run the
-// query with the addition of ImagePaths.hash == image's hash.
-// This would tell us if the image still belongs in _filtered
-// and where it belongs. But then we'd have to remove the old
-// entry which kind of sucks for poeple with lots of images
-// because it's O(N).
-- (void)trashedFile:(NSString*)path withRating:(NSString*)rating
+- (void)trashedCategorizedFile:(NSString*)path withRating:(NSString*)rating
 {
-	NSArray* filtered;
-	
 	NSUInteger index = nameToRating(rating);
-	if (index == NormalRating)
-	{
-		filtered = _filtered[NormalRating];
-		if (![filtered containsObject:path])
-		{
-			index = UncategorizedRating;
-		}
-	}
-	
-	filtered = _filtered[index];
-	if (filtered.count > 0)			// only adjust the counts if we're using them
+	if (index >= _currentRating)
 	{
 		_numShown[index] -= 1;
-		_numTotal[index] -= 1;
-	}
 		
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+	}
 }
 
-- (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating for:(NSString*)path
+- (void)trashedUncategorizedFile:(NSString*)path
 {
-	NSArray* filtered;
+	if (_includeUncategorized)
+	{
+		_numShown[UncategorizedRating] -= 1;
+
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+	}
+}
+
+- (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating
+{
+	bool changed = false;
 	
 	NSUInteger index = nameToRating(oldRating);
-	if (index == NormalRating)
-	{
-		filtered = _filtered[NormalRating];
-		if (![filtered containsObject:path])
-		{
-			index = UncategorizedRating;
-		}
-	}
-
-	filtered = _filtered[index];
-	if (filtered.count > 0)			// only adjust the counts if we're using them
+	if (index >= _currentRating)
 	{
 		_numShown[index] -= 1;
-		_numTotal[index] -= 1;
-	}
-	
-	index = nameToRating(newRating);
-	filtered = _filtered[index];
-	if (filtered.count > 0)
-	{
-		_numShown[index] += 1;
-		_numTotal[index] += 1;
+		changed = true;
 	}
 
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+	index = nameToRating(newRating);
+	if (index >= _currentRating)
+	{
+		_numShown[index] += 1;
+		changed = true;
+	}
+	
+	if (changed)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+}
+
+- (void)changedUncategorizedToRating:(NSString*)rating
+{
+	bool changed = false;
+
+	if (_includeUncategorized)
+	{
+		_numShown[UncategorizedRating] -= 1;
+		changed = true;
+	}
+
+	NSUInteger index = nameToRating(rating);
+	if (index >= _currentRating)
+	{
+		_numShown[index] += 1;
+		changed = true;
+	}
+
+	if (changed)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+}
+
+// Note that this is main thread code.
+- (bool)filterBy:(NSString*)ratingName andTags:(NSArray*)tags includeUncategorized:(bool)includeUncategorized
+{
+	NSUInteger rating = nameToRating(ratingName);
+	if (rating != _currentRating || ![tags isEqualToArray:_currentTags] || includeUncategorized !=_includeUncategorized)
+	{
+		_currentRating = rating;
+		_currentTags = tags;
+		_includeUncategorized = includeUncategorized;
+		
+		for (NSUInteger i = 0; i <= TopRating; ++i)
+			_numShown[i] = 0;
+			
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+	}
+
+	NSString* sql = [NSString stringWithFormat:@"%@ LIMIT 1", [self _getCountQuery]];
+	NSUInteger count = [self _runCountQuery:sql];
+	if (count == 0 && _includeUncategorized)
+	{
+		sql = [NSString stringWithFormat:@"%@ LIMIT 1", [self _getCountUncategorizedQuery]];
+		count = [self _runCountQuery:sql];
+	}
+	return count > 0;
 }
 
 - (NSUInteger)numShownForRating:(NSUInteger)rating
@@ -170,167 +188,212 @@ NSString* ratingToName(NSUInteger rating)
 - (NSUInteger)totalForRating:(NSUInteger)rating
 {
 	ASSERT(rating <= TopRating);
-	return _numTotal[rating];
-}
-
-- (NSUInteger)numUnfiltered
-{
-	return _paths.count;
+	
+	NSString* name = ratingToName(rating);
+	NSString* sql = [self _getCountQueryForRating:name];
+	NSUInteger count = [self _runCountQuery:sql];
+	
+	return count;
 }
 
 - (NSUInteger)numFiltered
 {
-	return _numFiltered;
+	NSString* sql = [self _getCountQuery];
+	NSUInteger count = [self _runCountQuery:sql];
+	
+	if (_includeUncategorized)
+	{
+		sql = [NSString stringWithFormat:@"%@ LIMIT 1", [self _getCountUncategorizedQuery]];
+		count += [self _runCountQuery:sql];
+	}
+	
+	return count;
+}
+
+- (NSUInteger)numWithNoFilter
+{
+	NSString* sql = @"SELECT COUNT(path) FROM ImagePaths";
+	
+	return [self _runCountQuery:sql];
+}
+
+static long ratingToWeight(NSUInteger rating)
+{
+	long scaling = 5;			// fantastic images are 125x more likely to appear than normal images
+	
+	long weight = 1;
+	for (NSUInteger i = 0; i <= TopRating; ++i)
+	{
+		weight *= scaling;
+	}
+	
+	return weight;
 }
 
 - (NSString*)randomPath:(NSArray*)shown
 {
 	NSString* path = nil;
 	
-	if (_numFiltered > 0)
+	double startTime = getTime();
+	NSString* sql = nil;
+	if (_includeUncategorized && random() % 2 == 0)	// if we have uncategorized images we want to show them often
 	{
+		sql = [NSString stringWithFormat:@"%@ LIMIT 1", [self _getCountUncategorizedQuery]];
+		NSUInteger count = [self _runCountQuery:sql];
+		if (count > 0)
+			sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getUncategorizedQuery]];
+	}
+	if (!sql)
+		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getQuery]];
+
+	NSError* error = nil;
+	NSMutableArray* rows = [_database queryRows:sql error:&error];
+	if (rows)
+	{
+		long weight = ratingToWeight(TopRating);
+
 		NSFileManager* fm = [NSFileManager defaultManager];
-		
-		NSUInteger rating = [self _findRandomRating];
-		NSUInteger numRatings = TopRating - WorstRating + 1;
-		for (NSUInteger i = 0; i < numRatings && path == nil; ++i)
+		NSString* fallback = nil;
+		NSUInteger fallbackRating = 0;
+		for (NSUInteger i = 0; i < rows.count && path == nil; ++i)
 		{
-			NSArray* filtered = _filtered[rating];
-			if (filtered.count > 0)
+			NSArray* row = rows[i];
+			NSString* candidate = row[0];
+			if (![shown containsObject:candidate])
 			{
-				LOG_VERBOSE("   trying %s images", STR(ratingToName(rating)));
-				
-				NSUInteger offset = random() % filtered.count;
-				for (NSUInteger j = 0; j < filtered.count && path == nil; ++j)
+				if ([fm fileExistsAtPath:candidate])
 				{
-					NSUInteger index = (offset + j) % filtered.count;
-					NSString* candidate = filtered[index];
+					NSString* tmp = row[1];
+					NSUInteger rating = (NSUInteger) [tmp integerValue];
+					fallback = candidate;
+					fallbackRating = rating;
 					
-					// We'll get notified and rebuild our lists as files get deleted,
-					// but not immediately...
-					if (![shown containsObject:candidate])
+					weight -= ratingToWeight(rating);
+					if (weight <= 0)
 					{
-						if ([fm fileExistsAtPath:candidate])
-						{
-							path = candidate;
-							_numShown[rating] += 1;
-							
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
-						}
+						path = candidate;
+						_numShown[rating] += 1;
+						
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 					}
 				}
 			}
-			
-			if (--rating > TopRating)
-				rating = TopRating;
 		}
+		
+		if (!path && fallback)
+		{
+			LOG_NORMAL("Showing a path that has already been shown");
+			path = fallback;
+			_numShown[fallbackRating] += 1;
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+		}
+				
+		double elapsed = getTime() - startTime;
+		LOG_VERBOSE("ran '%s' in %.1fs", STR(sql), elapsed);
 	}
-
+	else
+	{
+		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
+	}
+	
 	return path;
 }
 
-- (NSUInteger)_findRandomRating
-{
-	ASSERT(TopRating - WorstRating + 1 == 5);	// or maxWeight is busted
-	
-	long scaling = 5;			// fantastic images are 625x more likely to appear than normal images
-	long maxWeight = scaling*scaling*scaling*scaling*scaling;
-	long weight = random() % maxWeight;
-	
-	for (NSUInteger i = WorstRating; i <= TopRating; ++i)
-	{
-		if (weight <= scaling)
-			return i;
-		else
-			weight /= scaling;
-	}
-	
-	return TopRating;
-}
-
-// Note that this is main thread code.
-- (bool)filterBy:(NSString*)rating andTags:(NSArray*)tags includeUncategorized:(bool)includeUncategorized
+- (NSUInteger)_runCountQuery:(NSString*)sql
 {
 	double startTime = getTime();
-	
-	_numFiltered = 0;
-	for (NSUInteger i = WorstRating; i <= TopRating; ++i)
-	{
-		NSMutableArray* filtered = _filtered[i];
-		[filtered removeAllObjects];
-		_numShown[i] = 0;
-		_numTotal[i] = 0;
-	}
-	
-	[self _addCategorized:rating andTags:tags];
-	if (includeUncategorized)
-		[self _addUnCategorized];
-	
-	double elapsed = getTime() - startTime;
-	if (_numFiltered > 0)
-		LOG_NORMAL("filtered %lu images to %lu images in %.1fs", _paths.count, _numFiltered, elapsed);
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
-
-	return _numFiltered > 0;
-}
-
-- (void)_addCategorized:(NSString*)rating andTags:(NSArray*)tags
-{
-	NSError* error = nil;
-	NSString* sql = [self _getQuery:rating andTags:tags];
-	NSMutableArray* rows = [_database queryRows:sql error:&error];
-	for (NSUInteger i = 0; rows && i < rows.count; ++i)
-	{
-		NSArray* row = rows[i];
-		NSString* path = row[0];
-		NSString* ii   = row[1];
-		
-		NSUInteger index = (NSUInteger) [ii integerValue];
-		if (index <= TopRating)		// should always be true...
-		{
-			NSMutableArray* filtered = _filtered[index];
-			[filtered addObject:path];
-			_numFiltered += 1;
-			_numTotal[index] += 1;
-		}
-	}
-
-	if (!rows)
-		LOG_ERROR("Categorized query failed: %s", STR(error.localizedFailureReason));
-}
-
-// Much faster to use separate queries for categorized and uncategorized.
-- (void)_addUnCategorized
-{
-	NSMutableArray* filtered = _filtered[TopRating];
 
 	NSError* error = nil;
-	NSString* sql = @"SELECT path FROM ImagePaths WHERE length(hash) == 0";
+	NSUInteger count = 0;
 	NSMutableArray* rows = [_database queryRows1:sql error:&error];
-	for (NSUInteger i = 0; rows && i < rows.count; ++i)
+	if (rows && rows.count == 1)
 	{
-		NSString* path = rows[i];
+		NSString* text = rows[0];
+		count = (NSUInteger) [text integerValue];
 		
-		[filtered addObject:path];
-		_numFiltered += 1;
-		_numTotal[TopRating] += 1;
+		double elapsed = getTime() - startTime;
+		LOG_VERBOSE("ran '%s' in %.1fs", STR(sql), elapsed);
+	}
+	else
+	{
+		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
 	}
 	
-	if (!rows)
-		LOG_ERROR("Uncategorized query failed: %s", STR(error.localizedFailureReason));
+	return count;
 }
 
-// This is where we get categorized paths, i.e. those with a rating and tags.
-- (NSString*)_getQuery:(NSString*)rating andTags:(NSArray*)tags
+- (NSString*)_getCountQueryForRating:(NSString*)rating
 {
 	NSMutableArray* predicates = [NSMutableArray new];
-
-	int level = (int) nameToRating(rating);
-	if (level > NormalRating)
-		[predicates addObject:[NSString stringWithFormat:@"rating >= %d", level]];
 	
-	NSArray* clauses = [self _getTagsClauses:tags];
+	int level = (int) nameToRating(rating);
+	[predicates addObject:[NSString stringWithFormat:@"rating == %d", level]];
+	
+	[self _addTagsPredicates:predicates];
+	[predicates addObject:@"Indexing.hash == ImagePaths.hash"];
+	
+	NSString* sql = [NSString stringWithFormat:@"SELECT COUNT(path) FROM Indexing, ImagePaths WHERE %@",
+					 [predicates componentsJoinedByString:@" AND "]];
+	LOG_VERBOSE("%s", STR(sql));
+	
+	return sql;
+}
+
+- (NSString*)_getCountQuery
+{
+	NSMutableArray* predicates = [NSMutableArray new];
+	
+	if (_currentRating > NormalRating)
+		[predicates addObject:[NSString stringWithFormat:@"rating >= %lu", (unsigned long)_currentRating]];
+	
+	[self _addTagsPredicates:predicates];
+	[predicates addObject:@"Indexing.hash == ImagePaths.hash"];
+	
+	NSString* sql = [NSString stringWithFormat:@"SELECT COUNT(path) FROM Indexing, ImagePaths WHERE %@",
+					 [predicates componentsJoinedByString:@" AND "]];
+	LOG_VERBOSE("%s", STR(sql));
+	
+	return sql;
+}
+
+- (NSString*)_getQuery
+{
+	NSMutableArray* predicates = [NSMutableArray new];
+	
+	if (_currentRating > NormalRating)
+		[predicates addObject:[NSString stringWithFormat:@"rating >= %lu", (unsigned long)_currentRating]];
+	
+	[self _addTagsPredicates:predicates];
+	[predicates addObject:@"Indexing.hash == ImagePaths.hash"];
+	
+	NSString* sql = [NSString stringWithFormat:@"SELECT path, rating FROM Indexing, ImagePaths WHERE %@",
+					 [predicates componentsJoinedByString:@" AND "]];
+	LOG_VERBOSE("%s", STR(sql));
+	
+	return sql;
+}
+
+// Much faster to do these via separate qeurries.
+- (NSString*)_getCountUncategorizedQuery
+{
+	NSString* sql = @"SELECT COUNT(path) FROM ImagePaths WHERE length(hash) == 0";
+	LOG_VERBOSE("%s", STR(sql));
+	
+	return sql;
+}
+
+- (NSString*)_getUncategorizedQuery
+{
+	NSString* sql = @"SELECT path, 0 FROM ImagePaths WHERE length(hash) == 0";
+	LOG_VERBOSE("%s", STR(sql));
+	
+	return sql;
+}
+
+- (void)_addTagsPredicates:(NSMutableArray*)predicates
+{
+	NSArray* clauses = [self _getTagsClauses:_currentTags];
 	if (clauses.count == 1)
 	{
 		[predicates addObject:clauses[0]];
@@ -340,14 +403,6 @@ NSString* ratingToName(NSUInteger rating)
 		NSString* clause = [clauses componentsJoinedByString:@" OR "];
 		[predicates addObject:[NSString stringWithFormat:@"(%@)", clause]];
 	}
-	
-	[predicates addObject:@"Indexing.hash == ImagePaths.hash"];
-
-	NSString* sql = [NSString stringWithFormat:@"SELECT path, rating FROM Indexing, ImagePaths WHERE %@",
-		[predicates componentsJoinedByString:@" AND "]];
-	LOG_VERBOSE("%s", STR(sql));
-	
-	return sql;
 }
 
 - (NSArray*)_getTagsClauses:(NSArray*)tags
@@ -364,19 +419,19 @@ NSString* ratingToName(NSUInteger rating)
 	return clauses;
 }
 
-- (NSMutableArray*)_findPaths:(NSString*)root database:(Database*)database;
+- (void)_addUncategorized:(NSString*)root database:(Database*)database;
 {
-	NSMutableArray* paths = [NSMutableArray new];
 	LOG_NORMAL("loading images from '%s'", STR(root));
 	double startTime = getTime();
 	
 	NSError* error = nil;
+	__block NSUInteger count = 0;
 	[self _enumerateDeepDir:root glob:_glob error:&error block:
 		^(NSString *path)
 		{
 			if ([_glob matchName:path.lastPathComponent] == 1)
 			{
-				[paths addObject:path];
+				++count;
 				[database insertOrIgnore:@"ImagePaths" values:@[path, @""]];
 			}
 			else
@@ -386,9 +441,7 @@ NSString* ratingToName(NSUInteger rating)
 		}];
 		
 	double elapsed = getTime() - startTime;
-	LOG_NORMAL("found %lu images in %.1fs", paths.count, elapsed);
-
-	return paths;
+	LOG_NORMAL("found %lu images in %.1fs", count, elapsed);
 }
 
 - (bool)_enumerateDeepDir:(NSString*)path glob:(Glob*)glob error:(NSError**)outError block:(void (^)(NSString* item))block

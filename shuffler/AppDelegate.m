@@ -76,7 +76,7 @@ const NSUInteger MaxHistory = 500;
 {
 	_files = files;
 		
-	if (_files && _files.numUnfiltered > 0)
+	if (_files && _files.numWithNoFilter > 0)
 		(void) [_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized];
 	
 	if (_files && _files.numFiltered > 0)
@@ -86,7 +86,7 @@ const NSUInteger MaxHistory = 500;
 	}
 	else
 	{
-		if (_files.numUnfiltered == 0)
+		if (_files.numWithNoFilter == 0)
 			[_controller.window setTitle:@"No Files"];
 		else
 			[_controller.window setTitle:@"No Matches"];

@@ -115,10 +115,16 @@
 
 - (void)trashedFile:(NSString*)path
 {
-	NSString* rating = [_ratingPopup titleOfSelectedItem];
-	
 	AppDelegate* app = [NSApp delegate];
-	[app.files trashedFile:path withRating:rating];
+	if (_tagsPopup.selectedItem)
+	{
+		NSString* rating = [_ratingPopup titleOfSelectedItem];
+		[app.files trashedCategorizedFile:path withRating:rating];
+	}
+	else
+	{
+		[app.files trashedUncategorizedFile:path];
+	}
 }
 
 - (IBAction)selectRating:(id)sender
@@ -126,8 +132,12 @@
 	NSString* newRating = [_ratingPopup titleOfSelectedItem];
 	if ([newRating compare:_rating] != NSOrderedSame)
 	{
-		AppDelegate* app = [NSApp delegate];
-		[app.files changedRatingFrom:_rating to:newRating for:_mainWindow.path];
+		// If it's still uncategorized we don't count the rating.
+		if (_tagsPopup.selectedItem)
+		{
+			AppDelegate* app = [NSApp delegate];
+			[app.files changedRatingFrom:_rating to:newRating];
+		}
 
 		if (_database)
 			[self _saveSettings];
@@ -149,6 +159,13 @@
 
 - (void)selectTag:(NSMenuItem*)sender
 {
+	if (!_tagsPopup.selectedItem)
+	{
+		AppDelegate* app = [NSApp delegate];
+		NSString* rating = [_ratingPopup titleOfSelectedItem];
+		[app.files changedUncategorizedToRating:rating];
+	}
+	
 	NSString* name = [sender title];
 	NSString* tags = [self _toggleTag:name];
 	[_tagsLabel setStringValue:tags];
@@ -159,6 +176,13 @@
 
 - (IBAction)selectNoneTag:(NSMenuItem*)sender
 {
+	if (!_tagsPopup.selectedItem)
+	{
+		AppDelegate* app = [NSApp delegate];
+		NSString* rating = [_ratingPopup titleOfSelectedItem];
+		[app.files changedUncategorizedToRating:rating];
+	}
+	
 	[_tagsLabel setStringValue:@"None"];
 	if (_database)
 		[self _saveSettings];

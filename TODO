@@ -11,7 +11,18 @@ SELECT path FROM Indexing, ImagePaths WHERE ImagePaths.hash == Indexing.hash ORD
 	- max is a query
 	- filtered is as now except using limited random query
 	- if fail to find unshown image, pick the first
+* Need to put togther a directory with new images.
+	- dektop wallpaper
+	- might be able to download straight from google search
+	  see http://stackoverflow.com/questions/22866579/download-images-with-google-custom-search-api
+	- http://api.imgur.com/
+	- http://melloristudio.com/wallch/1000-HD-Wallpapers
+	- http://www.vladstudio.com/wallpaperclocks/browse.php
+* Is extending the timer when a UI change is made actually working?
+* Look at some other apps:
+	- http://www.webupd8.org/2011/01/download-collection-of-1000-widescreen.html has a list
 * Trash should update the db
+	- also if we try a file and it is missing
 * Showing great victoria images is fubar:
 	- doesn't recycle (just beeps at 5 of 9)
 * Maybe on updates we should just do a new query?

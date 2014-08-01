@@ -11,15 +11,18 @@ NSString* ratingToName(NSUInteger rating);
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath;
 
-- (void)trashedFile:(NSString*)path withRating:(NSString*)rating;
-- (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating for:(NSString*)path;
+- (void)trashedCategorizedFile:(NSString*)path withRating:(NSString*)rating;
+- (void)trashedUncategorizedFile:(NSString*)path;
+
+- (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating;
+- (void)changedUncategorizedToRating:(NSString*)rating;
 
 - (bool)filterBy:(NSString*)rating andTags:(NSArray*)tag includeUncategorized:(bool)withUncategorized;
 
 - (NSString*)root;
 - (NSString*)randomPath:(NSArray*)shown;
 
-- (NSUInteger)numUnfiltered;
+- (NSUInteger)numWithNoFilter;
 - (NSUInteger)numFiltered;
 
 - (NSUInteger)numShownForRating:(NSUInteger)rating;
