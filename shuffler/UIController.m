@@ -116,7 +116,7 @@
 - (void)trashedFile:(NSString*)path
 {
 	AppDelegate* app = [NSApp delegate];
-	if (_tagsPopup.selectedItem)
+	if (_tagsLabel.stringValue.length > 0)
 	{
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
 		[app.files trashedCategorizedFile:path withRating:rating];
@@ -133,7 +133,7 @@
 	if ([newRating compare:_rating] != NSOrderedSame)
 	{
 		// If it's still uncategorized we don't count the rating.
-		if (_tagsPopup.selectedItem)
+		if (_tagsLabel.stringValue.length > 0)
 		{
 			AppDelegate* app = [NSApp delegate];
 			[app.files changedRatingFrom:_rating to:newRating];
@@ -159,7 +159,7 @@
 
 - (void)selectTag:(NSMenuItem*)sender
 {
-	if (!_tagsPopup.selectedItem)
+	if (_tagsLabel.stringValue.length == 0)
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
@@ -176,7 +176,7 @@
 
 - (IBAction)selectNoneTag:(NSMenuItem*)sender
 {
-	if (!_tagsPopup.selectedItem)
+	if (_tagsLabel.stringValue.length == 0)
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];

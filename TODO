@@ -1,21 +1,11 @@
-SELECT COUNT(hash) FROM Indexing WHERE rating >= 1 AND tags GLOB '*Dogs:*';
-
-SELECT path FROM Indexing, ImagePaths WHERE rating >= 1 AND tags GLOB '*Dogs:*' AND ImagePaths.hash == Indexing.hash LIMIT 1 OFFSET 100
-
-SELECT path FROM Indexing, ImagePaths WHERE ImagePaths.hash == Indexing.hash ORDER BY RANDOM() LIMIT 1
-
-
-
-* Maybe we should let the db handle state?
-	- shown works as now
-	- max is a query
-	- filtered is as now except using limited random query
-	- if fail to find unshown image, pick the first
+* Do a commit
+* Database, not preferences, should include tags.
+	- need to manually update the old db
+* Think the show only menu titles need to change.
 * Need to put togther a directory with new images.
-	- dektop wallpaper
+	- http://api.imgur.com/
 	- might be able to download straight from google search
 	  see http://stackoverflow.com/questions/22866579/download-images-with-google-custom-search-api
-	- http://api.imgur.com/
 	- http://melloristudio.com/wallch/1000-HD-Wallpapers
 	- http://www.vladstudio.com/wallpaperclocks/browse.php
 * Is extending the timer when a UI change is made actually working?
@@ -25,11 +15,9 @@ SELECT path FROM Indexing, ImagePaths WHERE ImagePaths.hash == Indexing.hash ORD
 	- also if we try a file and it is missing
 * Showing great victoria images is fubar:
 	- doesn't recycle (just beeps at 5 of 9)
-* Maybe on updates we should just do a new query?
-	- crazy to do a full query
-	- maybe a partial query?
 * If uncategorized and rating or scaling is changed then set tags to none
 * Get Next and Previous menu items working
+* Probably should persist shown paths in the database.
 * Scaling popup should say how much Max actually is
 * Don't think selectNewTag updates main menu
 * Get Interval submenu working

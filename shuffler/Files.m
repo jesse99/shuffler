@@ -49,7 +49,7 @@ NSString* ratingToName(NSUInteger rating)
 	ASSERT(false);
 }
 
-// Note that these are created within a thread and then handed off to the main thread.
+// This is created within a thread and then handed off to the main thread.
 @implementation Files
 {
 	NSString* _root;
@@ -189,10 +189,18 @@ NSString* ratingToName(NSUInteger rating)
 {
 	ASSERT(rating <= TopRating);
 	
-	NSString* name = ratingToName(rating);
-	NSString* sql = [self _getCountQueryForRating:name];
-	NSUInteger count = [self _runCountQuery:sql];
+	NSString* sql;
+	if (rating != UncategorizedRating)
+	{
+		NSString* name = ratingToName(rating);
+		sql = [self _getCountQueryForRating:name];
+	}
+	else
+	{
+		sql = [self _getCountUncategorizedQuery];
+	}
 	
+	NSUInteger count = [self _runCountQuery:sql];
 	return count;
 }
 
@@ -203,7 +211,7 @@ NSString* ratingToName(NSUInteger rating)
 	
 	if (_includeUncategorized)
 	{
-		sql = [NSString stringWithFormat:@"%@ LIMIT 1", [self _getCountUncategorizedQuery]];
+		sql = [self _getCountUncategorizedQuery];
 		count += [self _runCountQuery:sql];
 	}
 	
@@ -222,7 +230,7 @@ static long ratingToWeight(NSUInteger rating)
 	long scaling = 5;			// fantastic images are 125x more likely to appear than normal images
 	
 	long weight = 1;
-	for (NSUInteger i = 0; i <= TopRating; ++i)
+	for (NSUInteger i = NormalRating; i <= TopRating; ++i)
 	{
 		weight *= scaling;
 	}
@@ -235,20 +243,20 @@ static long ratingToWeight(NSUInteger rating)
 	NSString* path = nil;
 	
 	double startTime = getTime();
-	NSString* sql = nil;
-	if (_includeUncategorized && random() % 2 == 0)	// if we have uncategorized images we want to show them often
-	{
-		sql = [NSString stringWithFormat:@"%@ LIMIT 1", [self _getCountUncategorizedQuery]];
-		NSUInteger count = [self _runCountQuery:sql];
-		if (count > 0)
-			sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getUncategorizedQuery]];
-	}
-	if (!sql)
-		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getQuery]];
-
+	NSMutableArray* rows = [NSMutableArray new];
+	
 	NSError* error = nil;
-	NSMutableArray* rows = [_database queryRows:sql error:&error];
-	if (rows)
+	NSString* sql;
+	if (_includeUncategorized)
+	{
+		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getUncategorizedQuery]];
+		[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
+	}
+	
+	sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getQuery]];
+	[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
+
+	if (rows && rows.count > 0)
 	{
 		long weight = ratingToWeight(TopRating);
 
@@ -259,15 +267,15 @@ static long ratingToWeight(NSUInteger rating)
 		{
 			NSArray* row = rows[i];
 			NSString* candidate = row[0];
-			if (![shown containsObject:candidate])
+			if ([fm fileExistsAtPath:candidate])
 			{
-				if ([fm fileExistsAtPath:candidate])
+				NSString* tmp = row[1];
+				NSUInteger rating = (NSUInteger) [tmp integerValue];
+				fallback = candidate;
+				fallbackRating = rating;
+				
+				if (![shown containsObject:candidate])
 				{
-					NSString* tmp = row[1];
-					NSUInteger rating = (NSUInteger) [tmp integerValue];
-					fallback = candidate;
-					fallbackRating = rating;
-					
 					weight -= ratingToWeight(rating);
 					if (weight <= 0)
 					{
@@ -290,7 +298,7 @@ static long ratingToWeight(NSUInteger rating)
 		}
 				
 		double elapsed = getTime() - startTime;
-		LOG_VERBOSE("ran '%s' in %.1fs", STR(sql), elapsed);
+		LOG_VERBOSE("ran queries in %.1fs", elapsed);
 	}
 	else
 	{
@@ -302,8 +310,6 @@ static long ratingToWeight(NSUInteger rating)
 
 - (NSUInteger)_runCountQuery:(NSString*)sql
 {
-	double startTime = getTime();
-
 	NSError* error = nil;
 	NSUInteger count = 0;
 	NSMutableArray* rows = [_database queryRows1:sql error:&error];
@@ -311,9 +317,6 @@ static long ratingToWeight(NSUInteger rating)
 	{
 		NSString* text = rows[0];
 		count = (NSUInteger) [text integerValue];
-		
-		double elapsed = getTime() - startTime;
-		LOG_VERBOSE("ran '%s' in %.1fs", STR(sql), elapsed);
 	}
 	else
 	{
@@ -335,7 +338,6 @@ static long ratingToWeight(NSUInteger rating)
 	
 	NSString* sql = [NSString stringWithFormat:@"SELECT COUNT(path) FROM Indexing, ImagePaths WHERE %@",
 					 [predicates componentsJoinedByString:@" AND "]];
-	LOG_VERBOSE("%s", STR(sql));
 	
 	return sql;
 }
@@ -352,7 +354,6 @@ static long ratingToWeight(NSUInteger rating)
 	
 	NSString* sql = [NSString stringWithFormat:@"SELECT COUNT(path) FROM Indexing, ImagePaths WHERE %@",
 					 [predicates componentsJoinedByString:@" AND "]];
-	LOG_VERBOSE("%s", STR(sql));
 	
 	return sql;
 }
@@ -378,14 +379,13 @@ static long ratingToWeight(NSUInteger rating)
 - (NSString*)_getCountUncategorizedQuery
 {
 	NSString* sql = @"SELECT COUNT(path) FROM ImagePaths WHERE length(hash) == 0";
-	LOG_VERBOSE("%s", STR(sql));
 	
 	return sql;
 }
 
 - (NSString*)_getUncategorizedQuery
 {
-	NSString* sql = @"SELECT path, 0 FROM ImagePaths WHERE length(hash) == 0";
+	NSString* sql = @"SELECT path, 4 FROM ImagePaths WHERE length(hash) == 0";	// 4 == uncategorized
 	LOG_VERBOSE("%s", STR(sql));
 	
 	return sql;

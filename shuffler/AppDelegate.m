@@ -33,6 +33,9 @@ const NSUInteger MaxHistory = 500;
 		@"tags": @[@"Animals", @"Art", @"Celebrities", @"Fantasy", @"Movies", @"Nature", @"Sports"],
 		@"root": @"~/Pictures"};
 	[defaults registerDefaults:initialSettings];
+	
+//	[defaults setObject:@"/Users/jessejones/Documents/1000 HD Wallpapers (By Mellori Studio)" forKey:@"root"];
+//	[defaults synchronize];
 		
 	_rating = @"Normal";
 	_tags = [NSMutableArray new];
