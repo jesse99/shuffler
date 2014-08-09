@@ -289,7 +289,7 @@ static long ratingToWeight(NSUInteger rating)
 {
 	NSString* path = nil;
 	
-	double startTime = getTime();
+//	double startTime = getTime();
 	NSMutableArray* rows = [NSMutableArray new];
 	
 	NSError* error = nil;
@@ -350,8 +350,8 @@ static long ratingToWeight(NSUInteger rating)
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 		}
 				
-		double elapsed = getTime() - startTime;
-		LOG_VERBOSE("ran queries in %.1fs", elapsed);
+//		double elapsed = getTime() - startTime;
+//		LOG_VERBOSE("ran queries in %.1fs", elapsed);
 	}
 	else
 	{
@@ -423,7 +423,7 @@ static long ratingToWeight(NSUInteger rating)
 	
 	NSString* sql = [NSString stringWithFormat:@"SELECT path, rating FROM Indexing, ImagePaths WHERE %@",
 					 [predicates componentsJoinedByString:@" AND "]];
-	LOG_VERBOSE("%s", STR(sql));
+	//LOG_VERBOSE("%s", STR(sql));
 	
 	return sql;
 }
@@ -439,7 +439,7 @@ static long ratingToWeight(NSUInteger rating)
 - (NSString*)_getUncategorizedQuery
 {
 	NSString* sql = @"SELECT path, 4 FROM ImagePaths WHERE length(hash) == 0";	// 4 == uncategorized
-	LOG_VERBOSE("%s", STR(sql));
+	//LOG_VERBOSE("%s", STR(sql));
 	
 	return sql;
 }
