@@ -39,7 +39,7 @@ const NSUInteger MaxHistory = 500;
 	_tags = [NSMutableArray new];
 	_includeUncategorized = true;
 	
-	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(_nextImage) userInfo:nil repeats:true];
+	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(nextImage:) userInfo:nil repeats:true];
 	_shown = [NSMutableArray new];
 	
 	NSString* root = [defaults stringForKey:@"root"];
@@ -82,7 +82,7 @@ const NSUInteger MaxHistory = 500;
 	
 	if (_files && _files.numFiltered > 0)
 	{
-		[self _nextImage];
+		[self nextImage:self];
 		[self.window display];		// not sure why we need this, but without it we don't see the very first image
 	}
 	else
@@ -138,7 +138,7 @@ const NSUInteger MaxHistory = 500;
 		[_shown removeObjectAtIndex:_index];
 		--_index;
 		
-		[self _nextImage];
+		[self nextImage:self];
 		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 		
 		NSURL* url = [[NSURL alloc] initFileURLWithPath:path];
@@ -214,7 +214,7 @@ const NSUInteger MaxHistory = 500;
 		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
-- (void)_nextImage
+- (IBAction)nextImage:(id)sender
 {
 	if (_files)
 	{
@@ -237,7 +237,7 @@ const NSUInteger MaxHistory = 500;
 				_index = _shown.count - 1;
 			}
 		}
-
+		
 		if (path)
 		{
 			[_controller setPath:path];
@@ -250,7 +250,7 @@ const NSUInteger MaxHistory = 500;
 	}
 }
 
-- (void)_prevImage
+- (IBAction)prevImage:(id)sender
 {
 	if (_index > 0)
 	{
@@ -366,12 +366,12 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
     switch (key.id)
 	{
         case 1:
-			[delegate _prevImage];
+			[delegate prevImage:delegate];
 			[delegate->_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 			break;
 			
         case 2:
-			[delegate _nextImage];
+			[delegate nextImage:delegate];
 			[delegate->_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 			break;
     }

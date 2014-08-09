@@ -103,9 +103,15 @@
                         <items>
                             <menuItem title="Next" keyEquivalent="" id="ElD-bB-OH3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="nextImage:" target="Voe-Tx-rLC" id="LU1-YB-WZ4"/>
+                                </connections>
                             </menuItem>
                             <menuItem title="Previous" keyEquivalent="" id="UH5-ea-bvj">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="prevImage:" target="Voe-Tx-rLC" id="jpQ-15-MGL"/>
+                                </connections>
                             </menuItem>
                             <menuItem title="Database Info" keyEquivalent="i" id="o9m-91-smV">
                                 <connections>
