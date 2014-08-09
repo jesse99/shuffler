@@ -566,7 +566,6 @@ static long ratingToWeight(NSUInteger rating)
 			[_database insertOrIgnore:@"Tags" values:@[@"Art"]];
 			[_database insertOrIgnore:@"Tags" values:@[@"Celebrities"]];
 			[_database insertOrIgnore:@"Tags" values:@[@"Fantasy"]];
-			[_database insertOrIgnore:@"Tags" values:@[@"General"]];
 			[_database insertOrIgnore:@"Tags" values:@[@"Nature"]];
 			[_database insertOrIgnore:@"Tags" values:@[@"Sports"]];
 		}

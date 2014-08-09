@@ -1,5 +1,4 @@
-* Don't think we should have a General tag
-	- not in the database or the default
+* Setting an uncategorized tag doesn't decrement total uncategoried.
 * Get Next and Previous menu items working
 * Probably should persist shown paths in the database.
 	- but how do we limit this?
