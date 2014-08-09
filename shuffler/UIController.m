@@ -129,8 +129,9 @@
 
 - (IBAction)selectRating:(id)sender
 {
+	NSString* oldRating = [_rating copy];
 	NSString* newRating = [_ratingPopup titleOfSelectedItem];
-	if ([newRating compare:_rating] != NSOrderedSame)
+	if ([newRating compare:oldRating] != NSOrderedSame)
 	{
 		_rating = newRating;
 
@@ -145,10 +146,10 @@
 		}
 		else
 		{
-			[app.files changedRatingFrom:_rating to:newRating];
-			
 			if (_database)
 				[self _saveSettings];
+
+			[app.files changedRatingFrom:oldRating to:newRating];
 		}
 	}
 }
@@ -168,33 +169,37 @@
 
 - (void)selectTag:(NSMenuItem*)sender
 {
-	if (_tagsLabel.stringValue.length == 0)
-	{
-		AppDelegate* app = [NSApp delegate];
-		NSString* rating = [_ratingPopup titleOfSelectedItem];
-		[app.files changedUncategorizedToCategorized:rating];
-	}
+	bool wasUncategorized = _tagsLabel.stringValue.length == 0;
 	
 	NSString* name = [sender title];
 	NSString* tags = [self _toggleTag:name];
 	[_tagsLabel setStringValue:tags];
 
 	if (_database)
-		[self _saveSettings];
-}
+		[self _saveSettings];	// this is what saves the new hash into the database
 
-- (IBAction)selectNoneTag:(NSMenuItem*)sender
-{
-	if (_tagsLabel.stringValue.length == 0)
+	if (wasUncategorized)
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
 		[app.files changedUncategorizedToCategorized:rating];
 	}
+}
+
+- (IBAction)selectNoneTag:(NSMenuItem*)sender
+{
+	bool wasUncategorized = _tagsLabel.stringValue.length == 0;
 	
 	[_tagsLabel setStringValue:@"None"];
 	if (_database)
 		[self _saveSettings];
+
+	if (wasUncategorized)
+	{
+		AppDelegate* app = [NSApp delegate];
+		NSString* rating = [_ratingPopup titleOfSelectedItem];
+		[app.files changedUncategorizedToCategorized:rating];
+	}
 }
 
 - (IBAction)selectNewTag:(NSMenuItem*)sender

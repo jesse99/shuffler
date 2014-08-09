@@ -1,7 +1,8 @@
-* Setting an uncategorized tag doesn't decrement total uncategoried.
-* Get Next and Previous menu items working
+* Showing paths that have already been shown quite a bit.
 * Probably should persist shown paths in the database.
 	- but how do we limit this?
+	- could reset it on quit
+	- then load it on startup
 * Scaling popup should say how much Max actually is
 * Don't think selectNewTag updates main menu
 * Get Interval submenu working
