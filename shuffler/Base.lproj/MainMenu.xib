@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
     </dependencies>
@@ -113,9 +113,9 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="cqS-U1-KBD"/>
-                            <menuItem title="Show Only Rating" id="Fcs-0Z-mT3">
+                            <menuItem title="Show Rating" id="Fcs-0Z-mT3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Show Only Rating" id="37B-TN-Xqq">
+                                <menu key="submenu" title="Show Rating" id="37B-TN-Xqq">
                                     <items>
                                         <menuItem title="Normal" id="LAl-Ve-ttm">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -144,9 +144,9 @@
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem title="Show Only Tags" id="aYw-95-Coy">
+                            <menuItem title="Show Tags" id="aYw-95-Coy">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Show Only Tags" id="WNN-2h-sfS">
+                                <menu key="submenu" title="Show Tags" id="WNN-2h-sfS">
                                     <items>
                                         <menuItem title="None" id="snu-N0-UBf">
                                             <modifierMask key="keyEquivalentModifierMask"/>
