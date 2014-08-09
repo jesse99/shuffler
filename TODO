@@ -1,5 +1,3 @@
-* Trash should update the db
-	- also if we try a file and it is missing
 * If uncategorized and rating or scaling is changed then set tags to none
 * Get Next and Previous menu items working
 * Probably should persist shown paths in the database.

@@ -96,6 +96,7 @@ NSString* ratingToName(NSUInteger rating)
 	{
 		_numShown[index] -= 1;
 		
+		[self _removePathFromDatabase:path];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 	}
 }
@@ -107,7 +108,45 @@ NSString* ratingToName(NSUInteger rating)
 		if (_numShown[UncategorizedRating] > 0)		// this can be zero if we've just changed how we are filtering
 			_numShown[UncategorizedRating] -= 1;
 
+		[self _removePathFromDatabase:path];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+	}
+}
+
+- (void)_removePathFromDatabase:(NSString*)path
+{
+	NSString* hash = @"";
+	NSError* error = nil;
+	NSString* sql = [NSString stringWithFormat:@"SELECT hash FROM ImagePaths WHERE path == \"%@\"", path];
+	NSMutableArray* rows = [_database queryRows1:sql error:&error];
+	if (rows && rows.count == 1)
+	{
+		hash = rows[0];
+	}
+	else
+	{
+		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
+	}
+	
+	if (hash.length > 0)
+	{
+		sql = [NSString stringWithFormat:@"DELETE FROM Appearance WHERE hash == \"%@\"", hash];
+		if (![_database update:sql error:&error])
+		{
+			LOG_ERROR("'%s' update failed: %s", STR(sql), STR(error.localizedFailureReason));
+		}
+
+		sql = [NSString stringWithFormat:@"DELETE FROM Indexing WHERE hash == \"%@\"", hash];
+		if (![_database update:sql error:&error])
+		{
+			LOG_ERROR("'%s' update failed: %s", STR(sql), STR(error.localizedFailureReason));
+		}
+	}
+
+	sql = [NSString stringWithFormat:@"DELETE FROM ImagePaths WHERE path == \"%@\"", path];
+	if (![_database update:sql error:&error])
+	{
+		LOG_ERROR("'%s' update failed: %s", STR(sql), STR(error.localizedFailureReason));
 	}
 }
 
@@ -295,6 +334,10 @@ static long ratingToWeight(NSUInteger rating)
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 					}
 				}
+			}
+			else
+			{
+				[self _removePathFromDatabase:candidate];
 			}
 		}
 		
