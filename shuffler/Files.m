@@ -172,7 +172,7 @@ NSString* ratingToName(NSUInteger rating)
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 }
 
-- (void)changedUncategorizedToRating:(NSString*)rating
+- (void)changedUncategorizedToCategorized:(NSString*)rating
 {
 	bool changed = false;
 

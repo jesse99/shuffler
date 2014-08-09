@@ -132,17 +132,24 @@
 	NSString* newRating = [_ratingPopup titleOfSelectedItem];
 	if ([newRating compare:_rating] != NSOrderedSame)
 	{
-		// If it's still uncategorized we don't count the rating.
-		if (_tagsLabel.stringValue.length > 0)
-		{
-			AppDelegate* app = [NSApp delegate];
-			[app.files changedRatingFrom:_rating to:newRating];
-		}
-
-		if (_database)
-			[self _saveSettings];
-		
 		_rating = newRating;
+
+		AppDelegate* app = [NSApp delegate];
+		if (_tagsLabel.stringValue.length == 0)
+		{
+			// If the user edits an uncategorized file then it's nice
+			// to move it out of uncategorized. This will make the Info
+			// window a bit nicer and save the user from having to set
+			// the tag (sometimes anyway).
+			[self selectNoneTag:nil];
+		}
+		else
+		{
+			[app.files changedRatingFrom:_rating to:newRating];
+			
+			if (_database)
+				[self _saveSettings];
+		}
 	}
 }
 
@@ -153,7 +160,9 @@
 	NSData* data = [NSData dataWithContentsOfFile:_mainWindow.path];
 	[_mainWindow update:_mainWindow.path imageData:data scaling:scaling];
 
-	if (_database)
+	if (_tagsLabel.stringValue.length == 0)
+		[self selectNoneTag:nil];
+	else if (_database)
 		[self _saveSettings];
 }
 
@@ -163,7 +172,7 @@
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
-		[app.files changedUncategorizedToRating:rating];
+		[app.files changedUncategorizedToCategorized:rating];
 	}
 	
 	NSString* name = [sender title];
@@ -180,7 +189,7 @@
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
-		[app.files changedUncategorizedToRating:rating];
+		[app.files changedUncategorizedToCategorized:rating];
 	}
 	
 	[_tagsLabel setStringValue:@"None"];

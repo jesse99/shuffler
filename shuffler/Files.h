@@ -15,7 +15,7 @@ NSString* ratingToName(NSUInteger rating);
 - (void)trashedUncategorizedFile:(NSString*)path;
 
 - (void)changedRatingFrom:(NSString*)oldRating to:(NSString*)newRating;
-- (void)changedUncategorizedToRating:(NSString*)rating;
+- (void)changedUncategorizedToCategorized:(NSString*)rating;
 
 - (bool)filterBy:(NSString*)rating andTags:(NSArray*)tag includeUncategorized:(bool)withUncategorized;
 

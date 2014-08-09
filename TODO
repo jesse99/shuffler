@@ -1,9 +1,12 @@
-* If uncategorized and rating or scaling is changed then set tags to none
+* Don't think we should have a General tag
+	- not in the database or the default
 * Get Next and Previous menu items working
 * Probably should persist shown paths in the database.
+	- but how do we limit this?
 * Scaling popup should say how much Max actually is
 * Don't think selectNewTag updates main menu
 * Get Interval submenu working
+* Kinf of annoying that rating and scaling and tags are reset after editing the picture.
 * Support other images menu items.
 * Should disable UI window while scanning.
 * Seems to be a bit of a race when changing a setting and timer firing
