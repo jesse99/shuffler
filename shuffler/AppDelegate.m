@@ -239,9 +239,14 @@ const NSUInteger MaxHistory = 500;
 		}
 
 		if (path)
+		{
 			[_controller setPath:path];
+			[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+		}
 		else
+		{
 			NSBeep();
+		}
 	}
 }
 
@@ -251,6 +256,7 @@ const NSUInteger MaxHistory = 500;
 	{
 		NSString* path = _shown[--_index];
 		[_controller setPath:path];
+		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 	}
 	else
 	{
