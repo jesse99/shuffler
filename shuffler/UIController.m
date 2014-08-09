@@ -194,17 +194,43 @@
 	NSInteger button = [NSApp runModalForWindow:controller.window];
 	if (button == NSOKButton)
 	{
-		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-		NSMutableArray* tags = [[defaults objectForKey:@"tags"] mutableCopy];
-		[tags addObject:controller.textField.stringValue];
-		[tags sortUsingSelector:@selector(compare:)];
-		
-		[defaults setObject:tags forKey:@"tags"];
-		[defaults synchronize];
+		[self _addTag:controller.textField.stringValue];
 		
 		[self _clearTagsMenu];
 		[self _populateTagsMenu];
 	}
+}
+
+- (void)_addTag:(NSString*)tag
+{
+	if (_database)
+	{
+		NSError* error = nil;
+		tag = [_database escapeValue:tag];
+		NSString* sql = [NSString stringWithFormat:@"INSERT INTO Tags VALUES (\"%@\");", tag];
+		if (![_database update:sql error:&error])
+		{
+			LOG_ERROR("'%s' failed: %s", STR(sql), STR(error.localizedFailureReason));
+		}
+	}
+}
+
+- (NSArray*)getDatabaseTags
+{
+	NSArray* tags = nil;
+	
+	if (_database)
+	{
+		NSError* error = nil;
+		NSString* sql = @"SELECT name FROM Tags ORDER BY name";
+		tags = [_database queryRows1:sql error:&error];
+		if (!tags)
+		{
+			LOG_ERROR("'%s' failed: %s", STR(sql), STR(error.localizedFailureReason));
+		}
+	}
+	
+	return tags != nil ? tags : @[];
 }
 
 - (void)_clearTagsMenu
@@ -221,8 +247,7 @@
 
 - (void)_populateTagsMenu
 {
-	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	NSArray* tags = [defaults objectForKey:@"tags"];
+	NSArray* tags = [self getDatabaseTags];
 	for (NSUInteger i = tags.count - 1; i < tags.count; --i)
 	{
 		[_tagsMenu insertItemWithTitle:tags[i] action:@selector(selectTag:) keyEquivalent:@"" atIndex:2];
@@ -349,10 +374,16 @@
 		
 		if (created)
 			created = [database update:@"\
-				CREATE TABLE IF NOT EXISTS ImagePaths(\
-				   path TEXT NOT NULL PRIMARY KEY\
-				      CONSTRAINT absolute_path CHECK(substr(path, 1, 1) = '/'),\
-				   hash TEXT NOT NULL\
+					   CREATE TABLE IF NOT EXISTS ImagePaths(\
+					   path TEXT NOT NULL PRIMARY KEY\
+					   CONSTRAINT absolute_path CHECK(substr(path, 1, 1) = '/'),\
+					   hash TEXT NOT NULL\
+					   )" error:&error];
+		
+		if (created)
+			created = [database update:@"\
+				CREATE TABLE IF NOT EXISTS Tags(\
+				   name TEXT NOT NULL PRIMARY KEY\
 				)" error:&error];
 		
 		if (!created)

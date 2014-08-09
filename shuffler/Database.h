@@ -23,6 +23,9 @@
 - (void)insertOrReplace:(NSString*)table values:(NSArray*)values;
 - (void)insertOrIgnore:(NSString*)table values:(NSArray*)values;
 
+// Replaces problematic characters for strings used within a VALUES clause.
+- (NSString*)escapeValue:(NSString*)value;
+
 // TODO: Continuum's Database class had some features that we may
 // want to add:
 // 1) Transactions (the Update method that took a callback).

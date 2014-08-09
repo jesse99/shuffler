@@ -1,6 +1,4 @@
 * Do a commit
-* Database, not preferences, should include tags.
-	- need to manually update the old db
 * Think the show only menu titles need to change.
 * Need to put togther a directory with new images.
 	- http://api.imgur.com/

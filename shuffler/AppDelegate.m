@@ -29,12 +29,10 @@ const NSUInteger MaxHistory = 500;
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	NSDictionary* initialSettings = @{
-		@"tags": @[@"Animals", @"Art", @"Celebrities", @"Fantasy", @"Movies", @"Nature", @"Sports"],
-		@"root": @"~/Pictures"};
+	NSDictionary* initialSettings = @{@"root": @"~/Pictures"};
 	[defaults registerDefaults:initialSettings];
 	
-//	[defaults setObject:@"/Users/jessejones/Documents/1000 HD Wallpapers (By Mellori Studio)" forKey:@"root"];
+	//	[defaults setObject:@"/Users/jessejones/Documents/1000 HD Wallpapers (By Mellori Studio)" forKey:@"root"];
 //	[defaults synchronize];
 		
 	_rating = @"Normal";
@@ -49,7 +47,7 @@ const NSUInteger MaxHistory = 500;
 	_dbPath = [root stringByAppendingPathComponent:@"shuffler.db"];
 	_controller = [[UIController alloc] init:_window dbPath:_dbPath];
 	
-	NSArray* tags = [[defaults arrayForKey:@"tags"] reverse];
+	NSArray* tags = [[_controller getDatabaseTags] reverse];
 	for (NSString* tag in tags)
 	{
 		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:tag action:@selector(toggleTag:) keyEquivalent:@""];

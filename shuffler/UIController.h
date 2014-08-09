@@ -12,6 +12,8 @@
 - (IBAction)selectNoneTag:(NSMenuItem*)sender;
 - (IBAction)selectNewTag:(NSMenuItem*)sender;
 
+- (NSArray*)getDatabaseTags;
+
 @property (strong) IBOutlet NSPopUpButton *ratingPopup;
 @property (strong) IBOutlet NSPopUpButton *scalingPopup;
 @property (strong) IBOutlet NSPopUpButton *tagsPopup;

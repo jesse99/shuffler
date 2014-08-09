@@ -180,4 +180,11 @@ static int queryCallback1(void* context, int numCols, char** values, char** name
 	}
 }
 
+- (NSString*)escapeValue:(NSString*)value
+{
+	value = [value stringByReplacingOccurrencesOfString:@"\"" withString:@"'"];
+	value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"''"];
+	return value;
+}
+
 @end

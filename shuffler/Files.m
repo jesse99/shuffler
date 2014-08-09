@@ -69,7 +69,7 @@ NSString* ratingToName(NSUInteger rating)
 	if (self)
 	{
 		_root = [dbPath stringByDeletingLastPathComponent];
-		_database = [self _createDatabase:dbPath];
+		[self _createDatabase:dbPath];
 
 		// See https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsimagerep_Class/Reference/Reference.html#//apple_ref/occ/clm/NSImageRep/imageRepWithContentsOfFile:
 		NSArray* globs = @[@"*.tiff", @"*.gif", @"*.jpg", @"*.jpeg", @"*.pict", @"*.pdf", @"*.eps", @"*.png"];
@@ -104,7 +104,8 @@ NSString* ratingToName(NSUInteger rating)
 {
 	if (_includeUncategorized)
 	{
-		_numShown[UncategorizedRating] -= 1;
+		if (_numShown[UncategorizedRating] > 0)		// this can be zero if we've just changed how we are filtering
+			_numShown[UncategorizedRating] -= 1;
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 	}
@@ -138,7 +139,8 @@ NSString* ratingToName(NSUInteger rating)
 
 	if (_includeUncategorized)
 	{
-		_numShown[UncategorizedRating] -= 1;
+		if (_numShown[UncategorizedRating] > 0)		// this can be zero if we've just changed how we are filtering
+			_numShown[UncategorizedRating] -= 1;
 		changed = true;
 	}
 
@@ -189,18 +191,24 @@ NSString* ratingToName(NSUInteger rating)
 {
 	ASSERT(rating <= TopRating);
 	
-	NSString* sql;
-	if (rating != UncategorizedRating)
+	NSUInteger count = 0;
+	
+	if (rating >= _currentRating)
 	{
-		NSString* name = ratingToName(rating);
-		sql = [self _getCountQueryForRating:name];
-	}
-	else
-	{
-		sql = [self _getCountUncategorizedQuery];
+		NSString* sql;
+		if (rating != UncategorizedRating)
+		{
+			NSString* name = ratingToName(rating);
+			sql = [self _getCountQueryForRating:name];
+		}
+		else
+		{
+			sql = [self _getCountUncategorizedQuery];
+		}
+		
+		count = [self _runCountQuery:sql];
 	}
 	
-	NSUInteger count = [self _runCountQuery:sql];
 	return count;
 }
 
@@ -247,8 +255,10 @@ static long ratingToWeight(NSUInteger rating)
 	
 	NSError* error = nil;
 	NSString* sql;
-	if (_includeUncategorized)
+	if (_includeUncategorized && random() % 2 == 1)
 	{
+		// If we land here and find a useable image we'll always pick it
+		// because they have max weight.
 		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getUncategorizedQuery]];
 		[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
 	}
@@ -492,20 +502,32 @@ static long ratingToWeight(NSUInteger rating)
 }
 
 
-- (Database*)_createDatabase:(NSString*)dbPath
+- (void)_createDatabase:(NSString*)dbPath
 {
-	Database* database = nil;
-	
 	if (dbPath)
 	{
 		// We're executing within a thread so we need our own Database instance.
 		NSError* error = nil;
-		database = [[Database alloc] initWithPath:dbPath error:&error];
-		if (!database)
+		_database = [[Database alloc] initWithPath:dbPath error:&error];
+		if (!_database)
 			LOG_ERROR("Couldn't create the database at '%s': %s", STR(dbPath), STR(error.localizedFailureReason));
 	}
-		
-	return database;
+	
+	if (_database)
+	{
+		NSUInteger count = [self _runCountQuery:@"SELECT COUNT(name) FROM Tags"];
+		if (count == 0)
+		{
+			LOG_NORMAL("Adding default tags");
+			[_database insertOrIgnore:@"Tags" values:@[@"Animals"]];
+			[_database insertOrIgnore:@"Tags" values:@[@"Art"]];
+			[_database insertOrIgnore:@"Tags" values:@[@"Celebrities"]];
+			[_database insertOrIgnore:@"Tags" values:@[@"Fantasy"]];
+			[_database insertOrIgnore:@"Tags" values:@[@"General"]];
+			[_database insertOrIgnore:@"Tags" values:@[@"Nature"]];
+			[_database insertOrIgnore:@"Tags" values:@[@"Sports"]];
+		}
+	}
 }
 
 @end
