@@ -162,7 +162,7 @@ NSString* ratingToName(NSUInteger rating)
 	if (rating != _currentRating || ![tags isEqualToArray:_currentTags] || includeUncategorized !=_includeUncategorized)
 	{
 		_currentRating = rating;
-		_currentTags = tags;
+		_currentTags = [tags copy];
 		_includeUncategorized = includeUncategorized;
 		
 		for (NSUInteger i = 0; i <= TopRating; ++i)
@@ -201,7 +201,7 @@ NSString* ratingToName(NSUInteger rating)
 			NSString* name = ratingToName(rating);
 			sql = [self _getCountQueryForRating:name];
 		}
-		else
+		else if (_includeUncategorized)
 		{
 			sql = [self _getCountUncategorizedQuery];
 		}
