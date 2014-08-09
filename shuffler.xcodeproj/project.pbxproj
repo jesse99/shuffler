@@ -169,21 +169,11 @@
 			children = (
 				372E954419568FF1004FC97D /* AppDelegate.h */,
 				372E954519568FF1004FC97D /* AppDelegate.m */,
-				3756CB43195BD3F30008C300 /* ArrayCategory.h */,
-				3756CB44195BD3F30008C300 /* ArrayCategory.m */,
-				3756CB3E195A7C5F0008C300 /* Assert.h */,
-				3756CB3F195A7C600008C300 /* Assert.m */,
-				3756CB3B195A7C130008C300 /* Database.h */,
-				3756CB3C195A7C130008C300 /* Database.m */,
 				37B0090019730E5500919A77 /* DatabaseInfo.xib */,
 				37B0090219730FF300919A77 /* DatabaseInfoController.h */,
 				37B0090319730FF300919A77 /* DatabaseInfoController.m */,
 				372A6E0A195767DB00ABC430 /* Files.h */,
 				372A6E0B195767DB00ABC430 /* Files.m */,
-				372A6E0D1957687D00ABC430 /* Glob.h */,
-				372A6E0E1957687E00ABC430 /* Glob.m */,
-				372A6E11195769F600ABC430 /* Logger.h */,
-				372A6E12195769F600ABC430 /* Logger.m */,
 				372E953E19568FF1004FC97D /* main.m */,
 				372E954719568FF1004FC97D /* MainMenu.xib */,
 				372A6E171957AEBA00ABC430 /* MainWindow.h */,
@@ -192,11 +182,10 @@
 				37B008FD1967AF9500919A77 /* NewTagController.h */,
 				37B008FE1967AF9500919A77 /* NewTagController.m */,
 				372A6E141957A8FD00ABC430 /* Shuffler.h */,
-				37B009051973472600919A77 /* StringCategory.h */,
-				37B009061973472600919A77 /* StringCategory.m */,
 				372A6E1A195901B300ABC430 /* UIWindow.xib */,
 				376BF50B195909AA005149EB /* UIController.h */,
 				376BF50C195909AA005149EB /* UIController.m */,
+				3760186E1995BFFE00FF5814 /* Utils */,
 				372E953919568FF1004FC97D /* Supporting Files */,
 			);
 			path = shuffler;
@@ -231,6 +220,25 @@
 				372E955919568FF2004FC97D /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3760186E1995BFFE00FF5814 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				3756CB43195BD3F30008C300 /* ArrayCategory.h */,
+				3756CB44195BD3F30008C300 /* ArrayCategory.m */,
+				3756CB3E195A7C5F0008C300 /* Assert.h */,
+				3756CB3F195A7C600008C300 /* Assert.m */,
+				3756CB3B195A7C130008C300 /* Database.h */,
+				3756CB3C195A7C130008C300 /* Database.m */,
+				372A6E0D1957687D00ABC430 /* Glob.h */,
+				372A6E0E1957687E00ABC430 /* Glob.m */,
+				372A6E11195769F600ABC430 /* Logger.h */,
+				372A6E12195769F600ABC430 /* Logger.m */,
+				37B009051973472600919A77 /* StringCategory.h */,
+				37B009061973472600919A77 /* StringCategory.m */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
