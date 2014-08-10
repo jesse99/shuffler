@@ -1,24 +1,3 @@
-				NSMenuItem item = m_scaling.Value.lastItem();
-				
-				title = "Max (" + m_mainWindow.Value.MaxPercent + "%)";
-				item.setTitle(NSString.Create(title));
-				m_scaling.Value.selectItem(item);
-
-
-		public int MaxPercent
-		{
-			get
-			{
-				return (int) (100*m_maxScaling);
-			}
-		}
-		
-			NSSize size = new NSSize(rep.pixelsWide(), rep.pixelsHigh());
-			NSSize windSize = frame().size;
-			m_maxScaling = Math.Min(windSize.width/size.width, windSize.height/size.height);
-			
-* Scaling popup should say how much Max actually is
-* Don't think selectNewTag updates main menu
 * Get Interval submenu working
 * Kind of annoying that rating and scaling and tags are reset after editing the picture.
 * Support other images menu items.
@@ -41,6 +20,7 @@
 * May want a preference to shift the picture a bit (put this in a menu?)
 * Probably want to support margins on all sides
 * Preference for which directory to use.
+* Need to be able to remove tags.
 * May want a pref for rating scaling.
 * Compact database is awfully fast. Maybe it should just be run every hour.
 * Default to user's pictures directory.

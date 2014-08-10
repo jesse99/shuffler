@@ -179,23 +179,27 @@
 	}
 }
 
-- (void)selectTag:(NSMenuItem*)sender
+- (void)_selectTagByTitle:(NSString*)name
 {
 	bool wasUncategorized = _tagsLabel.stringValue.length == 0;
 	
-	NSString* name = [sender title];
 	NSString* tags = [self _toggleTag:name];
 	[_tagsLabel setStringValue:tags];
-
+	
 	if (_database)
 		[self _saveSettings];	// this is what saves the new hash into the database
-
+	
 	if (wasUncategorized)
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
 		[app.files changedUncategorizedToCategorized:rating];
 	}
+}
+
+- (void)selectTag:(NSMenuItem*)sender
+{
+	[self _selectTagByTitle:sender.title];
 }
 
 - (IBAction)selectNoneTag:(NSMenuItem*)sender
@@ -220,10 +224,16 @@
 	NSInteger button = [NSApp runModalForWindow:controller.window];
 	if (button == NSOKButton)
 	{
-		[self _addTag:controller.textField.stringValue];
+		NSString* name = controller.textField.stringValue;
+		[self _addTag:name];
 		
 		[self _clearTagsMenu];
 		[self _populateTagsMenu];
+
+		AppDelegate* app = [NSApp delegate];
+		[app reloadTagsMenu];
+
+		[self _selectTagByTitle:name];
 	}
 }
 

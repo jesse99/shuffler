@@ -4,6 +4,8 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
+- (void)reloadTagsMenu;
+
 @property (readonly) Files* files;
 
 @property (assign) IBOutlet MainWindow *window;

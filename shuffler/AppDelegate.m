@@ -47,12 +47,7 @@ const NSUInteger MaxHistory = 500;
 	_dbPath = [root stringByAppendingPathComponent:@"shuffler.db"];
 	_controller = [[UIController alloc] init:_window dbPath:_dbPath];
 	
-	NSArray* tags = [[_controller getDatabaseTags] reverse];
-	for (NSString* tag in tags)
-	{
-		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:tag action:@selector(toggleTag:) keyEquivalent:@""];
-		[_tagsMenu insertItem:item atIndex:2];
-	}
+	[self reloadTagsMenu];
 	
 	[_controller.window setTitle:@"Scanning…"];
 	[self _registerHotKeys];
@@ -65,6 +60,30 @@ const NSUInteger MaxHistory = 500;
 		 
 		   dispatch_async(main, ^{[self _displayInitial:files];});
 	   });
+}
+
+- (void)reloadTagsMenu
+{
+	[self _clearTagsMenu];
+	
+	NSArray* tags = [[_controller getDatabaseTags] reverse];
+	for (NSString* tag in tags)
+	{
+		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:tag action:@selector(toggleTag:) keyEquivalent:@""];
+		[_tagsMenu insertItem:item atIndex:2];
+	}
+}
+
+- (void)_clearTagsMenu
+{
+	while (true)
+	{
+		NSMenuItem* item = [_tagsMenu itemAtIndex:2];
+		if ([item isSeparatorItem])
+			break;
+		
+		[_tagsMenu removeItemAtIndex:2];
+	}
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
