@@ -36,6 +36,8 @@
 		self = [super initWithContentRect:contentRect styleMask:style backing:buffering defer:flag];
 	}
 	
+	_maxScaling = 1.0;
+	
 	return self;
 }
 

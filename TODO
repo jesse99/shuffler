@@ -1,12 +1,26 @@
-* Showing paths that have already been shown quite a bit.
-* Probably should persist shown paths in the database.
-	- but how do we limit this?
-	- could reset it on quit
-	- then load it on startup
+				NSMenuItem item = m_scaling.Value.lastItem();
+				
+				title = "Max (" + m_mainWindow.Value.MaxPercent + "%)";
+				item.setTitle(NSString.Create(title));
+				m_scaling.Value.selectItem(item);
+
+
+		public int MaxPercent
+		{
+			get
+			{
+				return (int) (100*m_maxScaling);
+			}
+		}
+		
+			NSSize size = new NSSize(rep.pixelsWide(), rep.pixelsHigh());
+			NSSize windSize = frame().size;
+			m_maxScaling = Math.Min(windSize.width/size.width, windSize.height/size.height);
+			
 * Scaling popup should say how much Max actually is
 * Don't think selectNewTag updates main menu
 * Get Interval submenu working
-* Kinf of annoying that rating and scaling and tags are reset after editing the picture.
+* Kind of annoying that rating and scaling and tags are reset after editing the picture.
 * Support other images menu items.
 * Should disable UI window while scanning.
 * Seems to be a bit of a race when changing a setting and timer firing
@@ -14,14 +28,14 @@
 * Need to watch the directory:
 	- need to special case trashFile
 	- or maybe just handle it as part of watching
-* Look at some other apps:
-	- http://www.webupd8.org/2011/01/download-collection-of-1000-widescreen.html has a list
 * Look at supporing networked images:
 	- http://api.imgur.com/
 	- might be able to download straight from google search
 	  see http://stackoverflow.com/questions/22866579/download-images-with-google-custom-search-api
 	- http://melloristudio.com/wallch/1000-HD-Wallpapers
 	- http://www.vladstudio.com/wallpaperclocks/browse.php
+* Look at some other apps:
+	- http://www.webupd8.org/2011/01/download-collection-of-1000-widescreen.html has a list
 * Indicate dupes somehow.
 	- maybe show in finder could show them both
 * May want a preference to shift the picture a bit (put this in a menu?)
@@ -46,3 +60,6 @@
 	- old-shuffler has some ideas about this
 * Can we get files from a remote source?
 
+* Probably should persist shown paths in the database:
+	- on quit clear the old table and add rows for the shown paths
+	- on startup initialize shown from the table

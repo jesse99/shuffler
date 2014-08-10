@@ -105,12 +105,18 @@
 	if (scaling == 1.0)
 		[_scalingPopup selectItemWithTitle:@"None"];
 	else if (scaling == INFINITY)
-		[_scalingPopup selectItemWithTitle:@"Max"];
+		[_scalingPopup selectItem:_scalingPopup.lastItem];
 	else
 		[_scalingPopup selectItemWithTitle:[NSString stringWithFormat:@"%d%%", (int) (100*scaling)]];
 	
 	// Swap in the new image
 	[_mainWindow update:path imageData:data scaling:scaling];
+	
+	if (scaling == INFINITY)
+	{
+		NSMenuItem* item = [_scalingPopup lastItem];
+		[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
+	}
 }
 
 - (void)trashedFile:(NSString*)path
@@ -165,6 +171,12 @@
 		[self selectNoneTag:nil];
 	else if (_database)
 		[self _saveSettings];
+
+	if (scaling == INFINITY)
+	{
+		NSMenuItem* item = [_scalingPopup lastItem];
+		[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
+	}
 }
 
 - (void)selectTag:(NSMenuItem*)sender

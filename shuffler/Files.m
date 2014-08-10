@@ -298,11 +298,11 @@ static long ratingToWeight(NSUInteger rating)
 	{
 		// If we land here and find a useable image we'll always pick it
 		// because they have max weight.
-		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getUncategorizedQuery]];
+		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 50", [self _getUncategorizedQuery]];
 		[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
 	}
 	
-	sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 100", [self _getQuery]];
+	sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 300", [self _getQuery]];
 	[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
 
 	if (rows && rows.count > 0)
