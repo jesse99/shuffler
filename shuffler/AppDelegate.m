@@ -8,7 +8,6 @@
 #import "MainWindow.h"
 #import "UIController.h"
 
-const double DefaultInterval = 60.0;		// TODO: use a pref for the delay
 const NSUInteger MaxHistory = 500;
 
 @implementation AppDelegate
@@ -16,6 +15,7 @@ const NSUInteger MaxHistory = 500;
 	NSTimer* _timer;
 	UIController* _controller;
 	NSString* _dbPath;
+	NSInteger _interval;
 
 	NSMutableArray* _shown;
 	NSUInteger _index;
@@ -29,17 +29,18 @@ const NSUInteger MaxHistory = 500;
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	NSDictionary* initialSettings = @{@"root": @"~/Pictures"};
+	NSDictionary* initialSettings = @{@"root": @"~/Pictures", @"interval": @60};
 	[defaults registerDefaults:initialSettings];
 	
-	//	[defaults setObject:@"/Users/jessejones/Documents/1000 HD Wallpapers (By Mellori Studio)" forKey:@"root"];
+//	[defaults setObject:@"/Users/jessejones/Documents/1000 HD Wallpapers (By Mellori Studio)" forKey:@"root"];
 //	[defaults synchronize];
 		
 	_rating = @"Normal";
 	_tags = [NSMutableArray new];
 	_includeUncategorized = true;
 	
-	_timer = [NSTimer scheduledTimerWithTimeInterval:DefaultInterval target:self selector:@selector(nextImage:) userInfo:nil repeats:true];
+	_interval = [defaults integerForKey:@"interval"];
+	_timer = [NSTimer scheduledTimerWithTimeInterval:_interval target:self selector:@selector(nextImage:) userInfo:nil repeats:true];
 	_shown = [NSMutableArray new];
 	
 	NSString* root = [defaults stringForKey:@"root"];
@@ -175,9 +176,23 @@ const NSUInteger MaxHistory = 500;
 	}
 }
 
+- (IBAction)setInterval:(NSMenuItem*)sender
+{
+	if (sender.tag != _interval)
+	{
+		_interval = sender.tag;
+		
+		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+		[defaults setInteger:_interval forKey:@"interval"];
+		[defaults synchronize];
+	}
+
+	[self rescheduleTimer];
+}
+
 - (void)rescheduleTimer
 {
-	[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+	[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:_interval]];
 }
 
 // This gets a bit confusing but these rating and tags apply to what we will show
@@ -364,6 +379,10 @@ const NSUInteger MaxHistory = 500;
 	{
 		[item setState:[_rating compare:item.title] == NSOrderedSame];
 		enabled = _files != nil;
+	}
+	else if (item.action == @selector(setInterval:))
+	{
+		[item setState:item.tag == _interval];
 	}
 	else if (item.action == @selector(toggleTag:) || item.action == @selector(toggleNoneTag:))
 	{

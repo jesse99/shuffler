@@ -176,35 +176,65 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Interval" id="KRy-7X-VeX">
                                     <items>
-                                        <menuItem title="1 second" id="gG5-bp-4KS">
+                                        <menuItem title="1 second" tag="1" id="gG5-bp-4KS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="FIe-A4-vUZ"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="5 seconds" id="Z0i-9T-dlS">
+                                        <menuItem title="5 seconds" tag="5" id="Z0i-9T-dlS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="aVv-sC-P8a"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="10 seconds" id="6EX-2h-S8k">
+                                        <menuItem title="10 seconds" tag="10" id="6EX-2h-S8k">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="2VO-hr-Tc1"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="30 seconds" id="QsN-5p-FrE">
+                                        <menuItem title="30 seconds" tag="30" id="QsN-5p-FrE">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="SEq-bU-E50"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="1 minute" id="X2f-jr-EfB">
+                                        <menuItem title="1 minute" tag="60" id="X2f-jr-EfB">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="EPZ-eu-Aq1"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="2 minutes" id="D2l-yB-WlE">
+                                        <menuItem title="2 minutes" tag="120" id="D2l-yB-WlE">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="8gD-nF-EGX"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="5 minutes" id="jKm-WO-nJf">
+                                        <menuItem title="5 minutes" tag="300" id="jKm-WO-nJf">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="0ju-Np-moG"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="10 minutes" id="z5K-MW-ya4">
+                                        <menuItem title="10 minutes" tag="600" id="z5K-MW-ya4">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="ao5-VP-6Fh"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="30 minutes" id="cgO-Jh-U3S">
+                                        <menuItem title="30 minutes" tag="1800" id="cgO-Jh-U3S">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="Dfq-4D-wuI"/>
+                                            </connections>
                                         </menuItem>
-                                        <menuItem title="Never" id="3xX-1i-E9a">
+                                        <menuItem title="Never" tag="4294967295" id="3xX-1i-E9a">
                                             <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="setInterval:" target="Voe-Tx-rLC" id="sUK-qP-Fel"/>
+                                            </connections>
                                         </menuItem>
                                     </items>
                                 </menu>
