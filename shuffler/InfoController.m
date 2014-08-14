@@ -1,12 +1,12 @@
-#import "DatabaseInfoController.h"
+#import "InfoController.h"
 
 #import "AppDelegate.h"
 #import "Files.h"
 #import "StringCategory.h"
 
-static DatabaseInfoController* _controller;
+static InfoController* _controller;
 
-@implementation DatabaseInfoController
+@implementation InfoController
 {
 	NSDictionary* _labelAttrs;
 	NSDictionary* _textAttrs;
@@ -30,7 +30,7 @@ static DatabaseInfoController* _controller;
 + (void)show
 {
 	if (!_controller)
-		_controller = [[DatabaseInfoController alloc] init];
+		_controller = [[InfoController alloc] init];
 	
 	if (_controller)
 	{
@@ -40,6 +40,11 @@ static DatabaseInfoController* _controller;
 		[_controller showWindow:_controller];
 		[window makeKeyAndOrderFront:NSApp];
 	}
+}
+
+- (void)close:(id)sender
+{
+	[self.window orderOut:sender];
 }
 
 - (void)_reload:(NSNotification*)notification

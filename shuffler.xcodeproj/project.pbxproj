@@ -34,7 +34,7 @@
 		37B008FC1967ADE000919A77 /* NewTag.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37B008FB1967ADE000919A77 /* NewTag.xib */; };
 		37B008FF1967AF9500919A77 /* NewTagController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B008FE1967AF9500919A77 /* NewTagController.m */; };
 		37B0090119730E5500919A77 /* DatabaseInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37B0090019730E5500919A77 /* DatabaseInfo.xib */; };
-		37B0090419730FF300919A77 /* DatabaseInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B0090319730FF300919A77 /* DatabaseInfoController.m */; };
+		37B0090419730FF300919A77 /* InfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B0090319730FF300919A77 /* InfoController.m */; };
 		37B009071973472600919A77 /* StringCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B009061973472600919A77 /* StringCategory.m */; };
 /* End PBXBuildFile section */
 
@@ -94,8 +94,8 @@
 		37B008FD1967AF9500919A77 /* NewTagController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTagController.h; sourceTree = "<group>"; };
 		37B008FE1967AF9500919A77 /* NewTagController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTagController.m; sourceTree = "<group>"; };
 		37B0090019730E5500919A77 /* DatabaseInfo.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DatabaseInfo.xib; sourceTree = "<group>"; };
-		37B0090219730FF300919A77 /* DatabaseInfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseInfoController.h; sourceTree = "<group>"; };
-		37B0090319730FF300919A77 /* DatabaseInfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatabaseInfoController.m; sourceTree = "<group>"; };
+		37B0090219730FF300919A77 /* InfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoController.h; sourceTree = "<group>"; };
+		37B0090319730FF300919A77 /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoController.m; sourceTree = "<group>"; };
 		37B009051973472600919A77 /* StringCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringCategory.h; sourceTree = "<group>"; };
 		37B009061973472600919A77 /* StringCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringCategory.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -170,10 +170,10 @@
 				372E954419568FF1004FC97D /* AppDelegate.h */,
 				372E954519568FF1004FC97D /* AppDelegate.m */,
 				37B0090019730E5500919A77 /* DatabaseInfo.xib */,
-				37B0090219730FF300919A77 /* DatabaseInfoController.h */,
-				37B0090319730FF300919A77 /* DatabaseInfoController.m */,
 				372A6E0A195767DB00ABC430 /* Files.h */,
 				372A6E0B195767DB00ABC430 /* Files.m */,
+				37B0090219730FF300919A77 /* InfoController.h */,
+				37B0090319730FF300919A77 /* InfoController.m */,
 				372E953E19568FF1004FC97D /* main.m */,
 				372E954719568FF1004FC97D /* MainMenu.xib */,
 				372A6E171957AEBA00ABC430 /* MainWindow.h */,
@@ -349,7 +349,7 @@
 				372A6E0F1957687E00ABC430 /* Glob.m in Sources */,
 				3756CB3D195A7C130008C300 /* Database.m in Sources */,
 				37B008FF1967AF9500919A77 /* NewTagController.m in Sources */,
-				37B0090419730FF300919A77 /* DatabaseInfoController.m in Sources */,
+				37B0090419730FF300919A77 /* InfoController.m in Sources */,
 				3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */,
 				3756CB40195A7C600008C300 /* Assert.m in Sources */,
 				37B009071973472600919A77 /* StringCategory.m in Sources */,

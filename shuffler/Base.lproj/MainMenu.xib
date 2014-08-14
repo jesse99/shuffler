@@ -75,7 +75,7 @@
                             </menuItem>
                             <menuItem title="Close Window" keyEquivalent="w" id="fGT-HD-i8i">
                                 <connections>
-                                    <action selector="orderOut:" target="-1" id="aA9-Re-7oB"/>
+                                    <action selector="close:" target="-1" id="Yam-fN-EUI"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="vI6-Hd-dzI"/>

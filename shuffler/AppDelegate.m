@@ -3,7 +3,7 @@
 #include "Carbon/Carbon.h"
 
 #import "Database.h"
-#import "DatabaseInfoController.h"
+#import "InfoController.h"
 #import "Files.h"
 #import "MainWindow.h"
 #import "UIController.h"
@@ -122,7 +122,7 @@ const NSUInteger MaxHistory = 500;
 	// takes under a second on a 2009 Mac Pro.
 	[self compactDatabase];
 	
-	[DatabaseInfoController show];
+	[InfoController show];
 }
 
 - (IBAction)copyPath:(id)sender

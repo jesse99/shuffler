@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@interface DatabaseInfoController : NSWindowController
+@interface InfoController : NSWindowController
 
 + (void)show;
 

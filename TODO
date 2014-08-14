@@ -1,8 +1,4 @@
-* Kind of annoying that rating and scaling and tags are reset after editing the picture.
-* Close window shouldn't be enabled for the main window.
 * Should disable UI window while scanning.
-* Seems to be a bit of a race when changing a setting and timer firing
-	- new image doesn't appear
 * Need to watch the directory:
 	- need to special case trashFile
 	- or maybe just handle it as part of watching
@@ -20,6 +16,8 @@
 * Probably want to support margins on all sides
 * Preference for which directory to use.
 * Need to be able to remove tags.
+* Seems to be a bit of a race when changing a setting and timer firing
+	- new image doesn't appear
 * May want a pref for rating scaling.
 * Compact database is awfully fast. Maybe it should just be run every hour.
 * Default to user's pictures directory.
