@@ -6,6 +6,8 @@
 
 - (void)reloadTagsMenu;
 
+- (void)rescheduleTimer;
+
 @property (readonly) Files* files;
 
 @property (assign) IBOutlet MainWindow *window;

@@ -157,6 +157,7 @@
 
 			[app.files changedRatingFrom:oldRating to:newRating];
 		}
+		[app rescheduleTimer];
 	}
 }
 
@@ -177,6 +178,9 @@
 		NSMenuItem* item = [_scalingPopup lastItem];
 		[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
 	}
+
+	AppDelegate* app = [NSApp delegate];
+	[app rescheduleTimer];
 }
 
 - (void)_selectTagByTitle:(NSString*)name
@@ -189,12 +193,14 @@
 	if (_database)
 		[self _saveSettings];	// this is what saves the new hash into the database
 	
+	AppDelegate* app = [NSApp delegate];
 	if (wasUncategorized)
 	{
-		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
 		[app.files changedUncategorizedToCategorized:rating];
 	}
+
+	[app rescheduleTimer];
 }
 
 - (void)selectTag:(NSMenuItem*)sender
@@ -216,6 +222,9 @@
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
 		[app.files changedUncategorizedToCategorized:rating];
 	}
+
+	AppDelegate* app = [NSApp delegate];
+	[app rescheduleTimer];
 }
 
 - (IBAction)selectNewTag:(NSMenuItem*)sender

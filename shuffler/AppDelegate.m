@@ -158,7 +158,7 @@ const NSUInteger MaxHistory = 500;
 		--_index;
 		
 		[self nextImage:self];
-		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+		[self rescheduleTimer];
 		
 		NSURL* url = [[NSURL alloc] initFileURLWithPath:path];
 		NSURL* newURL = nil;
@@ -175,12 +175,19 @@ const NSUInteger MaxHistory = 500;
 	}
 }
 
+- (void)rescheduleTimer
+{
+	[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+}
+
+// This gets a bit confusing but these rating and tags apply to what we will show
+// not to the current image. The settings that apply to the current image are set
+// in UIController.
 - (IBAction)changeRating:(NSMenuItem *)sender
 {
 	if (_files && [_rating compare:sender.title] != NSOrderedSame)
 	{		
 		_rating = sender.title;
-		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 		
 		// For now we do this in the main thread because it gets all squirrelly if
 		// we queue up multiple threads and have them finish at different times.
@@ -209,8 +216,6 @@ const NSUInteger MaxHistory = 500;
 
 	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
-	else
-		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
 - (IBAction)toggleNoneTag:(id)sender
@@ -220,8 +225,6 @@ const NSUInteger MaxHistory = 500;
 	
 	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
-	else
-		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
 - (IBAction)toggleUncategorizedTag:(id)sender
@@ -229,8 +232,6 @@ const NSUInteger MaxHistory = 500;
 	_includeUncategorized = !_includeUncategorized;
 	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
-	else
-		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
 }
 
 - (IBAction)nextImage:(id)sender
@@ -260,7 +261,7 @@ const NSUInteger MaxHistory = 500;
 		if (path)
 		{
 			[_controller setPath:path];
-			[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+			[self rescheduleTimer];
 		}
 		else
 		{
@@ -275,7 +276,7 @@ const NSUInteger MaxHistory = 500;
 	{
 		NSString* path = _shown[--_index];
 		[_controller setPath:path];
-		[_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+		[self rescheduleTimer];
 	}
 	else
 	{
@@ -386,12 +387,12 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
 	{
         case 1:
 			[delegate prevImage:delegate];
-			[delegate->_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+			[delegate rescheduleTimer];
 			break;
 			
         case 2:
 			[delegate nextImage:delegate];
-			[delegate->_timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:DefaultInterval]];
+			[delegate rescheduleTimer];
 			break;
     }
 	

@@ -1,6 +1,7 @@
+* Changing rating didn't reset timer.
 * Get Interval submenu working
 * Kind of annoying that rating and scaling and tags are reset after editing the picture.
-* Support other images menu items.
+* Close window shouldn't be enabled for the main window.
 * Should disable UI window while scanning.
 * Seems to be a bit of a race when changing a setting and timer firing
 	- new image doesn't appear
