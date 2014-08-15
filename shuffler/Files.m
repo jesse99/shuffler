@@ -346,6 +346,7 @@ static long ratingToWeight(NSUInteger rating)
 		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 50", [self _getUncategorizedQuery]];
 		[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
 	}
+	NSUInteger numUncategorized = rows.count;
 	
 	sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 300", [self _getQuery]];
 	[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
@@ -368,7 +369,7 @@ static long ratingToWeight(NSUInteger rating)
 				fallback = candidate;
 				fallbackRating = rating;
 				
-				if (![shown containsObject:candidate])
+				if (i < numUncategorized || ![shown containsObject:candidate])
 				{
 					weight -= ratingToWeight(rating);
 					if (weight <= 0)
