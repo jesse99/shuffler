@@ -1,7 +1,3 @@
-* Should disable UI window while scanning.
-* Need to watch the directory:
-	- need to special case trashFile
-	- or maybe just handle it as part of watching
 * Look at supporing networked images:
 	- http://api.imgur.com/
 	- might be able to download straight from google search
@@ -36,6 +32,7 @@
 * Should we support a way to organize files by tag?
 	- old-shuffler has some ideas about this
 * Can we get files from a remote source?
+* Should disable UI while scanning.
 
 * Probably should persist shown paths in the database:
 	- on quit clear the old table and add rows for the shown paths

@@ -55,11 +55,29 @@ NSString* ratingToName(NSUInteger rating)
 	NSString* _root;
 	Database* _database;
 	Glob* _glob;
+	FSEventStreamRef _watcher;
 	
 	NSUInteger _currentRating;
 	NSArray* _currentTags;
 	bool _includeUncategorized;
 	NSUInteger _numShown[TopRating+1];	// [count]
+}
+
+static void watchCallback(ConstFSEventStreamRef streamRef,
+						  void *info,
+						  size_t numEvents,
+						  void *eventPaths,
+						  const FSEventStreamEventFlags eventFlags[],
+						  const FSEventStreamEventId eventIds[])
+{
+	Files* files = (__bridge Files*) info;
+		
+	const char** paths = (const char**)eventPaths;
+	for (size_t i = 0; i < numEvents; ++i)
+	{
+		NSString* path = [NSString stringWithUTF8String:paths[i]];
+		[files _changed:path];
+	}
 }
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath
@@ -79,14 +97,41 @@ NSString* ratingToName(NSUInteger rating)
 		_includeUncategorized = true;
 		
 		[self _addUncategorized:dirPath database:_database];	// TODO: popup a directory picker if nothing was found
+		
+		FSEventStreamContext context = {0};
+		context.info = (void*) CFBridgingRetain(self);
+		
+		_watcher = FSEventStreamCreate(NULL, watchCallback, &context, CFBridgingRetain(@[_root]), kFSEventStreamEventIdSinceNow, 15, kFSEventStreamCreateFlagIgnoreSelf);
+		FSEventStreamScheduleWithRunLoop(_watcher, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+		bool started = FSEventStreamStart(_watcher);
+		if (!started)
+			LOG_ERROR("Failed to create a watcher for %s", STR(_root));
 	}
 	
 	return self;
 }
 
+- (void)dealloc
+{
+	if (_watcher)
+	{
+		FSEventStreamStop(_watcher);
+		FSEventStreamInvalidate(_watcher);
+		FSEventStreamRelease(_watcher);
+		
+		CFBridgingRelease((__bridge CFTypeRef)(self));
+	}
+}
+
 - (NSString*)root
 {
 	return _root;
+}
+
+- (void)_changed:(NSString*)path
+{
+	[self _addUncategorized:path database:_database];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 }
 
 - (void)trashedCategorizedFile:(NSString*)path withRating:(NSString*)rating
