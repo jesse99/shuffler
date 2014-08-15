@@ -337,11 +337,6 @@
 	return scaling;
 }
 
-- (BOOL)windowShouldClose:(id)sender
-{
-	return FALSE;
-}
-
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
 	BOOL enabled = true;
@@ -359,10 +354,6 @@
 	{
 		[item setState:0];
 	}
-	else if (item.action == @selector(orderOut:))
-	{
-		enabled = false;
-	} 
 	
 	return enabled;
 }

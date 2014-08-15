@@ -1,3 +1,4 @@
+* Max label is wrong in the initial menu, but seems right once selected.
 * Look at supporing networked images:
 	- http://api.imgur.com/
 	- might be able to download straight from google search
@@ -8,6 +9,7 @@
 	- http://www.webupd8.org/2011/01/download-collection-of-1000-widescreen.html has a list
 * Indicate dupes somehow.
 	- maybe show in finder could show them both
+	- or option could show all/trash all
 * May want a preference to shift the picture a bit (put this in a menu?)
 * Probably want to support margins on all sides
 * Preference for which directory to use.
