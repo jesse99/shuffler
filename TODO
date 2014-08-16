@@ -1,4 +1,14 @@
-* Max label is wrong in the initial menu, but seems right once selected.
+* Support imgur galleries:
+	- may want to get on a branch
+	- refactor the code so that there are better abstractions
+	  maybe just a Store abstraction, one for file system, one for imgur
+	- implement stuff using the REST api
+	- trash should be a blacklist
+	- maybe open can goto the URL for the image?
+	- copy could copy the URL
+	- may want a move to <some directory> menu item
+	- probably want a Database menu to allow for selecting predefined directories and galleries
+* Get back on master branch
 * Look at supporing networked images:
 	- http://api.imgur.com/
 	- might be able to download straight from google search
