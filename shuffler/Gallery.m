@@ -1,4 +1,4 @@
-#import "Files.h"
+#import "Gallery.h"
 
 #import "Database.h"
 #import "Glob.h"
@@ -50,7 +50,7 @@ NSString* ratingToName(NSUInteger rating)
 }
 
 // This is created within a thread and then handed off to the main thread.
-@implementation Files
+@implementation Gallery
 {
 	NSString* _root;
 	Database* _database;
@@ -70,7 +70,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 						  const FSEventStreamEventFlags eventFlags[],
 						  const FSEventStreamEventId eventIds[])
 {
-	Files* files = (__bridge Files*) info;
+	Gallery* files = (__bridge Gallery*) info;
 		
 	const char** paths = (const char**)eventPaths;
 	for (size_t i = 0; i < numEvents; ++i)

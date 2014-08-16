@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@class Files, MainWindow;
+@class Gallery, MainWindow;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
@@ -8,7 +8,7 @@
 
 - (void)rescheduleTimer;
 
-@property (readonly) Files* files;
+@property (readonly) Gallery* files;
 
 @property (assign) IBOutlet MainWindow *window;
 @property (strong) IBOutlet NSMenu *tagsMenu;

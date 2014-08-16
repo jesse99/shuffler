@@ -4,7 +4,7 @@
 
 #import "Database.h"
 #import "InfoController.h"
-#import "Files.h"
+#import "Gallery.h"
 #import "MainWindow.h"
 #import "UIController.h"
 
@@ -20,7 +20,7 @@ const NSUInteger MaxHistory = 500;
 	NSMutableArray* _shown;
 	NSUInteger _index;
 	
-	Files* _files;
+	Gallery* _files;
 	NSString* _rating;
 	NSMutableArray* _tags;
 	bool _includeUncategorized;
@@ -57,7 +57,7 @@ const NSUInteger MaxHistory = 500;
 	dispatch_queue_t main = dispatch_get_main_queue();
 	dispatch_async(concurrent,
 	   ^{
-		   Files* files = [[Files alloc] init:root dbPath:_dbPath];
+		   Gallery* files = [[Gallery alloc] init:root dbPath:_dbPath];
 		 
 		   dispatch_async(main, ^{[self _displayInitial:files];});
 	   });
@@ -93,7 +93,7 @@ const NSUInteger MaxHistory = 500;
 	[defaults synchronize];
 }
 
-- (void)_displayInitial:(Files*)files
+- (void)_displayInitial:(Gallery*)files
 {
 	_files = files;
 		

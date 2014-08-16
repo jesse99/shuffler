@@ -1,7 +1,7 @@
 #import "InfoController.h"
 
 #import "AppDelegate.h"
-#import "Files.h"
+#import "Gallery.h"
 #import "StringCategory.h"
 
 static InfoController* _controller;
@@ -50,7 +50,7 @@ static InfoController* _controller;
 - (void)_reload:(NSNotification*)notification
 {
 	AppDelegate* delegate = [NSApp delegate];
-	Files* files = delegate.files;
+	Gallery* files = delegate.files;
 	
 	NSString* dir = [files.root lastPathComponent];
 	[self.window setTitle:dir];
@@ -74,7 +74,7 @@ static InfoController* _controller;
 	[storage endEditing];
 }
 
-- (void)_addStats:(Files*)files forRating:(NSUInteger)rating shown:(NSUInteger*)shown total:(NSUInteger*)total
+- (void)_addStats:(Gallery*)files forRating:(NSUInteger)rating shown:(NSUInteger*)shown total:(NSUInteger*)total
 {
 	NSUInteger totalNum = [files totalForRating:rating];
 	if (totalNum > 0)

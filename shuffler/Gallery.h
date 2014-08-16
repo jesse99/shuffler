@@ -7,7 +7,7 @@ extern const NSUInteger UncategorizedRating;
 NSString* ratingToName(NSUInteger rating);
 
 // Used to select a file to display.
-@interface Files : NSObject
+@interface Gallery : NSObject
 
 - (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath;
 

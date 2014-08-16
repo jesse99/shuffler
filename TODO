@@ -1,5 +1,9 @@
+BaseStore
+	FileStore
+	ImgurStore
+Gallery				new name for Files
+
 * Support imgur galleries:
-	- may want to get on a branch
 	- refactor the code so that there are better abstractions
 	  maybe just a Store abstraction, one for file system, one for imgur
 	- implement stuff using the REST api

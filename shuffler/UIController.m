@@ -4,7 +4,7 @@
 
 #import "AppDelegate.h"
 #import "Database.h"
-#import "Files.h"
+#import "Gallery.h"
 #import "MainWindow.h"
 #import "NewTagController.h"
 
