@@ -112,11 +112,8 @@
 	// Swap in the new image
 	[_mainWindow update:path imageData:data scaling:scaling];
 	
-	if (scaling == INFINITY)
-	{
-		NSMenuItem* item = [_scalingPopup lastItem];
-		[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
-	}
+	NSMenuItem* item = [_scalingPopup lastItem];
+	[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
 }
 
 - (void)trashedFile:(NSString*)path
