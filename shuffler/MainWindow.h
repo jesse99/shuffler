@@ -1,9 +1,11 @@
+#import "ImageProtocol.h"
+
 // The window which displays the current image.
 @interface MainWindow : NSWindow
 
-- (void)update:(NSString*)path imageData:(NSData*)data scaling:(double)scaling;
+- (void)update:(id<ImageProtocol>)image imageData:(NSData*)data scaling:(double)scaling;
 
-@property (readonly) NSString *path;
+@property (readonly) id<ImageProtocol> image;
 @property (readonly) double maxScaling;
 @property (strong) IBOutlet NSImageView *image1;
 @property (strong) IBOutlet NSImageView *image2;

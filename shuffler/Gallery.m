@@ -1,7 +1,7 @@
 #import "Gallery.h"
 
+#import "AppDelegate.h"
 #import "Database.h"
-#import "Glob.h"
 
 const NSUInteger NormalRating        = 0;
 const NSUInteger GoodRating          = 1;
@@ -52,10 +52,7 @@ NSString* ratingToName(NSUInteger rating)
 // This is created within a thread and then handed off to the main thread.
 @implementation Gallery
 {
-	NSString* _root;
 	Database* _database;
-	Glob* _glob;
-	FSEventStreamRef _watcher;
 	
 	NSUInteger _currentRating;
 	NSArray* _currentTags;
@@ -63,97 +60,49 @@ NSString* ratingToName(NSUInteger rating)
 	NSUInteger _numShown[TopRating+1];	// [count]
 }
 
-static void watchCallback(ConstFSEventStreamRef streamRef,
-						  void *info,
-						  size_t numEvents,
-						  void *eventPaths,
-						  const FSEventStreamEventFlags eventFlags[],
-						  const FSEventStreamEventId eventIds[])
-{
-	Gallery* files = (__bridge Gallery*) info;
-		
-	const char** paths = (const char**)eventPaths;
-	for (size_t i = 0; i < numEvents; ++i)
-	{
-		NSString* path = [NSString stringWithUTF8String:paths[i]];
-		[files _changed:path];
-	}
-}
-
-- (id)init:(NSString*)dirPath dbPath:(NSString*)dbPath
+- (id)init:(NSString*)dbPath
 {
 	self = [super init];
 	
 	if (self)
 	{
-		_root = [dbPath stringByDeletingLastPathComponent];
 		[self _createDatabase:dbPath];
 
-		// See https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/nsimagerep_Class/Reference/Reference.html#//apple_ref/occ/clm/NSImageRep/imageRepWithContentsOfFile:
-		NSArray* globs = @[@"*.tiff", @"*.gif", @"*.jpg", @"*.jpeg", @"*.pict", @"*.pdf", @"*.eps", @"*.png"];
-		_glob = [[Glob alloc] initWithGlobs:globs];
-		
 		_currentTags = @[];
 		_includeUncategorized = true;
 		
-		[self _addUncategorized:dirPath database:_database];	// TODO: popup a directory picker if nothing was found
-		
-		FSEventStreamContext context = {0};
-		context.info = (void*) CFBridgingRetain(self);
-		
-		_watcher = FSEventStreamCreate(NULL, watchCallback, &context, CFBridgingRetain(@[_root]), kFSEventStreamEventIdSinceNow, 15, kFSEventStreamCreateFlagIgnoreSelf);
-		FSEventStreamScheduleWithRunLoop(_watcher, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-		bool started = FSEventStreamStart(_watcher);
-		if (!started)
-			LOG_ERROR("Failed to create a watcher for %s", STR(_root));
+		[self _addUncategorized:_database];	// TODO: popup a directory picker if nothing was found
 	}
 	
 	return self;
 }
 
-- (void)dealloc
+- (void)storeChanged
 {
-	if (_watcher)
-	{
-		FSEventStreamStop(_watcher);
-		FSEventStreamInvalidate(_watcher);
-		FSEventStreamRelease(_watcher);
-		
-		CFBridgingRelease((__bridge CFTypeRef)(self));
-	}
-}
-
-- (NSString*)root
-{
-	return _root;
-}
-
-- (void)_changed:(NSString*)path
-{
-	[self _addUncategorized:path database:_database];
+	[self _addUncategorized:_database];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 }
 
-- (void)trashedCategorizedFile:(NSString*)path withRating:(NSString*)rating
+- (void)trashedCategorizedFile:(id<ImageProtocol>)image withRating:(NSString*)rating
 {
 	NSUInteger index = nameToRating(rating);
 	if (index >= _currentRating)
 	{
 		_numShown[index] -= 1;
 		
-		[self _removePathFromDatabase:path];
+		[self _removePathFromDatabase:image.path];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 	}
 }
 
-- (void)trashedUncategorizedFile:(NSString*)path
+- (void)trashedUncategorizedFile:(id<ImageProtocol>)image
 {
 	if (_includeUncategorized)
 	{
 		if (_numShown[UncategorizedRating] > 0)		// this can be zero if we've just changed how we are filtering
 			_numShown[UncategorizedRating] -= 1;
 
-		[self _removePathFromDatabase:path];
+		[self _removePathFromDatabase:image.path];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
 	}
 }
@@ -330,7 +279,7 @@ static long ratingToWeight(NSUInteger rating)
 	return weight;
 }
 
-- (NSString*)randomPath:(NSArray*)shown
+- (id<ImageProtocol>)randomImage:(NSArray*)shown
 {
 	NSString* path = nil;
 	
@@ -404,7 +353,8 @@ static long ratingToWeight(NSUInteger rating)
 		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
 	}
 	
-	return path;
+	AppDelegate* app = [NSApp delegate];
+	return [app.store create:path];
 }
 
 - (NSUInteger)_runCountQuery:(NSString*)sql
@@ -518,78 +468,14 @@ static long ratingToWeight(NSUInteger rating)
 	return clauses;
 }
 
-- (void)_addUncategorized:(NSString*)root database:(Database*)database;
+- (void)_addUncategorized:(Database*)database;	
 {
-	LOG_NORMAL("loading images from '%s'", STR(root));
-	double startTime = getTime();
-	
-	NSError* error = nil;
-	__block NSUInteger count = 0;
-	[self _enumerateDeepDir:root glob:_glob error:&error block:
-		^(NSString *path)
-		{
-			if ([_glob matchName:path.lastPathComponent] == 1)
-			{
-				++count;
-				[database insertOrIgnore:@"ImagePaths" values:@[path, @""]];
-			}
-			else
-			{
-				LOG_NORMAL("skipping '%s' (doesn't match image globs)", STR(path.lastPathComponent));
-			}
+	AppDelegate* app = [NSApp delegate];
+	(void) [app.store enumerate:
+		^(id<ImageProtocol> image) {
+			[database insertOrIgnore:@"ImagePaths" values:@[image.path, @""]];
 		}];
-		
-	double elapsed = getTime() - startTime;
-	LOG_NORMAL("found %lu images in %.1fs", count, elapsed);
 }
-
-- (bool)_enumerateDeepDir:(NSString*)path glob:(Glob*)glob error:(NSError**)outError block:(void (^)(NSString* item))block
-{
-	NSFileManager* fm = [NSFileManager new];
-	NSMutableArray* errors = [NSMutableArray new];
-	
-	NSURL* at = [NSURL fileURLWithPath:path isDirectory:YES];
-	NSArray* keys = @[NSURLNameKey, NSURLIsDirectoryKey, NSURLPathKey];
-	NSDirectoryEnumerationOptions options = glob ? NSDirectoryEnumerationSkipsHiddenFiles : 0;
-	NSDirectoryEnumerator* enumerator = [fm enumeratorAtURL:at includingPropertiesForKeys:keys options:options errorHandler:
-		 ^BOOL(NSURL* url, NSError* error)
-		 {
-			 NSString* reason = [error localizedFailureReason];
-			 NSString* mesg = [NSString stringWithFormat:@"Couldn't process %s: %s", STR(url), STR(reason)];
-			 [errors addObject:mesg];
-			 
-			 return YES;
-		 }];
-	
-	for (NSURL* url in enumerator)
-	{
-		NSNumber* isDirectory;
-		NSError* error = nil;
-		BOOL populated = [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&error];
-		
-		if (populated && !isDirectory.boolValue)		// note that NSDirectoryEnumerationSkipsHiddenFiles also skips hidden directories
-		{
-			NSString* candidate = url.path;
-			if (!glob || [glob matchName:candidate])
-				block(candidate);
-		}
-		else if (error)
-		{
-			NSString* reason = [error localizedFailureReason];
-			NSString* mesg = [NSString stringWithFormat:@"Couldn't check NSURLIsDirectoryKey for %s: %s", STR(url), STR(reason)];
-			[errors addObject:mesg];
-		}
-	}
-	
-	if (errors.count && outError)
-	{
-		NSString* mesg = [errors componentsJoinedByString:@"\n"];
-		NSDictionary* dict = @{NSLocalizedFailureReasonErrorKey:mesg};
-		*outError = [NSError errorWithDomain:@"shuffler" code:4 userInfo:dict];
-	}
-	return errors.count == 0;
-}
-
 
 - (void)_createDatabase:(NSString*)dbPath
 {

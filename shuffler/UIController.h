@@ -1,11 +1,13 @@
+#import "ImageProtocol.h"
+
 @class MainWindow;
 
 @interface UIController : NSWindowController
 
 - (id)init:(MainWindow*)window dbPath:(NSString*)dbPath;
 
-- (void)trashedFile:(NSString*)path;
-- (void)setPath:(NSString*)path;
+- (void)trashedFile:(id<ImageProtocol>)image;
+- (void)setImage:(id<ImageProtocol>)image;
 
 - (IBAction)selectRating:(id)sender;
 - (IBAction)selectScaling:(id)sender;
@@ -20,6 +22,6 @@
 @property (strong) IBOutlet NSMenu *tagsMenu;
 @property (strong) IBOutlet NSTextField *tagsLabel;
 
-@property (readonly) NSString *path;
+@property (readonly) id<ImageProtocol> image;
 
 @end

@@ -36,15 +36,15 @@
 	return self;
 }
 
-- (NSString*)path
+- (id<ImageProtocol>)image
 {
-	return _mainWindow.path;
+	return _mainWindow.image;
 }
 
-- (void)setPath:(NSString*)path
+- (void)setImage:(id<ImageProtocol>)image
 {
 	// Compute the hash (we do it each time because the file may have been edited)
-	NSData* data = [NSData dataWithContentsOfFile:path];
+	NSData* data = [image load];
 	unsigned char hash[16];
 	CC_MD5(data.bytes, (CC_LONG) data.length, hash);
 	_hash = [NSString stringWithFormat:@"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
@@ -97,7 +97,7 @@
 	}
 	
 	// Update our UI
-	[self.window setTitle:path.lastPathComponent];
+	[self.window setTitle:image.name];
 	[_ratingPopup selectItemAtIndex:rating];
 	[_tagsLabel setStringValue:tags];
 	_rating = [_ratingPopup titleOfSelectedItem];
@@ -110,23 +110,23 @@
 		[_scalingPopup selectItemWithTitle:[NSString stringWithFormat:@"%d%%", (int) (100*scaling)]];
 	
 	// Swap in the new image
-	[_mainWindow update:path imageData:data scaling:scaling];
+	[_mainWindow update:image imageData:data scaling:scaling];
 	
 	NSMenuItem* item = [_scalingPopup lastItem];
 	[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
 }
 
-- (void)trashedFile:(NSString*)path
+- (void)trashedFile:(id<ImageProtocol>)image
 {
 	AppDelegate* app = [NSApp delegate];
 	if (_tagsLabel.stringValue.length > 0)
 	{
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
-		[app.files trashedCategorizedFile:path withRating:rating];
+		[app.gallery trashedCategorizedFile:image withRating:rating];
 	}
 	else
 	{
-		[app.files trashedUncategorizedFile:path];
+		[app.gallery trashedUncategorizedFile:image];
 	}
 }
 
@@ -152,7 +152,7 @@
 			if (_database)
 				[self _saveSettings];
 
-			[app.files changedRatingFrom:oldRating to:newRating];
+			[app.gallery changedRatingFrom:oldRating to:newRating];
 		}
 		[app rescheduleTimer];
 	}
@@ -162,8 +162,8 @@
 {
 	double scaling = [self _getScaling];
 	
-	NSData* data = [NSData dataWithContentsOfFile:_mainWindow.path];
-	[_mainWindow update:_mainWindow.path imageData:data scaling:scaling];
+	NSData* data = [_mainWindow.image load];
+	[_mainWindow update:_mainWindow.image imageData:data scaling:scaling];
 
 	if (_tagsLabel.stringValue.length == 0)
 		[self selectNoneTag:nil];
@@ -194,7 +194,7 @@
 	if (wasUncategorized)
 	{
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
-		[app.files changedUncategorizedToCategorized:rating];
+		[app.gallery changedUncategorizedToCategorized:rating];
 	}
 
 	[app rescheduleTimer];
@@ -217,7 +217,7 @@
 	{
 		AppDelegate* app = [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
-		[app.files changedUncategorizedToCategorized:rating];
+		[app.gallery changedUncategorizedToCategorized:rating];
 	}
 
 	AppDelegate* app = [NSApp delegate];
@@ -299,7 +299,7 @@
 - (void)_saveSettings
 {
 	ASSERT(_database);
-	ASSERT(_mainWindow.path.length > 0);
+	ASSERT(_mainWindow.image != nil);
 	
 	NSInteger index = _ratingPopup.indexOfSelectedItem;
 	NSString* tags = _tagsLabel.stringValue;
@@ -310,7 +310,7 @@
 	double scaling = [self _getScaling];
 	[_database insertOrReplace:@"Appearance" values:@[_hash, @"0", [NSString stringWithFormat:@"%f", scaling]]];
 
-	[_database insertOrReplace:@"ImagePaths" values:@[_mainWindow.path, _hash]];
+	[_database insertOrReplace:@"ImagePaths" values:@[_mainWindow.image.path, _hash]];
 }
 
 - (double)_getScaling

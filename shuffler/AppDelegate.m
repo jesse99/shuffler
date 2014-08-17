@@ -3,8 +3,8 @@
 #include "Carbon/Carbon.h"
 
 #import "Database.h"
+#import "FileSystemStore.h"
 #import "InfoController.h"
-#import "Gallery.h"
 #import "MainWindow.h"
 #import "UIController.h"
 
@@ -14,13 +14,13 @@ const NSUInteger MaxHistory = 500;
 {
 	NSTimer* _timer;
 	UIController* _controller;
-	NSString* _dbPath;
 	NSInteger _interval;
 
 	NSMutableArray* _shown;
 	NSUInteger _index;
 	
-	Gallery* _files;
+	id<StoreProtocol> _store;
+	Gallery* _gallery;
 	NSString* _rating;
 	NSMutableArray* _tags;
 	bool _includeUncategorized;
@@ -44,9 +44,8 @@ const NSUInteger MaxHistory = 500;
 	_shown = [NSMutableArray new];
 	
 	NSString* root = [defaults stringForKey:@"root"];
-	root = [root stringByStandardizingPath];
-	_dbPath = [root stringByAppendingPathComponent:@"shuffler.db"];
-	_controller = [[UIController alloc] init:_window dbPath:_dbPath];
+	_store = [[FileSystemStore alloc] init:root];
+	_controller = [[UIController alloc] init:_window dbPath:_store.dbPath];
 	
 	[self reloadTagsMenu];
 	
@@ -57,9 +56,9 @@ const NSUInteger MaxHistory = 500;
 	dispatch_queue_t main = dispatch_get_main_queue();
 	dispatch_async(concurrent,
 	   ^{
-		   Gallery* files = [[Gallery alloc] init:root dbPath:_dbPath];
+		   Gallery* gallery = [[Gallery alloc] init:_store.dbPath];
 		 
-		   dispatch_async(main, ^{[self _displayInitial:files];});
+		   dispatch_async(main, ^{[self _displayInitial:gallery];});
 	   });
 }
 
@@ -93,21 +92,21 @@ const NSUInteger MaxHistory = 500;
 	[defaults synchronize];
 }
 
-- (void)_displayInitial:(Gallery*)files
+- (void)_displayInitial:(Gallery*)gallery
 {
-	_files = files;
+	_gallery = gallery;
 		
-	if (_files && _files.numWithNoFilter > 0)
-		(void) [_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized];
+	if (_gallery && _gallery.numWithNoFilter > 0)
+		(void) [_gallery filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized];
 	
-	if (_files && _files.numFiltered > 0)
+	if (_gallery && _gallery.numFiltered > 0)
 	{
 		[self nextImage:self];
 		[self.window display];		// not sure why we need this, but without it we don't see the very first image
 	}
 	else
 	{
-		if (_files.numWithNoFilter == 0)
+		if (_gallery.numWithNoFilter == 0)
 			[_controller.window setTitle:@"No Files"];
 		else
 			[_controller.window setTitle:@"No Matches"];
@@ -127,7 +126,7 @@ const NSUInteger MaxHistory = 500;
 
 - (IBAction)copyPath:(id)sender
 {
-	NSString* path = _controller.path;
+	NSString* path = _controller.image.path;
 	
 	NSPasteboard* pb = [NSPasteboard generalPasteboard];
 	NSArray* types = @[NSStringPboardType];
@@ -138,37 +137,31 @@ const NSUInteger MaxHistory = 500;
 
 - (IBAction)openFile:(id)sender
 {
-	NSString* path = _controller.path;
-	
-	[[NSWorkspace sharedWorkspace] openFile:path];
+	[_controller.image open];
 }
 
 - (IBAction)showFileInFinder:(id)sender
 {
-	NSString* path = _controller.path;
-	
-	[[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:@""];
+	[_controller.image showInFinder];
 }
 
 - (IBAction)trashFile:(id)sender
 {
 	if (_index < _shown.count)
 	{
-		NSString* path = _shown[_index];
+		id<ImageProtocol> image = _shown[_index];
 		[_shown removeObjectAtIndex:_index];
 		--_index;
 		
 		[self nextImage:self];
 		[self rescheduleTimer];
 		
-		NSURL* url = [[NSURL alloc] initFileURLWithPath:path];
-		NSURL* newURL = nil;
 		NSError* error = nil;
-		BOOL trashed = [[NSFileManager defaultManager] trashItemAtURL:url resultingItemURL:&newURL error:&error];
+		BOOL trashed = [image trash:&error];
 		if (trashed)
-			[_controller trashedFile:path];
+			[_controller trashedFile:image];
 		else
-			LOG_ERROR("failed to trash %s: %s", STR(path), STR(error.localizedFailureReason));
+			LOG_ERROR("failed to trash %s: %s", STR(image), STR(error.localizedFailureReason));
 	}
 	else
 	{
@@ -200,13 +193,13 @@ const NSUInteger MaxHistory = 500;
 // in UIController.
 - (IBAction)changeRating:(NSMenuItem *)sender
 {
-	if (_files && [_rating compare:sender.title] != NSOrderedSame)
+	if (_gallery && [_rating compare:sender.title] != NSOrderedSame)
 	{		
 		_rating = sender.title;
 		
 		// For now we do this in the main thread because it gets all squirrelly if
 		// we queue up multiple threads and have them finish at different times.
-		if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
+		if (![_gallery filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 			[_controller.window setTitle:@"No Matches"];
 	}
 }
@@ -229,7 +222,7 @@ const NSUInteger MaxHistory = 500;
 		[_tags sortUsingSelector:@selector(compare:)];
 	}
 
-	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
+	if (![_gallery filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
 }
 
@@ -238,34 +231,34 @@ const NSUInteger MaxHistory = 500;
 	[_tags removeAllObjects];
 	[_tags addObject:@"None"];
 	
-	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
+	if (![_gallery filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
 }
 
 - (IBAction)toggleUncategorizedTag:(id)sender
 {
 	_includeUncategorized = !_includeUncategorized;
-	if (![_files filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
+	if (![_gallery filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 		[_controller.window setTitle:@"No Matches"];
 }
 
 - (IBAction)nextImage:(id)sender
 {
-	if (_files)
+	if (_gallery)
 	{
-		NSString* path = nil;
+		id<ImageProtocol> image = nil;
 		if (_index + 1 < _shown.count)
 		{
-			path = _shown[++_index];
+			image = _shown[++_index];
 		}
 		else
 		{
-			path = [_files randomPath:_shown];
-			if (path)
+			image = [_gallery randomImage:_shown];
+			if (image)
 			{
-				[_shown addObject:path];
+				[_shown addObject:image];
 				
-				NSUInteger max = MIN(_files.numFiltered/2, 2000);
+				NSUInteger max = MIN(_gallery.numFiltered/2, 2000);
 				if (_shown.count > max)
 					[_shown removeObjectsInRange:NSMakeRange(0, max/2)];
 				
@@ -273,9 +266,9 @@ const NSUInteger MaxHistory = 500;
 			}
 		}
 		
-		if (path)
+		if (image)
 		{
-			[_controller setPath:path];
+			[_controller setImage:image];
 			[self rescheduleTimer];
 		}
 		else
@@ -289,8 +282,8 @@ const NSUInteger MaxHistory = 500;
 {
 	if (_index > 0)
 	{
-		NSString* path = _shown[--_index];
-		[_controller setPath:path];
+		id<ImageProtocol> image = _shown[--_index];
+		[_controller setImage:image];
 		[self rescheduleTimer];
 	}
 	else
@@ -308,10 +301,10 @@ const NSUInteger MaxHistory = 500;
 	dispatch_async(concurrent,
 	   ^{
 		   NSError* error = nil;
-		   Database* db = [[Database alloc] initWithPath:_dbPath error:&error];
+		   Database* db = [[Database alloc] initWithPath:_store.dbPath error:&error];
 		   if (!db)
 		   {
-			   LOG_ERROR("Couldn't create the database at '%s': %s", STR(_dbPath), STR(error.localizedFailureReason));
+			   LOG_ERROR("Couldn't create the database at '%s': %s", STR(_store.dbPath), STR(error.localizedFailureReason));
 			   NSBeep();
 			   return;
 		   }
@@ -378,7 +371,7 @@ const NSUInteger MaxHistory = 500;
 	if (item.action == @selector(changeRating:))
 	{
 		[item setState:[_rating compare:item.title] == NSOrderedSame];
-		enabled = _files != nil;
+		enabled = _gallery != nil;
 	}
 	else if (item.action == @selector(setInterval:))
 	{

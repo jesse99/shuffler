@@ -1,6 +1,9 @@
 #import <Cocoa/Cocoa.h>
 
-@class Gallery, MainWindow;
+#import "Gallery.h"
+#import "StoreProtocol.h"
+
+@class MainWindow;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
@@ -8,7 +11,8 @@
 
 - (void)rescheduleTimer;
 
-@property (readonly) Gallery* files;
+@property (readonly) id<StoreProtocol> store;
+@property (readonly) Gallery* gallery;
 
 @property (assign) IBOutlet MainWindow *window;
 @property (strong) IBOutlet NSMenu *tagsMenu;

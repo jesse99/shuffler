@@ -49,11 +49,10 @@ static InfoController* _controller;
 
 - (void)_reload:(NSNotification*)notification
 {
-	AppDelegate* delegate = [NSApp delegate];
-	Gallery* files = delegate.files;
+	AppDelegate* app = [NSApp delegate];
+	Gallery* gallery = app.gallery;
 	
-	NSString* dir = [files.root lastPathComponent];
-	[self.window setTitle:dir];
+	[self.window setTitle:app.store.name];
     
 	NSTextStorage* storage = _textView.textStorage;
 	[storage beginEditing];
@@ -61,11 +60,11 @@ static InfoController* _controller;
 	
 	NSUInteger shown = 0;
 	NSUInteger total = 0;
-	[self _addStats:files forRating:FantasticRating shown:&shown total:&total];
-	[self _addStats:files forRating:GreatRating shown:&shown total:&total];
-	[self _addStats:files forRating:GoodRating shown:&shown total:&total];
-	[self _addStats:files forRating:NormalRating shown:&shown total:&total];
-	[self _addStats:files forRating:UncategorizedRating shown:&shown total:&total];
+	[self _addStats:gallery forRating:FantasticRating shown:&shown total:&total];
+	[self _addStats:gallery forRating:GreatRating shown:&shown total:&total];
+	[self _addStats:gallery forRating:GoodRating shown:&shown total:&total];
+	[self _addStats:gallery forRating:NormalRating shown:&shown total:&total];
+	[self _addStats:gallery forRating:UncategorizedRating shown:&shown total:&total];
 
 	NSString* shownStr = [NSString formatWithThousandSeparator:[NSNumber numberWithUnsignedInteger:shown]];
 	NSString* totalStr = [NSString formatWithThousandSeparator:[NSNumber numberWithUnsignedInteger:total]];
@@ -74,12 +73,12 @@ static InfoController* _controller;
 	[storage endEditing];
 }
 
-- (void)_addStats:(Gallery*)files forRating:(NSUInteger)rating shown:(NSUInteger*)shown total:(NSUInteger*)total
+- (void)_addStats:(Gallery*)gallery forRating:(NSUInteger)rating shown:(NSUInteger*)shown total:(NSUInteger*)total
 {
-	NSUInteger totalNum = [files totalForRating:rating];
+	NSUInteger totalNum = [gallery totalForRating:rating];
 	if (totalNum > 0)
 	{
-		NSUInteger numShown = [files numShownForRating:rating];
+		NSUInteger numShown = [gallery numShownForRating:rating];
 		NSString* shownStr = [NSString formatWithThousandSeparator:[NSNumber numberWithUnsignedInteger:numShown]];
 		NSString* totalStr = [NSString formatWithThousandSeparator:[NSNumber numberWithUnsignedInteger:totalNum]];
 		

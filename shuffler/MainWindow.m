@@ -41,7 +41,7 @@
 	return self;
 }
 
-- (void)update:(NSString*)path imageData:(NSData*)data scaling:(double)scaling
+- (void)update:(id<ImageProtocol>)image imageData:(NSData*)data scaling:(double)scaling
 {
 	if (!_images[0])
 		[self _postInit];
@@ -71,8 +71,8 @@
 		
 		// Load the image (we need to use a two step process here because just
 		// creating an NSImage won't always give us a valid size).
-		NSImage* image = [[NSImage alloc] initWithSize:size];
-		[image addRepresentation:rep];
+		NSImage* bitmap = [[NSImage alloc] initWithSize:size];
+		[bitmap addRepresentation:rep];
 
 		// Fade the old view out and the new view in.
 		NSAnimationContext* context = [NSAnimationContext currentContext];
@@ -84,14 +84,14 @@
 
 		// Set the frame and image for the new view. Note that we get nicer
 		// results if we do this after the fades.
-		[_images[_index] setImage:image];
+		[_images[_index] setImage:bitmap];
 		[_images[_index] setFrame:[self _doGetViewRect:size]];
-		_path = path;
-		LOG_VERBOSE("selected '%s'", STR(path));
+		_image = image;
+		LOG_VERBOSE("selected '%s'", STR(image));
 	}
 	else
 	{
-		LOG_ERROR("failed to load '%s'", STR(path));
+		LOG_ERROR("failed to load '%s'", STR(image));
 	}
 }
 

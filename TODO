@@ -1,18 +1,17 @@
-BaseStore
-	FileStore
-	ImgurStore
-Gallery				new name for Files
-
+* Refactor the code:
+	- make sure it still works
+	- do a commit
+	- do something with compact database, maybe check if can delete images
 * Support imgur galleries:
-	- refactor the code so that there are better abstractions
-	  maybe just a Store abstraction, one for file system, one for imgur
 	- implement stuff using the REST api
 	- trash should be a blacklist
 	- maybe open can goto the URL for the image?
 	- copy could copy the URL
 	- may want a move to <some directory> menu item
 	- probably want a Database menu to allow for selecting predefined directories and galleries
+* flickr?
 * Get back on master branch
+* Don't think the max code is correct for horz scaling
 * Look at supporing networked images:
 	- http://api.imgur.com/
 	- might be able to download straight from google search
