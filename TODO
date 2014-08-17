@@ -1,6 +1,4 @@
 * Refactor the code:
-	- make sure it still works
-	- do a commit
 	- do something with compact database, maybe check if can delete images
 * Support imgur galleries:
 	- implement stuff using the REST api

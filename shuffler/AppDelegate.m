@@ -119,7 +119,8 @@ const NSUInteger MaxHistory = 500;
 	// we'll take the opportunity to clean up the database. Note
 	// that this is 1) in the background 2) very fast, 40K images
 	// takes under a second on a 2009 Mac Pro.
-	[self compactDatabase];
+	if (_store.canDeleteImages)
+		[self compactDatabase];
 	
 	[InfoController show];
 }
@@ -324,7 +325,6 @@ const NSUInteger MaxHistory = 500;
 	NSError* error = nil;
 	
 	// Enumerate path and hash from ImagePaths,
-	NSFileManager* fm = [NSFileManager defaultManager];
 	NSString* sql = @"SELECT path, hash FROM ImagePaths";
 	NSMutableArray* rows = [db queryRows:sql error:&error];
 	for (NSUInteger i = 0; rows && i < rows.count; ++i)
@@ -334,7 +334,7 @@ const NSUInteger MaxHistory = 500;
 		NSString* hash = row[1];
 		
 		// if path does not exist then,
-		if (![fm fileExistsAtPath:path])
+		if (![_store exists:path])
 		{
 			// update ImagePaths,
 			path = [path stringByReplacingOccurrencesOfString:@"'" withString:@"''"];

@@ -300,18 +300,18 @@ static long ratingToWeight(NSUInteger rating)
 	sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 300", [self _getQuery]];
 	[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
 
+	AppDelegate* app = [NSApp delegate];
 	if (rows && rows.count > 0)
 	{
 		long weight = ratingToWeight(TopRating);
 
-		NSFileManager* fm = [NSFileManager defaultManager];
 		NSString* fallback = nil;
 		NSUInteger fallbackRating = 0;
 		for (NSUInteger i = 0; i < rows.count && path == nil; ++i)
 		{
 			NSArray* row = rows[i];
 			NSString* candidate = row[0];
-			if ([fm fileExistsAtPath:candidate])
+			if ([app.store exists:candidate])
 			{
 				NSString* tmp = row[1];
 				NSUInteger rating = (NSUInteger) [tmp integerValue];
@@ -353,7 +353,6 @@ static long ratingToWeight(NSUInteger rating)
 		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
 	}
 	
-	AppDelegate* app = [NSApp delegate];
 	return [app.store create:path];
 }
 

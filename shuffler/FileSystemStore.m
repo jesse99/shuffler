@@ -64,10 +64,23 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 	}
 }
 	
+- (bool) canDeleteImages
+{
+	return true;
+}
+
 - (NSString*)name
 {
 	NSString* dirName = [_root lastPathComponent];
 	return dirName;
+}
+
+- (bool)exists:(NSString*)path
+{
+	NSFileManager* fm = [NSFileManager defaultManager];
+	bool exists = [fm fileExistsAtPath:path];
+	return exists;
+	
 }
 
 - (id<ImageProtocol>)create:(NSString*)path
