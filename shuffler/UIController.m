@@ -417,8 +417,7 @@
 		if (created)
 			created = [database update:@"\
 					   CREATE TABLE IF NOT EXISTS ImagePaths(\
-					   path TEXT NOT NULL PRIMARY KEY\
-					   CONSTRAINT absolute_path CHECK(substr(path, 1, 1) = '/'),\
+					   path TEXT NOT NULL PRIMARY KEY,\
 					   hash TEXT NOT NULL\
 					   )" error:&error];
 		

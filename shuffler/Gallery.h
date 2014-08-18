@@ -12,6 +12,7 @@ NSString* ratingToName(NSUInteger rating);
 @interface Gallery : NSObject
 
 - (id)init:(NSString*)dbPath;
+- (void)spinup:(void (^)())finished;
 
 - (void)trashedCategorizedFile:(id<ImageProtocol>)image withRating:(NSString*)rating;
 - (void)trashedUncategorizedFile:(id<ImageProtocol>)image;

@@ -80,7 +80,6 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 	NSFileManager* fm = [NSFileManager defaultManager];
 	bool exists = [fm fileExistsAtPath:path];
 	return exists;
-	
 }
 
 - (id<ImageProtocol>)create:(NSString*)path
@@ -88,7 +87,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 	return [[FileSytemImage alloc] init:path];
 }
 
-- (bool)enumerate:(void (^)(NSURL* url))block
+- (void)enumerate:(void (^)(NSString* path))block finished:(void (^)())finished
 {
 	LOG_NORMAL("enumerating images from '%s'", STR(_root));
 	double startTime = getTime();
@@ -101,8 +100,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 		 if ([_glob matchName:path.lastPathComponent] == 1)
 		 {
 			 count++;
-			 NSURL* url = [NSURL fileURLWithPath:path isDirectory:FALSE];
-			 block(url);
+			 block(path);
 		 }
 		 else
 		 {
@@ -117,14 +115,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 	
 	double elapsed = getTime() - startTime;
 	LOG_NORMAL("found %lu images in %.1fs", count, elapsed);
-	
-	return count > 0;
-}
-
-- (NSData*)loadImage:(NSURL*)url
-{
-	NSData* data = [NSData dataWithContentsOfFile:url.path];
-	return data;
+	finished();
 }
 
 - (bool)_enumerateDeepDir:(NSString*)path glob:(Glob*)glob error:(NSError**)outError block:(void (^)(NSString* item))block

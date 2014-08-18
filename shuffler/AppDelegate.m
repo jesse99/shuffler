@@ -4,6 +4,7 @@
 
 #import "Database.h"
 #import "FileSystemStore.h"
+#import "ImgurStore.h"
 #import "InfoController.h"
 #import "MainWindow.h"
 #import "UIController.h"
@@ -44,7 +45,9 @@ const NSUInteger MaxHistory = 500;
 	_shown = [NSMutableArray new];
 	
 	NSString* root = [defaults stringForKey:@"root"];
-	_store = [[FileSystemStore alloc] init:root];
+	root = @"/tmp";				// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//	_store = [[FileSystemStore alloc] init:root];
+	_store = [[ImgurStore alloc] init:root];
 	_controller = [[UIController alloc] init:_window dbPath:_store.dbPath];
 	
 	[self reloadTagsMenu];
@@ -57,8 +60,10 @@ const NSUInteger MaxHistory = 500;
 	dispatch_async(concurrent,
 	   ^{
 		   Gallery* gallery = [[Gallery alloc] init:_store.dbPath];
-		 
-		   dispatch_async(main, ^{[self _displayInitial:gallery];});
+		   [gallery spinup:
+			   ^{
+				   dispatch_async(main, ^{[self _displayInitial:gallery];});
+			   }];
 	   });
 }
 

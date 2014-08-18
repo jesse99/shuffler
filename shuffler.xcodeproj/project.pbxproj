@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06457F54387C4C8A873AA3D4 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7670AA1045384A209B994A1E /* libPods.a */; };
 		372A6E091956928400ABC430 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 372A6E081956928400ABC430 /* TODO */; };
 		372A6E0C195767DB00ABC430 /* Gallery.m in Sources */ = {isa = PBXBuildFile; fileRef = 372A6E0B195767DB00ABC430 /* Gallery.m */; };
 		372A6E0F1957687E00ABC430 /* Glob.m in Sources */ = {isa = PBXBuildFile; fileRef = 372A6E0E1957687E00ABC430 /* Glob.m */; };
@@ -36,6 +37,8 @@
 		37B0090119730E5500919A77 /* DatabaseInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37B0090019730E5500919A77 /* DatabaseInfo.xib */; };
 		37B0090419730FF300919A77 /* InfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B0090319730FF300919A77 /* InfoController.m */; };
 		37B009071973472600919A77 /* StringCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B009061973472600919A77 /* StringCategory.m */; };
+		37C9B2B819A1601600D6A0BC /* ImgurStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 37C9B2B719A1601600D6A0BC /* ImgurStore.m */; };
+		37C9B2BB19A16FBE00D6A0BC /* ImgurImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 37C9B2BA19A16FBE00D6A0BC /* ImgurImage.m */; };
 		37F92DA619A002ED0003ADF7 /* FileSystemStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F92DA519A002ED0003ADF7 /* FileSystemStore.m */; };
 		37F92DAA19A00A930003ADF7 /* FileSytemImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F92DA919A00A930003ADF7 /* FileSytemImage.m */; };
 /* End PBXBuildFile section */
@@ -100,12 +103,18 @@
 		37B0090319730FF300919A77 /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoController.m; sourceTree = "<group>"; };
 		37B009051973472600919A77 /* StringCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringCategory.h; sourceTree = "<group>"; };
 		37B009061973472600919A77 /* StringCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringCategory.m; sourceTree = "<group>"; };
+		37C9B2B619A1601600D6A0BC /* ImgurStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImgurStore.h; sourceTree = "<group>"; };
+		37C9B2B719A1601600D6A0BC /* ImgurStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImgurStore.m; sourceTree = "<group>"; };
+		37C9B2B919A16FBE00D6A0BC /* ImgurImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImgurImage.h; sourceTree = "<group>"; };
+		37C9B2BA19A16FBE00D6A0BC /* ImgurImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImgurImage.m; sourceTree = "<group>"; };
 		37F92DA119A001360003ADF7 /* StoreProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoreProtocol.h; sourceTree = "<group>"; };
 		37F92DA419A002ED0003ADF7 /* FileSystemStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystemStore.h; sourceTree = "<group>"; };
 		37F92DA519A002ED0003ADF7 /* FileSystemStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileSystemStore.m; sourceTree = "<group>"; };
 		37F92DA719A00A1B0003ADF7 /* ImageProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageProtocol.h; sourceTree = "<group>"; };
 		37F92DA819A00A930003ADF7 /* FileSytemImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSytemImage.h; sourceTree = "<group>"; };
 		37F92DA919A00A930003ADF7 /* FileSytemImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileSytemImage.m; sourceTree = "<group>"; };
+		7670AA1045384A209B994A1E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9269DA745DA24F81A25864B4 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +124,7 @@
 			files = (
 				3756CB42195A7E3F0008C300 /* libsqlite3.dylib in Frameworks */,
 				372E953319568FF1004FC97D /* Cocoa.framework in Frameworks */,
+				06457F54387C4C8A873AA3D4 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +149,7 @@
 				372E955619568FF2004FC97D /* shufflerTests */,
 				372E953119568FF1004FC97D /* Frameworks */,
 				372E953019568FF1004FC97D /* Products */,
+				9269DA745DA24F81A25864B4 /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -158,6 +169,7 @@
 				372E953219568FF1004FC97D /* Cocoa.framework */,
 				372E955119568FF2004FC97D /* XCTest.framework */,
 				372E953419568FF1004FC97D /* Other Frameworks */,
+				7670AA1045384A209B994A1E /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -185,6 +197,10 @@
 				372A6E0A195767DB00ABC430 /* Gallery.h */,
 				372A6E0B195767DB00ABC430 /* Gallery.m */,
 				37F92DA719A00A1B0003ADF7 /* ImageProtocol.h */,
+				37C9B2B919A16FBE00D6A0BC /* ImgurImage.h */,
+				37C9B2BA19A16FBE00D6A0BC /* ImgurImage.m */,
+				37C9B2B619A1601600D6A0BC /* ImgurStore.h */,
+				37C9B2B719A1601600D6A0BC /* ImgurStore.m */,
 				37B0090219730FF300919A77 /* InfoController.h */,
 				37B0090319730FF300919A77 /* InfoController.m */,
 				372E953E19568FF1004FC97D /* main.m */,
@@ -262,9 +278,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 372E956019568FF2004FC97D /* Build configuration list for PBXNativeTarget "shuffler" */;
 			buildPhases = (
+				28D18470E9A04241BDAC649A /* Check Pods Manifest.lock */,
 				372E952B19568FF1004FC97D /* Sources */,
 				372E952C19568FF1004FC97D /* Frameworks */,
 				372E952D19568FF1004FC97D /* Resources */,
+				983FB22265384147A5D9C950 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -354,6 +372,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		28D18470E9A04241BDAC649A /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		983FB22265384147A5D9C950 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		372E952B19568FF1004FC97D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -365,8 +416,10 @@
 				37B008FF1967AF9500919A77 /* NewTagController.m in Sources */,
 				37B0090419730FF300919A77 /* InfoController.m in Sources */,
 				3756CB45195BD3F30008C300 /* ArrayCategory.m in Sources */,
+				37C9B2BB19A16FBE00D6A0BC /* ImgurImage.m in Sources */,
 				3756CB40195A7C600008C300 /* Assert.m in Sources */,
 				37B009071973472600919A77 /* StringCategory.m in Sources */,
+				37C9B2B819A1601600D6A0BC /* ImgurStore.m in Sources */,
 				372A6E191957AEBA00ABC430 /* MainWindow.m in Sources */,
 				372E954619568FF1004FC97D /* AppDelegate.m in Sources */,
 				37F92DAA19A00A930003ADF7 /* FileSytemImage.m in Sources */,
@@ -503,6 +556,7 @@
 		};
 		372E956119568FF2004FC97D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9269DA745DA24F81A25864B4 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
@@ -523,6 +577,7 @@
 		};
 		372E956219568FF2004FC97D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9269DA745DA24F81A25864B4 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;

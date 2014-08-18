@@ -70,17 +70,22 @@ NSString* ratingToName(NSUInteger rating)
 
 		_currentTags = @[];
 		_includeUncategorized = true;
-		
-		[self _addUncategorized:_database];	// TODO: popup a directory picker if nothing was found
 	}
 	
 	return self;
 }
 
+- (void)spinup:(void (^)())finished
+{
+	[self _addUncategorized:_database finished:finished];	// TODO: popup a directory picker if nothing was found	
+}
+
 - (void)storeChanged
 {
-	[self _addUncategorized:_database];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
+	[self _addUncategorized:_database finished:
+		^{
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:nil];
+		}];
 }
 
 - (void)trashedCategorizedFile:(id<ImageProtocol>)image withRating:(NSString*)rating
@@ -284,22 +289,39 @@ static long ratingToWeight(NSUInteger rating)
 	NSString* path = nil;
 	
 //	double startTime = getTime();
-	NSMutableArray* rows = [NSMutableArray new];
-	
 	NSError* error = nil;
-	NSString* sql;
-	if (_includeUncategorized && random() % 2 == 1)
-	{
-		// If we land here and find a useable image we'll always pick it
-		// because they have max weight.
-		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 50", [self _getUncategorizedQuery]];
-		[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
-	}
-	NSUInteger numUncategorized = rows.count;
-	
-	sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 300", [self _getQuery]];
-	[rows addObjectsFromArray:[_database queryRows:sql error:&error]];
+	NSString* sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 300", [self _getQuery]];
+	NSArray* categorized = [_database queryRows:sql error:&error];
 
+	NSMutableArray* rows = [NSMutableArray new];
+	NSRange uncategorizedRange = NSMakeRange(0, 0);
+	if (_includeUncategorized)
+	{
+		sql = [NSString stringWithFormat:@"%@ ORDER BY RANDOM() LIMIT 50", [self _getUncategorizedQuery]];
+		NSArray* uncategorized = [_database queryRows:sql error:&error];
+		
+		if (random() % 2 == 1)
+		{
+			// Half the time we'll show an uncategorized file (if any exist we'll pick them
+			// because they have max weight).
+			[rows addObjectsFromArray:uncategorized];
+			[rows addObjectsFromArray:categorized];
+			uncategorizedRange = NSMakeRange(0, uncategorized.count);
+		}
+		else
+		{
+			// The other half of the time we'll try and show a categorized file (this may
+			// fail if there aren't very many and they've all been shown).
+			[rows addObjectsFromArray:categorized];
+			[rows addObjectsFromArray:uncategorized];
+			uncategorizedRange = NSMakeRange(categorized.count, uncategorized.count);
+		}
+	}
+	else
+	{
+		[rows addObjectsFromArray:categorized];
+	}
+	
 	AppDelegate* app = [NSApp delegate];
 	if (rows && rows.count > 0)
 	{
@@ -318,7 +340,7 @@ static long ratingToWeight(NSUInteger rating)
 				fallback = candidate;
 				fallbackRating = rating;
 				
-				if (i < numUncategorized || ![shown containsObject:candidate])
+				if ((i >= uncategorizedRange.location && i < uncategorizedRange.location + uncategorizedRange.length) || ![shown containsObject:candidate])
 				{
 					weight -= ratingToWeight(rating);
 					if (weight <= 0)
@@ -353,7 +375,7 @@ static long ratingToWeight(NSUInteger rating)
 		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
 	}
 	
-	return [app.store create:path];
+	return path != nil ? [app.store create:path] : nil;
 }
 
 - (NSUInteger)_runCountQuery:(NSString*)sql
@@ -467,13 +489,13 @@ static long ratingToWeight(NSUInteger rating)
 	return clauses;
 }
 
-- (void)_addUncategorized:(Database*)database;	
+- (void)_addUncategorized:(Database*)database finished:(void (^)())finished;
 {
 	AppDelegate* app = [NSApp delegate];
 	(void) [app.store enumerate:
-		^(id<ImageProtocol> image) {
-			[database insertOrIgnore:@"ImagePaths" values:@[image.path, @""]];
-		}];
+		^(NSString* path) {
+			[database insertOrIgnore:@"ImagePaths" values:@[path, @""]];
+		} finished:finished];
 }
 
 - (void)_createDatabase:(NSString*)dbPath
