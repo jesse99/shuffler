@@ -10,6 +10,7 @@
 - (void)showInFinder;
 - (bool)trash:(NSError**)error;
 
+- (BOOL)isEqual:(id)object;
 - (NSString*)description;
 
 @property (readonly) NSString* name;

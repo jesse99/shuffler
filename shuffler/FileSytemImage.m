@@ -45,6 +45,14 @@
 	return _path.lastPathComponent;
 }
 
+- (BOOL)isEqual:(id)object
+{
+	if(![object isKindOfClass: [FileSytemImage class]])
+		return NO;
+	
+	return [[object path] isEqual: _path];
+}
+
 - (NSString*)description
 {
 	return _path;

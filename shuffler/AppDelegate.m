@@ -45,9 +45,11 @@ const NSUInteger MaxHistory = 500;
 	_shown = [NSMutableArray new];
 	
 	NSString* root = [defaults stringForKey:@"root"];
-	root = @"/tmp";				// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//	_store = [[FileSystemStore alloc] init:root];
-	_store = [[ImgurStore alloc] init:root];
+	_store = [[FileSystemStore alloc] init:root];
+
+	//root = @"/tmp";				// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	//_store = [[ImgurStore alloc] init:root];
+	
 	_controller = [[UIController alloc] init:_window dbPath:_store.dbPath];
 	
 	[self reloadTagsMenu];

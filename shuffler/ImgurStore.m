@@ -19,7 +19,6 @@
 		_root = [root stringByStandardizingPath];
 		_dbPath = [_root stringByAppendingPathComponent:@"shuffler.db"];
 
-//		[IMGSession authenticatedSessionWithClientID:@"d8d39c04b69fcd3" secret:@"c0cce20e7262ced639e3ab7cd76f7acb996badb7" authType:IMGCodeAuth withDelegate:self];
 		[IMGSession anonymousSessionWithClientID:@"d004fa3f064cec9" withDelegate:self];
 	}
 	

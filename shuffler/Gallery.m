@@ -286,7 +286,7 @@ static long ratingToWeight(NSUInteger rating)
 
 - (id<ImageProtocol>)randomImage:(NSArray*)shown
 {
-	NSString* path = nil;
+	id<ImageProtocol> image = nil;
 	
 //	double startTime = getTime();
 	NSError* error = nil;
@@ -327,9 +327,9 @@ static long ratingToWeight(NSUInteger rating)
 	{
 		long weight = ratingToWeight(TopRating);
 
-		NSString* fallback = nil;
+		id<ImageProtocol> fallback = nil;
 		NSUInteger fallbackRating = 0;
-		for (NSUInteger i = 0; i < rows.count && path == nil; ++i)
+		for (NSUInteger i = 0; i < rows.count && image == nil; ++i)
 		{
 			NSArray* row = rows[i];
 			NSString* candidate = row[0];
@@ -337,7 +337,7 @@ static long ratingToWeight(NSUInteger rating)
 			{
 				NSString* tmp = row[1];
 				NSUInteger rating = (NSUInteger) [tmp integerValue];
-				fallback = candidate;
+				fallback = [app.store create:candidate];
 				fallbackRating = rating;
 				
 				if ((i >= uncategorizedRange.location && i < uncategorizedRange.location + uncategorizedRange.length) || ![shown containsObject:candidate])
@@ -345,7 +345,7 @@ static long ratingToWeight(NSUInteger rating)
 					weight -= ratingToWeight(rating);
 					if (weight <= 0)
 					{
-						path = candidate;
+						image = fallback;
 						_numShown[rating] += 1;
 						
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
@@ -358,10 +358,10 @@ static long ratingToWeight(NSUInteger rating)
 			}
 		}
 		
-		if (!path && fallback)
+		if (!image && fallback)
 		{
 			LOG_NORMAL("Showing a path that has already been shown");
-			path = fallback;
+			image = fallback;
 			_numShown[fallbackRating] += 1;
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"Stats Changed" object:self];
@@ -375,7 +375,7 @@ static long ratingToWeight(NSUInteger rating)
 		LOG_ERROR("'%s' query failed: %s", STR(sql), STR(error.localizedFailureReason));
 	}
 	
-	return path != nil ? [app.store create:path] : nil;
+	return image;
 }
 
 - (NSUInteger)_runCountQuery:(NSString*)sql

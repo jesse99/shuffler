@@ -7,10 +7,6 @@ open shuffler.xcworkspace
 	be sure to build this before trying to build the real shuffler
 
 * Install AFNetworking and ImgurSession:
-	- use the pod file goo
-	- are the object ids persistent?
-	- shown check doesn't seem to work
-	- flip a coin and add uncategorized before or after categorized
 	- maybe we should allow multiple albums
 * Refactor the code:
 	- do something with compact database, maybe check if can delete images
