@@ -98,6 +98,44 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Edit" id="5QF-Oa-p0T">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Edit" id="W48-6f-4Dl">
+                        <items>
+                            <menuItem title="Undo" keyEquivalent="z" id="dRJ-4n-Yzg">
+                                <connections>
+                                    <action selector="undo:" target="-1" id="M6e-cu-g7V"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Redo" keyEquivalent="Z" id="6dh-zS-Vam">
+                                <connections>
+                                    <action selector="redo:" target="-1" id="oIA-Rs-6OD"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="WRV-NI-Exz"/>
+                            <menuItem title="Cut" keyEquivalent="x" id="uRl-iY-unG">
+                                <connections>
+                                    <action selector="cut:" target="-1" id="YJe-68-I9s"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Copy" keyEquivalent="c" id="x3v-GG-iWU">
+                                <connections>
+                                    <action selector="copy:" target="-1" id="G1f-GL-Joy"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Paste" keyEquivalent="v" id="gVA-U4-sdL">
+                                <connections>
+                                    <action selector="paste:" target="-1" id="UvS-8e-Qdg"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Select All" keyEquivalent="a" id="Ruw-6m-B2m">
+                                <connections>
+                                    <action selector="selectAll:" target="-1" id="VNm-Mi-diN"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Image" id="9vd-n0-prs">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Image" id="c2e-OL-Y6L">
@@ -238,9 +276,9 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Database" id="4tp-1A-QII">
+                <menuItem title="Window" id="4tp-1A-QII">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Database" id="nJl-Kh-haO">
+                    <menu key="submenu" title="Window" id="nJl-Kh-haO">
                         <items>
                             <menuItem title="Database Info" keyEquivalent="i" id="GIw-SF-gnG">
                                 <connections>
@@ -248,42 +286,14 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="nsr-n9-xwI"/>
-                        </items>
-                    </menu>
-                </menuItem>
-                <menuItem title="Edit" id="5QF-Oa-p0T">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Edit" id="W48-6f-4Dl">
-                        <items>
-                            <menuItem title="Undo" keyEquivalent="z" id="dRJ-4n-Yzg">
+                            <menuItem title="Use Screen 1" keyEquivalent="1" id="eY2-Vw-sf8">
                                 <connections>
-                                    <action selector="undo:" target="-1" id="M6e-cu-g7V"/>
+                                    <action selector="useScreen1:" target="Voe-Tx-rLC" id="9KG-ZB-DzS"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Redo" keyEquivalent="Z" id="6dh-zS-Vam">
+                            <menuItem title="Use Screen 2" keyEquivalent="2" id="ebz-kh-iH3">
                                 <connections>
-                                    <action selector="redo:" target="-1" id="oIA-Rs-6OD"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="WRV-NI-Exz"/>
-                            <menuItem title="Cut" keyEquivalent="x" id="uRl-iY-unG">
-                                <connections>
-                                    <action selector="cut:" target="-1" id="YJe-68-I9s"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Copy" keyEquivalent="c" id="x3v-GG-iWU">
-                                <connections>
-                                    <action selector="copy:" target="-1" id="G1f-GL-Joy"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Paste" keyEquivalent="v" id="gVA-U4-sdL">
-                                <connections>
-                                    <action selector="paste:" target="-1" id="UvS-8e-Qdg"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Select All" keyEquivalent="a" id="Ruw-6m-B2m">
-                                <connections>
-                                    <action selector="selectAll:" target="-1" id="VNm-Mi-diN"/>
+                                    <action selector="useScreen2:" target="Voe-Tx-rLC" id="M54-Vb-OBb"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -334,6 +344,11 @@
         </window>
         <menuItem title="Item" id="b7n-Bv-DV4">
             <modifierMask key="keyEquivalentModifierMask"/>
+        </menuItem>
+        <menuItem title="Database Info" keyEquivalent="i" id="Lz3-PN-wd0">
+            <connections>
+                <action selector="showInfo:" target="Voe-Tx-rLC" id="Sqf-NW-IET"/>
+            </connections>
         </menuItem>
     </objects>
 </document>

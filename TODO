@@ -69,9 +69,10 @@ pod install
 open shuffler.xcworkspace
 	be sure to build this before trying to build the real shuffler
 
-* Would be nice if Snaccing said what it was scanning.
+* Would be nice if Snanning said what it was scanning.
 * Got another image that didn't have a hash:
 	- multiple paths?
+* Punt on imgur.
 * Should we have sources instead of stores?
 * Work on a databases menu:
 	- selecting should create a new store object

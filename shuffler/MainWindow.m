@@ -4,6 +4,7 @@
 
 @implementation MainWindow
 {
+	NSScreen* _screen;
 	NSImageView* _images[2];
 	NSUInteger _index;
 	double _maxScaling;
@@ -25,6 +26,8 @@
 		contentRect.origin.y = 0.0;
 		self = [[MainWindow alloc] initWithContentRect:contentRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:false screen:screen];
 		
+		_screen = screen;
+
 		[self setBackgroundColor:[NSColor clearColor]];
 		[self setExcludedFromWindowsMenu:true];
 		[self setIgnoresMouseEvents:true];
@@ -39,6 +42,12 @@
 	_maxScaling = 1.0;
 	
 	return self;
+}
+
+- (void)useScreen:(NSScreen*)screen
+{
+	_screen = screen;
+	[self setFrame:_screen.frame display:NO];
 }
 
 - (void)update:(id<ImageProtocol>)image imageData:(NSData*)data scaling:(double)scaling
@@ -109,13 +118,15 @@
 	[self orderFront:self];
 }
 
+// This is the view rect for the view within the window (the window is transparent and
+// fills the screen).
 - (NSRect)_doGetViewRect:(NSSize)imageSize
 {
 	NSRect result;
 	
 	// For the vertical component we can use the full window. If the image
-	// is to tall it will be scaled. If the image is shorter than the window it
-	// will be centered.
+	// is too tall it will be scaled. If the image is shorter than the window
+	// it will be centered.
 	NSSize windSize = self.frame.size;
 	result.origin.y = 0.0f;
 	result.size.height = windSize.height;

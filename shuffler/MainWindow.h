@@ -5,6 +5,8 @@
 
 - (void)update:(id<ImageProtocol>)image imageData:(NSData*)data scaling:(double)scaling;
 
+- (void)useScreen:(NSScreen*)screen;
+
 @property (readonly) id<ImageProtocol> image;
 @property (readonly) double maxScaling;
 @property (strong) IBOutlet NSImageView *image1;

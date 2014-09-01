@@ -400,6 +400,22 @@ const NSUInteger MaxHistory = 500;
 		LOG_ERROR("Compaction error for row: %s", STR(error.localizedFailureReason));
 }
 
+- (IBAction)useScreen1:(id)sender
+{
+	NSArray* screens = [NSScreen screens];
+	[self.window useScreen:screens[0]];
+	
+	[_controller setImage:_controller.image];
+}
+
+- (IBAction)useScreen2:(id)sender
+{
+	NSArray* screens = [NSScreen screens];
+	[self.window useScreen:screens[1]];
+	
+	[_controller setImage:_controller.image];
+}
+
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
 	BOOL enabled = true;
