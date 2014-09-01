@@ -1,6 +1,6 @@
 #import "MainWindow.h"
 
-#define LEFT_BORDER 420		// TODO: make this a pref
+#define LEFT_BORDER 430		// TODO: make this a pref
 
 @implementation MainWindow
 {
@@ -131,7 +131,7 @@
 - (NSScreen*)_getScreen
 {
 	NSArray* screens = [NSScreen screens];	// 0 is the primary screen
-	NSScreen* screen = screens.count > 1 ? screens[1] : screens[0];	// TODO: use a pref
+	NSScreen* screen = screens.count > 1 ? screens[0] : screens[0];	// TODO: use a pref
 
 	return screen;
 }
