@@ -13,6 +13,7 @@
         <customObject id="-3" userLabel="Application"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
+                <outlet property="databaseMenu" destination="nJl-Kh-haO" id="lIP-Xw-Bvr"/>
                 <outlet property="tagsMenu" destination="WNN-2h-sfS" id="nDS-iN-cxR"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
@@ -97,9 +98,9 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Images" id="9vd-n0-prs">
+                <menuItem title="Image" id="9vd-n0-prs">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Images" id="c2e-OL-Y6L">
+                    <menu key="submenu" title="Image" id="c2e-OL-Y6L">
                         <items>
                             <menuItem title="Next" keyEquivalent="" id="ElD-bB-OH3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -111,11 +112,6 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="prevImage:" target="Voe-Tx-rLC" id="jpQ-15-MGL"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Database Info" keyEquivalent="i" id="o9m-91-smV">
-                                <connections>
-                                    <action selector="showInfo:" target="Voe-Tx-rLC" id="Rx6-3e-75I"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="cqS-U1-KBD"/>
@@ -242,6 +238,19 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Database" id="4tp-1A-QII">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Database" id="nJl-Kh-haO">
+                        <items>
+                            <menuItem title="Database Info" keyEquivalent="i" id="GIw-SF-gnG">
+                                <connections>
+                                    <action selector="showInfo:" target="Voe-Tx-rLC" id="dkK-a2-nkb"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="nsr-n9-xwI"/>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Edit" id="5QF-Oa-p0T">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Edit" id="W48-6f-4Dl">
@@ -294,7 +303,7 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="shuffler" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="main_window" animationBehavior="default" id="QvC-M9-y7g" customClass="MainWindow">
+        <window title="shuffler" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hasShadow="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="QvC-M9-y7g" customClass="MainWindow">
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="634" y="409" width="356" height="253"/>

@@ -27,7 +27,7 @@
 
 -(void)imgurSessionRateLimitExceeded
 {
-	LOG_ERROR("igur rate limit exceeded");
+	LOG_ERROR("imgur rate limit exceeded");
 }
 
 -(void)imgurSessionNeedsExternalWebview:(NSURL*)url completion:(void(^)())completion
@@ -40,12 +40,12 @@
 
 -(void)imgurRequestFailed:(NSError*)error
 {
-	LOG_ERROR("igur request failed: %s", STR(error.localizedFailureReason));
+	LOG_ERROR("imgur request failed: %s", STR(error.localizedFailureReason));
 }
 
 -(void)imgurReachabilityChanged:(AFNetworkReachabilityStatus)status
 {
-	LOG_ERROR("igur reachability changed: %d", (int) status);
+	LOG_ERROR("imgur reachability changed: %d", (int) status);
 }
 
 - (bool)canDeleteImages

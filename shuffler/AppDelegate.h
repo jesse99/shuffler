@@ -16,5 +16,6 @@
 
 @property (assign) IBOutlet MainWindow *window;
 @property (strong) IBOutlet NSMenu *tagsMenu;
+@property (strong) IBOutlet NSMenu *databaseMenu;
 
 @end

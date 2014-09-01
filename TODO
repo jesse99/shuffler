@@ -1,4 +1,67 @@
-album	objectID
+http://imgur.com/gallery/1JJby
+http://imgur.com/gallery/do7F9
+http://imgur.com/gallery/fpq6M
+http://imgur.com/gallery/J0PeI
+http://imgur.com/gallery/SeAxQ
+http://imgur.com/gallery/BKejH
+http://imgur.com/gallery/LpnWW
+http://imgur.com/gallery/tukoe
+http://imgur.com/gallery/kR003
+http://imgur.com/gallery/ecgst
+http://imgur.com/gallery/CYby3
+http://imgur.com/gallery/bNSmi
+http://imgur.com/gallery/dJaJQ
+http://imgur.com/gallery/lZtnw
+http://imgur.com/gallery/v9Ji9
+http://imgur.com/gallery/WazqA
+http://imgur.com/gallery/PFjXB
+http://imgur.com/gallery/VjMAJ
+http://imgur.com/gallery/1wdbw
+http://imgur.com/gallery/ysjZN
+http://imgur.com/gallery/YbhCN
+http://imgur.com/gallery/0jrrr
+http://imgur.com/gallery/XLMPs
+http://imgur.com/gallery/0sew9
+http://imgur.com/gallery/n1rqj
+http://imgur.com/gallery/5pmhZ
+http://imgur.com/gallery/nG1s1
+http://imgur.com/gallery/wrkBE
+http://imgur.com/gallery/gVp0c
+http://imgur.com/gallery/WDVOr
+http://imgur.com/gallery/pApNX
+http://imgur.com/gallery/m9ZlT
+http://imgur.com/gallery/5rdJa
+http://imgur.com/gallery/abnLz
+http://imgur.com/gallery/zf3ON
+http://imgur.com/gallery/X5ZON
+http://imgur.com/gallery/Brz77
+http://imgur.com/gallery/fXtqq
+http://imgur.com/gallery/mRpTx
+http://imgur.com/gallery/p7D6K
+http://imgur.com/gallery/ShHsF
+http://imgur.com/gallery/SxE6f
+http://imgur.com/gallery/xQhJN
+http://imgur.com/gallery/6tOCj
+http://imgur.com/gallery/LePbV
+http://imgur.com/gallery/zerKi
+http://imgur.com/gallery/jIdLc
+http://imgur.com/gallery/QEeGJ
+http://imgur.com/gallery/6i6Mk
+http://imgur.com/gallery/WtcPf
+http://imgur.com/gallery/aJOSo
+http://imgur.com/gallery/gdLTf
+http://imgur.com/gallery/n0Vg0
+http://imgur.com/gallery/6pcqk
+http://imgur.com/gallery/OgLyf
+http://imgur.com/gallery/N4m00
+http://imgur.com/gallery/5iBIb
+http://imgur.com/gallery/Oute2
+http://imgur.com/gallery/RyWxX
+http://imgur.com/gallery/bn2KT
+http://imgur.com/gallery/xsGUM
+http://imgur.com/gallery/phBYs
+http://imgur.com/gallery/EBugn
+http://imgur.com/gallery/YopsG
 
 sudo gem install cocoapods
 pod setup
@@ -6,18 +69,30 @@ pod install
 open shuffler.xcworkspace
 	be sure to build this before trying to build the real shuffler
 
+* Would be nice if Snaccing said what it was scanning.
+* Got another image that didn't have a hash:
+	- multiple paths?
+* Should we have sources instead of stores?
+* Work on a databases menu:
+	- selecting should create a new store object
+	- need a pref for which store is selected
+	- support multiple albums
+	- probably should support multiple local directories
+	- should tags belong to the store?
 * Install AFNetworking and ImgurSession:
+	- cache images
 	- maybe we should allow multiple albums
-* Refactor the code:
-	- do something with compact database, maybe check if can delete images
 * Support imgur galleries:
-	- implement stuff using the REST api
 	- update readme with cocopods details
 	- trash should be a blacklist
 	- maybe open can goto the URL for the image?
 	- copy could copy the URL
 	- may want a move to <some directory> menu item
 	- probably want a Database menu to allow for selecting predefined directories and galleries
+Add some more imgur stores:
+	- wallpapers
+	- cats
+	- nature
 * flickr?
 * Get back on master branch
 * Don't think the max code is correct for horz scaling
@@ -40,6 +115,8 @@ open shuffler.xcworkspace
 	- new image doesn't appear
 * May want a pref for rating scaling.
 * Compact database is awfully fast. Maybe it should just be run every hour.
+* Get legit with commercial imgur use:
+	- maybe switch to http://unirest.io/objective-c
 * Default to user's pictures directory.
 	- If that's empty could default to a shuffler directory with a few pics (have to make sure that they are not copy righted)
 	- maybe some wiki commons pictures

@@ -29,17 +29,13 @@ const NSUInteger MaxHistory = 500;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	NSDictionary* initialSettings = @{@"root": @"~/Pictures", @"interval": @60};
-	[defaults registerDefaults:initialSettings];
+	[self _saveDefaultPrefs];
 	
-//	[defaults setObject:@"/Users/jessejones/Documents/1000 HD Wallpapers (By Mellori Studio)" forKey:@"root"];
-//	[defaults synchronize];
-		
 	_rating = @"Normal";
 	_tags = [NSMutableArray new];
 	_includeUncategorized = true;
 	
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	_interval = [defaults integerForKey:@"interval"];
 	_timer = [NSTimer scheduledTimerWithTimeInterval:_interval target:self selector:@selector(nextImage:) userInfo:nil repeats:true];
 	_shown = [NSMutableArray new];
@@ -49,9 +45,11 @@ const NSUInteger MaxHistory = 500;
 
 	//root = @"/tmp";				// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	//_store = [[ImgurStore alloc] init:root];
+	[self setStore:@"User Pictures"];
 	
 	_controller = [[UIController alloc] init:_window dbPath:_store.dbPath];
 	
+	[self initDatabaseMenu];
 	[self reloadTagsMenu];
 	
 	[_controller.window setTitle:@"Scanning…"];
@@ -67,6 +65,25 @@ const NSUInteger MaxHistory = 500;
 				   dispatch_async(main, ^{[self _displayInitial:gallery];});
 			   }];
 	   });
+}
+
+- (void)initDatabaseMenu
+{
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	NSDictionary* stores = [defaults dictionaryForKey:@"stores"];
+
+	NSMutableArray* names = [NSMutableArray new];
+	for (NSString* name in stores)
+	{
+		[names addObject:name];
+	}
+	[names sortUsingSelector:@selector(compare:)];
+
+	for (NSString* name in names)
+	{
+		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:name action:@selector(changeStore:) keyEquivalent:@""];
+		[_databaseMenu addItem:item];
+	}
 }
 
 - (void)reloadTagsMenu
@@ -210,6 +227,18 @@ const NSUInteger MaxHistory = 500;
 		if (![_gallery filterBy:_rating andTags:_tags includeUncategorized:_includeUncategorized])
 			[_controller.window setTitle:@"No Matches"];
 	}
+}
+
+- (void)changeStore:(NSMenuItem*)sender
+{
+	[self setStore:sender.title];
+}
+
+- (void)setStore:(NSString*)name
+{
+//	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+//	NSDictionary* stores = [defaults dictionaryForKey:@"stores"];
+//	NSDictionary* store = stores[sender.title];
 }
 
 - (void)toggleTag:(NSMenuItem*)sender
@@ -438,6 +467,26 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
     key.signature = 'shf2';
     key.id = 2;
     RegisterEventHotKey(F19, 0, key, GetApplicationEventTarget(), 0, &ref);
+}
+
+- (void)_saveDefaultPrefs
+{
+	NSDictionary* user = @{@"type": @"file system", @"paths": @[@"~/Pictures"]};
+	NSDictionary* cosplay = @{@"type": @"imgur", @"albums": @[@"http://imgur.com/gallery/ywIqy"]};
+
+	// TODO: delete this
+	NSDictionary* desktop = @{@"type": @"file system", @"paths": @[@"~/Documents/Desktop Pictures"]};
+//	NSDictionary* mellori = @{@"type": @"file system", @"paths": @[@"~/Documents/1000 HD Wallpapers (By Mellori Studio)"]};
+
+	NSDictionary* initialSettings = @{@"stores": @{@"User Pictures": user, @"Desktop Pictures": desktop, @"Imgur Cosplay": cosplay}, @"interval": @60};
+//	NSDictionary* initialSettings = @{@"stores": @{@"User Pictures": user, @"Mellori Wallpapers": mellori, @"Imgur Cosplay": cosplay}, @"interval": @60};
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+	[defaults registerDefaults:initialSettings];
+//	[defaults setObject:@"~/Documents/Desktop Pictures" forKey:@"root"];
+	
+	// TODO: delete this
+//	[defaults synchronize];
 }
 
 @end
