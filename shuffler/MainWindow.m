@@ -1,6 +1,5 @@
 #import "MainWindow.h"
 
-#define LEFT_BORDER 430		// TODO: make this a pref
 
 @implementation MainWindow
 {
@@ -8,6 +7,7 @@
 	NSImageView* _images[2];
 	NSUInteger _index;
 	double _maxScaling;
+	int _leftBorder;
 }
 
 // We can't make a borderless window in IB so we need to use a subclass
@@ -27,6 +27,7 @@
 		self = [[MainWindow alloc] initWithContentRect:contentRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:false screen:screen];
 		
 		_screen = screen;
+		_leftBorder = 430;	// TODO: make this a pref
 
 		[self setBackgroundColor:[NSColor clearColor]];
 		[self setExcludedFromWindowsMenu:true];
@@ -47,6 +48,10 @@
 - (void)useScreen:(NSScreen*)screen
 {
 	_screen = screen;
+	if (screen.frame.origin.x == 0)
+		_leftBorder = 430;
+	else
+		_leftBorder = 0;
 	[self setFrame:_screen.frame display:NO];
 }
 
@@ -133,7 +138,7 @@
 	
 	// For the horizontal component we want to center the image, but if it
 	// intersects the left border we need to push it to the right.
-	result.origin.x = MAX(windSize.width/2 - imageSize.width/2, LEFT_BORDER);
+	result.origin.x = MAX(windSize.width/2 - imageSize.width/2, _leftBorder);
 	result.size.width = MIN(imageSize.width, windSize.width - result.origin.x);
 	
 	return result;
