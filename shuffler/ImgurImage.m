@@ -1,5 +1,6 @@
 #import "ImgurImage.h"
 
+#if 0
 #import "ImgurSession.h"
 
 @implementation ImgurImage
@@ -68,3 +69,4 @@
 }
 
 @end
+#endif

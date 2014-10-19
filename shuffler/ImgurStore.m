@@ -1,5 +1,6 @@
 #import "ImgurStore.h"
 
+#if 0
 #import "AppDelegate.h"
 #import "ImgurImage.h"
 
@@ -110,3 +111,4 @@
 }
 
 @end
+#endif

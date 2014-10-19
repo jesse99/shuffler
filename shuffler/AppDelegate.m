@@ -62,7 +62,10 @@ const NSUInteger MaxHistory = 500;
 		   Gallery* gallery = [[Gallery alloc] init:_store.dbPath];
 		   [gallery spinup:
 			   ^{
-				   dispatch_async(main, ^{[self _displayInitial:gallery];});
+				   dispatch_async(main, ^{
+                       [self _displayInitial:gallery];
+                       [self useScreen2:self];
+                   });
 			   }];
 	   });
 }
@@ -416,6 +419,14 @@ const NSUInteger MaxHistory = 500;
 	[_controller setImage:_controller.image];
 }
 
+- (IBAction)useScreen3:(id)sender
+{
+    NSArray* screens = [NSScreen screens];
+    [self.window useScreen:screens[2]];
+    
+    [_controller setImage:_controller.image];
+}
+
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
 	BOOL enabled = true;
@@ -465,8 +476,11 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
 
 - (void)_registerHotKeys
 {
-	const uint F18 = 79;		// TODO: may want a pref for these
-	const uint F19 = 80;
+//	const uint F18 = 79;		// TODO: may want a pref for these
+//	const uint F19 = 80;
+    
+    const uint F1 = 0x7A;
+    const uint F2 = 0x78;
 	
     EventHotKeyRef ref;
     EventHotKeyID key;
@@ -478,11 +492,11 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
 	
     key.signature = 'shf1';
     key.id = 1;
-    RegisterEventHotKey(F18, 0, key, GetApplicationEventTarget(), 0, &ref);
+    RegisterEventHotKey(F1, 0, key, GetApplicationEventTarget(), 0, &ref);
 	
     key.signature = 'shf2';
     key.id = 2;
-    RegisterEventHotKey(F19, 0, key, GetApplicationEventTarget(), 0, &ref);
+    RegisterEventHotKey(F2, 0, key, GetApplicationEventTarget(), 0, &ref);
 }
 
 - (void)_saveDefaultPrefs

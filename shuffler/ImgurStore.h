@@ -1,4 +1,5 @@
 #import "StoreProtocol.h"
+#if 0
 #import "ImgurSession.h"
 
 // Used to manage images stored on <www.imgur.com>.
@@ -21,3 +22,4 @@
 @property (readonly) NSString* dbPath;
 
 @end
+#endif
