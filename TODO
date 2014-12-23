@@ -71,6 +71,8 @@ open shuffler.xcworkspace
 
 
 
+* Get rid of duplicate tag.
+* Get rid of extra none.
 * Would be nice if Scanning said what it was scanning.
 * Got another image that didn't have a hash:
 	- multiple paths?

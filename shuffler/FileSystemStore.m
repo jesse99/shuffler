@@ -21,7 +21,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 {
 	if (numEvents > 0)
 	{
-		AppDelegate* app = [NSApp delegate];
+		AppDelegate* app = (AppDelegate*) [NSApp delegate];
 		[app.gallery storeChanged];
 	}
 }

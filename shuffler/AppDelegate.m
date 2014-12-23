@@ -457,7 +457,7 @@ static OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent
     EventHotKeyID key;
     GetEventParameter(theEvent, kEventParamDirectObject, typeEventHotKeyID, NULL, sizeof(key), NULL, &key);
 	
-    AppDelegate* delegate = [NSApp delegate];
+    AppDelegate* delegate = (AppDelegate*) [NSApp delegate];
     switch (key.id)
 	{
         case 1:

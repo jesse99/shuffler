@@ -322,7 +322,7 @@ static long ratingToWeight(NSUInteger rating)
 		[rows addObjectsFromArray:categorized];
 	}
 	
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	if (rows && rows.count > 0)
 	{
 		long weight = ratingToWeight(TopRating);
@@ -491,7 +491,7 @@ static long ratingToWeight(NSUInteger rating)
 
 - (void)_addUncategorized:(Database*)database finished:(void (^)())finished;
 {
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	(void) [app.store enumerate:
 		^(NSString* path) {
 			[database insertOrIgnore:@"ImagePaths" values:@[path, @""]];

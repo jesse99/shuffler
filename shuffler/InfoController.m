@@ -49,7 +49,7 @@ static InfoController* _controller;
 
 - (void)_reload:(NSNotification*)notification
 {
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	Gallery* gallery = app.gallery;
 	
 	[self.window setTitle:app.store.name];

@@ -118,7 +118,7 @@
 
 - (void)trashedFile:(id<ImageProtocol>)image
 {
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	if (_tagsLabel.stringValue.length > 0)
 	{
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
@@ -138,7 +138,7 @@
 	{
 		_rating = newRating;
 
-		AppDelegate* app = [NSApp delegate];
+		AppDelegate* app = (AppDelegate*) [NSApp delegate];
 		if (_tagsLabel.stringValue.length == 0)
 		{
 			// If the user edits an uncategorized file then it's nice
@@ -176,7 +176,7 @@
 		[item setTitle:[NSString stringWithFormat:@"Max (%.0f%%)", 100*_mainWindow.maxScaling]];
 	}
 
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	[app rescheduleTimer];
 }
 
@@ -190,7 +190,7 @@
 	if (_database)
 		[self _saveSettings];	// this is what saves the new hash into the database
 	
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	if (wasUncategorized)
 	{
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
@@ -215,12 +215,12 @@
 
 	if (wasUncategorized)
 	{
-		AppDelegate* app = [NSApp delegate];
+		AppDelegate* app = (AppDelegate*) [NSApp delegate];
 		NSString* rating = [_ratingPopup titleOfSelectedItem];
 		[app.gallery changedUncategorizedToCategorized:rating];
 	}
 
-	AppDelegate* app = [NSApp delegate];
+	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	[app rescheduleTimer];
 }
 
@@ -236,7 +236,7 @@
 		[self _clearTagsMenu];
 		[self _populateTagsMenu];
 
-		AppDelegate* app = [NSApp delegate];
+		AppDelegate* app = (AppDelegate*) [NSApp delegate];
 		[app reloadTagsMenu];
 
 		[self _selectTagByTitle:name];
