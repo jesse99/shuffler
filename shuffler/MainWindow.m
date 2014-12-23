@@ -52,7 +52,7 @@
 		_leftBorder = 430;
 	else
 		_leftBorder = 0;
-	[self setFrame:_screen.frame display:NO];
+	[self setFrame:_screen.visibleFrame display:NO];
 }
 
 - (void)update:(id<ImageProtocol>)image imageData:(NSData*)data scaling:(double)scaling
@@ -98,8 +98,8 @@
 
 		// Set the frame and image for the new view. Note that we get nicer
 		// results if we do this after the fades.
-		[_images[_index] setImage:bitmap];
-		[_images[_index] setFrame:[self _doGetViewRect:size]];
+        [_images[_index] setImage:bitmap];
+        [_images[_index] setFrame:[self _doGetViewRect:size]];
 		_image = image;
 		LOG_VERBOSE("selected '%s'", STR(image));
 	}
@@ -119,7 +119,7 @@
 	[_image2 setImageFrameStyle:NSImageFrameNone];
 	_images[1] = _image2;
 	
-	[_image1.superview setWantsLayer:true];
+    [_image1.superview setWantsLayer:true];
 	[self orderFront:self];
 }
 
