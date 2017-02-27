@@ -12,7 +12,7 @@
 
 // We can't make a borderless window in IB so we need to use a subclass
 // so that we can still use IB to set our window up.
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)style backing:(NSBackingStoreType)buffering defer:(BOOL)flag
+- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)style backing:(NSBackingStoreType)buffering defer:(BOOL)flag
 {
 	// This is awfully goofy: we create a brand new window to replace the one that we
 	// were told to create. We do this because the init method that takes a screen is
@@ -27,7 +27,8 @@
 		self = [[MainWindow alloc] initWithContentRect:contentRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:false screen:screen];
 		
 		_screen = screen;
-		_leftBorder = 430;	// TODO: make this a pref
+//        _leftBorder = 430;	// TODO: make this a pref
+		_leftBorder = 0;	// TODO: make this a pref
 
 		[self setBackgroundColor:[NSColor clearColor]];
 		[self setExcludedFromWindowsMenu:true];
@@ -48,9 +49,9 @@
 - (void)useScreen:(NSScreen*)screen
 {
 	_screen = screen;
-	if (screen.frame.origin.x == 0)
-		_leftBorder = 430;
-	else
+//	if (screen.frame.origin.x == 0)
+//		_leftBorder = 430;
+//	else
 		_leftBorder = 0;
 	[self setFrame:_screen.visibleFrame display:NO];
 }

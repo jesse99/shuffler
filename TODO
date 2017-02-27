@@ -71,6 +71,7 @@ open shuffler.xcworkspace
 
 
 
+* Should probably have a table for uncategorized files
 * Get rid of duplicate tag.
 * Get rid of extra none.
 * Would be nice if Scanning said what it was scanning.
