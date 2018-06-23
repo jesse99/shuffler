@@ -59,7 +59,7 @@ const NSUInteger MaxHistory = 500;
 	dispatch_queue_t main = dispatch_get_main_queue();
 	dispatch_async(concurrent,
 	   ^{
-		   Gallery* gallery = [[Gallery alloc] init:_store.dbPath];
+           Gallery* gallery = [[Gallery alloc] init:self->_store.dbPath];
 		   [gallery spinup:
 			   ^{
 				   dispatch_async(main, ^{
@@ -341,10 +341,10 @@ const NSUInteger MaxHistory = 500;
 	dispatch_async(concurrent,
 	   ^{
 		   NSError* error = nil;
-		   Database* db = [[Database alloc] initWithPath:_store.dbPath error:&error];
+           Database* db = [[Database alloc] initWithPath:self->_store.dbPath error:&error];
 		   if (!db)
 		   {
-			   LOG_ERROR("Couldn't create the database at '%s': %s", STR(_store.dbPath), STR(error.localizedFailureReason));
+               LOG_ERROR("Couldn't create the database at '%s': %s", STR(self->_store.dbPath), STR(error.localizedFailureReason));
 			   NSBeep();
 			   return;
 		   }

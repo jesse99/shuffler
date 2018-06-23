@@ -87,7 +87,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 	return [[FileSytemImage alloc] init:path];
 }
 
-- (void)enumerate:(void (^)(NSString* path))block finished:(void (^)())finished
+- (void)enumerate:(void (^)(NSString* path))block finished:(void (^)(void))finished
 {
 	LOG_NORMAL("enumerating images from '%s'", STR(_root));
 	double startTime = getTime();
@@ -97,7 +97,7 @@ static void watchCallback(ConstFSEventStreamRef streamRef,
 	[self _enumerateDeepDir:_root glob:_glob error:&error block:
 	 ^(NSString *path)
 	 {
-		 if ([_glob matchName:path.lastPathComponent] == 1)
+         if ([self->_glob matchName:path.lastPathComponent] == 1)
 		 {
 			 count++;
 			 block(path);

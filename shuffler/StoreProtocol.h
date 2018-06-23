@@ -13,7 +13,7 @@
 
 // Enumerates over all the images in the store. Finished is called when the
 // enumeration is complete (which may happen well after this call returns).
-- (void)enumerate:(void (^)(NSString* path))callback finished:(void (^)())finished;
+- (void)enumerate:(void (^)(NSString* path))callback finished:(void (^)(void))finished;
 
 // True if images can be permanently deleted instead of black listed.
 @property (readonly) bool canDeleteImages;

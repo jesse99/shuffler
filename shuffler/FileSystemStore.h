@@ -8,7 +8,7 @@
 - (bool)exists:(NSString*)path;
 - (id<ImageProtocol>)create:(NSString*)path;
 
-- (void)enumerate:(void (^)(NSString* path))block finished:(void (^)())finished;
+- (void)enumerate:(void (^)(NSString* path))block finished:(void (^)(void))finished;
 
 @property (readonly) bool canDeleteImages;
 @property (readonly) NSString* name;

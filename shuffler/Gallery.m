@@ -75,7 +75,7 @@ NSString* ratingToName(NSUInteger rating)
 	return self;
 }
 
-- (void)spinup:(void (^)())finished
+- (void)spinup:(void (^)(void))finished
 {
 	[self _addUncategorized:_database finished:finished];	// TODO: popup a directory picker if nothing was found	
 }
@@ -489,7 +489,7 @@ static long ratingToWeight(NSUInteger rating)
 	return clauses;
 }
 
-- (void)_addUncategorized:(Database*)database finished:(void (^)())finished;
+- (void)_addUncategorized:(Database*)database finished:(void (^)(void))finished;
 {
 	AppDelegate* app = (AppDelegate*) [NSApp delegate];
 	(void) [app.store enumerate:
